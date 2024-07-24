@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace XenoAtom.Logging.Internal;
+namespace XenoAtom.Logging;
 
 /// <summary>
 /// A LogBufferManager, per thread, that can be used to allocate a buffer for a log message.

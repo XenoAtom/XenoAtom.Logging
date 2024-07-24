@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace XenoAtom.Logging.Internal;
+namespace XenoAtom.Logging;
 
 internal static class AlignHelper
 {
