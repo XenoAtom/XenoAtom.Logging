@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace XenoAtom.Logging;
+namespace XenoAtom.Logging.Internal;
 
 /// <summary>
 /// A LogBufferManager, per thread, that can be used to allocate a buffer for a log message.
@@ -20,9 +20,9 @@ internal unsafe class LogBufferManager
     {
         _logMessageWriters = new UnsafeObjectPool<LogMessageWriter>(4);
     }
-    
+
     public static LogBufferManager Current => _current ??= new LogBufferManager();
-    
+
 
     public LogMessageWriter Allocate()
     {
@@ -136,23 +136,23 @@ internal readonly struct LogDataHeaderPart
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public LogDataHeaderPart(LogDataPartKind kind, LogDataKind dataKind, ushort length)
-        => _data = ((uint)((byte)kind) << 24) | ((uint)dataKind << 16) | length;
+        => _data = (uint)(byte)kind << 24 | (uint)dataKind << 16 | length;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LogDataHeaderPart Aligned(LogDataPartKind kind, LogDataKind dataKind, ushort length)
-        => new(((uint)((byte)kind | 0x40) << 24) | ((uint)dataKind << 16) | length);
+        => new((uint)((byte)kind | 0x40) << 24 | (uint)dataKind << 16 | length);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static LogDataHeaderPart Formatted(LogDataPartKind kind, LogDataKind dataKind, ushort length)
-        =>   new(((uint)((byte)kind | 0x80) << 24) | ((uint)dataKind << 16) | length);
+        => new((uint)((byte)kind | 0x80) << 24 | (uint)dataKind << 16 | length);
 
-    public LogDataPartKind Kind => (LogDataPartKind)(((_data << 1) >> 24));
+    public LogDataPartKind Kind => (LogDataPartKind)(_data << 1 >> 24);
 
     public bool IsAligned => (int)(_data << 1) < 0;
 
     public bool IsFormatted => (int)_data < 0;
 
-    public LogDataKind DataKind => (LogDataKind)((byte)(_data >> 16));
+    public LogDataKind DataKind => (LogDataKind)(byte)(_data >> 16);
 
     public ushort Length => (ushort)_data;
 }
@@ -192,7 +192,7 @@ internal unsafe class LogMessageWriter
         _currentData = currentData;
         _endData = endData;
     }
-    
+
     public void BeginMessage(LogLevel level)
     {
 
@@ -215,7 +215,7 @@ internal unsafe class LogMessageWriter
         *(LogDataHeaderPart*)_currentData = new LogDataHeaderPart(LogDataPartKind.EndMessage, LogDataKind.Unknown, 0);
         _currentData = endData;
     }
-    
+
     internal void AppendLiteral(string s)
     {
         // Write the managed part
@@ -240,7 +240,7 @@ internal unsafe class LogMessageWriter
     {
         // TODO: Implement
     }
-    
+
     internal void AppendLiteral(ReadOnlySpan<byte> s)
     {
         // TODO: Implement
@@ -255,15 +255,15 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted(ReadOnlySpan<char> s, int alignment)
     {
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AppendFormatted(ReadOnlySpan<byte> s, int alignment)
     {
     }
-    
+
     public void AppendFormatted(int value, int alignment, string? format)
     {
-        AppendFormatted<int>(value);
+        AppendFormatted(value);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -370,7 +370,7 @@ internal unsafe class LogMessageWriter
         }
         _currentData = currentData + size;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AppendFormatted<T>(T value, int alignment, string? format) where T : unmanaged, ISpanFormattable
     {

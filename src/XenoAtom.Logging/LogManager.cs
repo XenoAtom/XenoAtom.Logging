@@ -24,17 +24,3 @@ public class LogManager
 
     }
 }
-
-internal struct LogMessageRaw
-{
-
-
-    private void Protocol()
-    {
-
-
-    }
-
-
-
-}

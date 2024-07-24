@@ -4,7 +4,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace XenoAtom.Logging;
+namespace XenoAtom.Logging.Internal;
 
 internal readonly unsafe struct SpanFormattableFunctionPointer(delegate*<ref byte, Span<char>, out int, ReadOnlySpan<char>, IFormatProvider?, bool> tryFormat)
 {
