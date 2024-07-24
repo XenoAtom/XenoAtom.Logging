@@ -1,0 +1,271 @@
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+// Copyright (c) Alexandre Mutel. All rights reserved.
+// Licensed under the BSD-Clause 2 license.
+// See license.txt file in the project root for full license information.
+//
+// This file is auto-generated. Edit Logger.gen.tt to modify it.
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+namespace XenoAtom.Logging;
+
+partial class Logger
+{
+<# var logTypes = new string[] {
+    "Trace",
+    "Debug",
+    "Info",
+    "Warn",
+    "Error",
+    "Fatal"
+};
+foreach (var logType in logTypes) {
+#>
+
+    /// <summary>
+    /// Interpolated string handler for <see cref="LogLevel.<#= logType #>"/> log level.
+    /// </summary>
+    [InterpolatedStringHandler]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    public readonly ref struct <#= logType #>InterpolatedLogMessage
+    {
+        internal readonly InterpolatedLogMessageInternal Internal;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="<#= logType #>InterpolatedLogMessage"/> struct.
+        /// </summary>
+        public <#= logType #>InterpolatedLogMessage(
+                int literalLength,
+                int formattedCount,
+                Logger logger,
+                out bool enabled)
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.<#= logType #>, literalLength, formattedCount, logger, out enabled);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="<#= logType #>InterpolatedLogMessage"/> struct.
+        /// </summary>
+        public <#= logType #>InterpolatedLogMessage(
+                int literalLength,
+                int formattedCount,
+                LogEventId eventId,
+                Logger logger,
+                out bool enabled)
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.<#= logType #>, literalLength, formattedCount, eventId, logger, out enabled);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="<#= logType #>InterpolatedLogMessage"/> struct.
+        /// </summary>
+        public <#= logType #>InterpolatedLogMessage(
+                int literalLength,
+                int formattedCount,
+                Exception? exception,
+                Logger logger,
+                out bool enabled)
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.<#= logType #>, literalLength, formattedCount, exception, logger, out enabled);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="<#= logType #>InterpolatedLogMessage"/> struct.
+        /// </summary>
+        public <#= logType #>InterpolatedLogMessage(
+                int literalLength,
+                int formattedCount,
+                LogEventId eventId,
+                Exception? exception,
+                Logger logger,
+                out bool enabled)
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.<#= logType #>, literalLength, formattedCount, eventId, exception, logger, out enabled);
+
+        /// <summary>
+        /// Appends a literal span of chars to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendLiteral(ReadOnlySpan<char> s)
+            => Internal.AppendLiteral(s);
+
+        /// <summary>
+        /// Appends a literal span of chars to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendLiteral(ReadOnlySpan<byte> s)
+            => Internal.AppendLiteral(s);
+
+        /// <summary>
+        /// Appends a literal string to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendLiteral([ConstantExpected] string s)
+            => Internal.AppendLiteral(s);
+
+        /// <summary>
+        /// Appends a formatted string to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(string s)
+            => Internal.AppendLiteral(s);
+
+        /// <summary>
+        /// Appends a formatted string to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(string s, int alignment)
+            => Internal.AppendFormatted(s, alignment);
+
+        /// <summary>
+        /// Appends a formatted span of chars to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(ReadOnlySpan<char> value)
+            => Internal.AppendLiteral(value);
+
+        /// <summary>
+        /// Appends a formatted span of chars to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(ReadOnlySpan<char> value, int alignment)
+            => Internal.AppendFormatted(value, alignment);
+
+        /// <summary>
+        /// Appends a formatted span of bytes to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(ReadOnlySpan<byte> value)
+            => Internal.AppendLiteral(value);
+
+        /// <summary>
+        /// Appends a formatted span of bytes to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(ReadOnlySpan<byte> value, int alignment)
+            => Internal.AppendFormatted(value, alignment);
+
+        /// <summary>
+        /// Appends a formatted boolean to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(bool value)
+            => Internal.AppendFormatted(value);
+
+        /// <summary>
+        /// Appends a formatted boolean to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted(bool value, int alignment)
+            => Internal.AppendFormatted(value, alignment);
+
+        /// <summary>
+        /// Appends a formatted value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T value) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value);
+            
+        /// <summary>
+        /// Appends a formatted value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T value, int alignment) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value, alignment);
+
+        /// <summary>
+        /// Appends a formatted value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T value, int alignment, string? format) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value, alignment, format);
+
+        /// <summary>
+        /// Appends a formatted nullable value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T? value) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value);
+
+        /// <summary>
+        /// Appends a formatted nullable value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T? value, int alignment) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value, alignment);
+
+        /// <summary>
+        /// Appends a formatted nullable value to the interpolated log message.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AppendFormatted<T>(T? value, int alignment, string? format) where T : unmanaged, ISpanFormattable
+            => Internal.AppendFormatted(value, alignment, format);
+    }
+<# } #>
+}
+
+partial class LoggerExtensions
+{
+<# foreach (var logType in logTypes) {#>
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, string msg)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+        logger.Log(new(LogLevel.<#= logType #>, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, string msg)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+        logger.Log(new(LogLevel.<#= logType #>, eventId, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, Exception? exception, string msg)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+
+        logger.Log(new(LogLevel.<#= logType #>, exception, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+
+        logger.Log(new(LogLevel.<#= logType #>, eventId, exception, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, [InterpolatedStringHandlerArgument("eventId", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+<# } #>
+}
