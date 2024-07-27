@@ -2,25 +2,9 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
-using System.Drawing;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace XenoAtom.Logging;
-
-// A log message is always aligned to 64 bytes and is composed of log message parts
-//
-// A log message part
-// (4) int:
-//  - byte: Part Kind: 0 = Message Part, 1 = End of Message, 2 = End of chunk,
-//  - byte: Data Kind 
-//  - ushort: Length of the part (number of 8 bytes)
-// (8) nint: function pointer formatting (2 bit used for flags)
-// (8*) byte[]: aligned on ulong
-
-// If length ==  0, end of message
-// If length == -1, end of chunk, the length is followed by a pointer to the beginning of the buffer (to be able to recover it and move it back to the pool), and a pointer to the next chunk
-// If length == -2, it is followed by a pointer to a string
 
 internal unsafe class LogMessageWriter
 {
@@ -429,4 +413,9 @@ internal unsafe class LogMessageWriter
     private void AllocateManaged() => _bufferManager.AllocateNextManaged(this);
 
     private void AllocateUnmanaged(int size = 0) => _bufferManager.AllocateNextUnmanaged(this, size);
+
+    public void AppendProperties(LogProperties properties)
+    {
+        
+    }
 }

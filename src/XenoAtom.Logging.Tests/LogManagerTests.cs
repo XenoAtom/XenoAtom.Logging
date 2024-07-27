@@ -35,7 +35,6 @@ public class LogManagerTests
 
         LogManager.Initialize(config);
 
-
         var helloConfig = config.GetLoggerConfig("hello");
         helloConfig.MinimumLevel = LogLevel.Error;
         helloConfig.Writers.Add(new ConsoleLogWriter());

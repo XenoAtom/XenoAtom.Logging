@@ -69,6 +69,24 @@ public sealed partial class Logger
             LogLevel level,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+        {
+            var localEnabled = logger.IsEnabled(level);
+            enabled = localEnabled;
+            if (localEnabled)
+            {
+                _writer = LogBufferManager.Current.Allocate();
+                _writer.BeginMessage(logger, level);
+                _writer.AppendProperties(properties);
+            }
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
             Logger logger,
             out bool enabled)
@@ -80,6 +98,26 @@ public sealed partial class Logger
                 _writer = LogBufferManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
+            }
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            LogEventId eventId,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+        {
+            var localEnabled = logger.IsEnabled(level);
+            enabled = localEnabled;
+            if (localEnabled)
+            {
+                _writer = LogBufferManager.Current.Allocate();
+                _writer.BeginMessage(logger, level);
+                _writer.AppendEventId(eventId);
+                _writer.AppendProperties(properties);
             }
         }
 
@@ -105,6 +143,26 @@ public sealed partial class Logger
             LogLevel level,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            Exception? exception,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+        {
+            var localEnabled = logger.IsEnabled(level);
+            enabled = localEnabled;
+            if (localEnabled)
+            {
+                _writer = LogBufferManager.Current.Allocate();
+                _writer.BeginMessage(logger, level);
+                _writer.AppendException(exception);
+                _writer.AppendProperties(properties);
+            }
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
             Exception? exception,
             Logger logger,
@@ -118,6 +176,28 @@ public sealed partial class Logger
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
                 _writer.AppendException(exception);
+            }
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            LogEventId eventId,
+            Exception? exception,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+        {
+            var localEnabled = logger.IsEnabled(level);
+            enabled = localEnabled;
+            if (localEnabled)
+            {
+                _writer = LogBufferManager.Current.Allocate();
+                _writer.BeginMessage(logger, level);
+                _writer.AppendEventId(eventId);
+                _writer.AppendException(exception);
+                _writer.AppendProperties(properties);
             }
         }
 

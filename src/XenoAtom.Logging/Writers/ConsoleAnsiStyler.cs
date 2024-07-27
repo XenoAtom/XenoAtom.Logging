@@ -4,4 +4,4 @@
 
 namespace XenoAtom.Logging.Writers;
 
-public delegate ReadOnlySpan<char> ConsoleAnsiStyler(ConsoleSegmentKind kind);
+public delegate ReadOnlySpan<char> ConsoleAnsiStyler(TextSegmentKind kind);
