@@ -4,6 +4,7 @@
 
 using System.Runtime.CompilerServices;
 using XenoAtom.Logging;
+using XenoAtom.Logging.Writers;
 
 namespace XenoAtom.Logging.Tests;
 
@@ -15,13 +16,40 @@ public class LogManagerTests
     [TestMethod]
     public unsafe void TestSimple()
     {
+        var config = new LogManagerConfig()
+        {
+            RootLogger =
+            {
+                MinimumLevel = LogLevel.Info,
+                Writers =
+                {
+                    new ConsoleLogWriter()
+                }
+            },
+            Loggers =
+            {
+                { "hello", LogLevel.Error },
+                { "hello", LogLevel.Info, [new ConsoleLogWriter()]}
+            }
+        };
+
+        LogManager.Initialize(config);
+
+
+        var helloConfig = config.GetLoggerConfig("hello");
+        helloConfig.MinimumLevel = LogLevel.Error;
+        helloConfig.Writers.Add(new ConsoleLogWriter());
+
         Logger log = LogManager.GetLogger("hello");
-        log.Level = LogLevel.None; // Disable interpolation for now
 
         int x = 0;
         var test = "World";
         var utf8Span = "hello world"u8;
-        log.Info($"Hel{x}l {true} {true,6} {LogLevel.Info}o {test} another {utf8Span}");
+
+        using (log.BeginScope(["Hello", 126, 12.0f]))
+        {
+            log.Info($"Hel{x}l {true} {true,6} {LogLevel.Info}o {test} another {utf8Span}");
+        }
 
         var array = GC.AllocateArray<object>(1024, true);
         var ptrArray = *(object**)(&array);

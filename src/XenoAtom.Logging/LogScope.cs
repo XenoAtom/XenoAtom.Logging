@@ -4,13 +4,7 @@
 
 namespace XenoAtom.Logging;
 
-internal enum LogDataPartKind : byte
+public readonly ref struct LogScope
 {
-    BeginMessage,
-    BeginLiteralMessage,
-    EventId,
-    Exception,
-    MessagePart,
-    EndMessage,
-    EndDataBuffer,
+    // TODO
 }

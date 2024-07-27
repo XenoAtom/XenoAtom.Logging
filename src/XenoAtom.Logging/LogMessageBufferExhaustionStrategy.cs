@@ -4,13 +4,15 @@
 
 namespace XenoAtom.Logging;
 
-internal enum LogDataPartKind : byte
+public enum LogMessageBufferExhaustionStrategy
 {
-    BeginMessage,
-    BeginLiteralMessage,
-    EventId,
-    Exception,
-    MessagePart,
-    EndMessage,
-    EndDataBuffer,
+    DropAndNotify,
+
+    Drop,
+
+    Block,
+
+    Allocate,
+
+    Default = DropAndNotify
 }

@@ -1,6 +1,8 @@
 // Copyright (c) Alexandre Mutel. All rights reserved.
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace XenoAtom.Logging;
@@ -49,8 +51,8 @@ public sealed partial class Logger
 
         public InterpolatedLogMessageInternal(
             LogLevel level,
-            int literalLength,
-            int formattedCount,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             Logger logger,
             out bool enabled)
         {
@@ -59,14 +61,14 @@ public sealed partial class Logger
             if (localEnabled)
             {
                 _writer = LogBufferManager.Current.Allocate();
-                _writer.BeginMessage(level, literalLength, formattedCount);
+                _writer.BeginMessage(logger, level);
             }
         }
 
         public InterpolatedLogMessageInternal(
             LogLevel level,
-            int literalLength,
-            int formattedCount,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
             Logger logger,
             out bool enabled)
@@ -76,15 +78,15 @@ public sealed partial class Logger
             if (localEnabled)
             {
                 _writer = LogBufferManager.Current.Allocate();
-                _writer.BeginMessage(level, literalLength, formattedCount);
+                _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
             }
         }
 
         public InterpolatedLogMessageInternal(
             LogLevel level,
-            int literalLength,
-            int formattedCount,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             Exception? exception,
             Logger logger,
             out bool enabled)
@@ -94,15 +96,15 @@ public sealed partial class Logger
             if (localEnabled)
             {
                 _writer = LogBufferManager.Current.Allocate();
-                _writer.BeginMessage(level, literalLength, formattedCount);
+                _writer.BeginMessage(logger, level);
                 _writer.AppendException(exception);
             }
         }
 
         public InterpolatedLogMessageInternal(
             LogLevel level,
-            int literalLength,
-            int formattedCount,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
             Exception? exception,
             Logger logger,
@@ -113,7 +115,7 @@ public sealed partial class Logger
             if (localEnabled)
             {
                 _writer = LogBufferManager.Current.Allocate();
-                _writer.BeginMessage(level, literalLength, formattedCount);
+                _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
                 _writer.AppendException(exception);
             }

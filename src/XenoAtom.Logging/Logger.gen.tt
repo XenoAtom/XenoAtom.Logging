@@ -215,6 +215,16 @@ partial class LoggerExtensions
         logger.Log(new(LogLevel.<#= logType #>, msg));
     }
 
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, string msg, LogProperties properties)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+        logger.Log(new(LogLevel.<#= logType #>, msg));
+    }
+
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
@@ -227,7 +237,26 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+        logger.Log(new(LogLevel.<#= logType #>, eventId, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
     public static void <#= logType #>(this Logger logger, Exception? exception, string msg)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+
+        logger.Log(new(LogLevel.<#= logType #>, exception, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, Exception? exception, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
 
@@ -247,7 +276,24 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    {
+        if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
+
+        logger.Log(new(LogLevel.<#= logType #>, eventId, exception, msg));
+    }
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
     public static void <#= logType #>(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg, LogProperties properties)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -259,13 +305,31 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, [InterpolatedStringHandlerArgument("eventId", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg, LogProperties properties)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
     public static void <#= logType #>(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    public static void <#= logType #>(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg, LogProperties properties)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
+        => logger.Log(msg.Internal);
+
+    /// <summary>
+    /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
+    /// </summary>
+    public static void <#= logType #>(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg, LogProperties properties)
         => logger.Log(msg.Internal);
 <# } #>
 }

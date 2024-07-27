@@ -10,6 +10,10 @@ namespace XenoAtom.Logging;
 public enum LogLevel
 {
     /// <summary>
+    /// Not used for writing log messages but specifies that a logging category should log all messages.
+    /// </summary>
+    All,
+    /// <summary>
     /// Logs that contain the most detailed messages. These messages may contain sensitive application data.
     /// These messages are disabled by default and should never be enabled in a production environment.
     /// </summary>
@@ -42,4 +46,40 @@ public enum LogLevel
     /// Not used for writing log messages. Specifies that a logging category should not write any messages.
     /// </summary>
     None,
+}
+
+public static class LogLevelExtensions
+{
+    public static string ToShortString(this LogLevel level) => level switch
+    {
+        LogLevel.Trace => "TRACE",
+        LogLevel.Debug => "DEBUG",
+        LogLevel.Info => "INFO",
+        LogLevel.Warn => "WARN",
+        LogLevel.Error => "ERROR",
+        LogLevel.Fatal => "FATAL",
+        _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+    };
+
+    public static string ToLongString(this LogLevel level) => level switch
+    {
+        LogLevel.Trace => "Trace",
+        LogLevel.Debug => "Debug",
+        LogLevel.Info => "Information",
+        LogLevel.Warn => "Warning",
+        LogLevel.Error => "Error",
+        LogLevel.Fatal => "Fatal",
+        _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+    };
+
+    public static string ToTriString(this LogLevel level) => level switch
+    {
+        LogLevel.Trace => "TRC",
+        LogLevel.Debug => "DBG",
+        LogLevel.Info => "INF",
+        LogLevel.Warn => "WRN",
+        LogLevel.Error => "ERR",
+        LogLevel.Fatal => "FTL",
+        _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+    };
 }

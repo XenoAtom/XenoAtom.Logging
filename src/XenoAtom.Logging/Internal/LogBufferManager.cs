@@ -12,7 +12,7 @@ namespace XenoAtom.Logging;
 internal unsafe class LogBufferManager
 {
     [ThreadStatic]
-    private static LogBufferManager _current;
+    private static LogBufferManager? _current;
 
     private UnsafeObjectPool<LogMessageWriter> _logMessageWriters;
 
@@ -22,7 +22,7 @@ internal unsafe class LogBufferManager
     }
 
     public static LogBufferManager Current => _current ??= new LogBufferManager();
-
+    
 
     public LogMessageWriter Allocate()
     {

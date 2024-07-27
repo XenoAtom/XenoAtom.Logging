@@ -4,13 +4,15 @@
 
 namespace XenoAtom.Logging;
 
-internal enum LogDataPartKind : byte
+public struct LogBeginScope : IDisposable
 {
-    BeginMessage,
-    BeginLiteralMessage,
-    EventId,
-    Exception,
-    MessagePart,
-    EndMessage,
-    EndDataBuffer,
+
+    internal LogBeginScope(Logger logger)
+    {
+    }
+
+    public void Dispose()
+    {
+        // TODO
+    }
 }

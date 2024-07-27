@@ -32,8 +32,6 @@ internal unsafe class LogMessageWriter
     private byte* _currentData;
     private byte* _endData;
 
-    const int MinDataSize = 4;
-
     internal LogMessageWriter(LogBufferManager bufferManager)
     {
         _bufferManager = bufferManager;
@@ -52,7 +50,6 @@ internal unsafe class LogMessageWriter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateManaged(void** beginObject, void** endObject)
     {
-        _beginObject = beginObject;
         _currentObject = beginObject;
         _endObject = endObject;
     }
@@ -60,7 +57,6 @@ internal unsafe class LogMessageWriter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateUnmanaged(byte* beginData, byte* endData)
     {
-        _beginData = beginData;
         _currentData = beginData;
         _endData = endData;
     }
@@ -77,17 +73,25 @@ internal unsafe class LogMessageWriter
         _currentData = currentData + size;
     }
 
-    public void BeginMessage(LogLevel level, int literalLength, int formattedCount)
+    public void BeginMessage(Logger logger, LogLevel level)
     {
-        var size = sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(int) + sizeof(int);
+        // LogDataPartKind.BeginMessage
+        // - Header
+        // - LogLevel
+        // - nint Logger
+        // - nint Thread
+        // - DateTimeOffset Timestamp
+        var size = sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint) + sizeof(DateTimeOffset);
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
         *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.BeginMessage, LogDataKind.Unknown, 0);
         *(LogLevel*)(currentData + sizeof(LogDataHeader)) = level;
-        *(int*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel)) = literalLength;
-        *(int*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(int)) = formattedCount;
+        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel)) = WriteObject(logger);
+        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint)) = WriteObject(Thread.CurrentThread);
+        *(DateTimeOffset*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint)) = LogManager.TimeProvider.GetUtcNow();
+
         _currentData = currentData + size;
     }
 
@@ -106,9 +110,9 @@ internal unsafe class LogMessageWriter
     public void EndDataBuffer(byte* beginDataBuffer, byte* endDataBuffer)
     {
         var currentData = _currentData;
-        *(LogDataHeader*)_currentData = new LogDataHeader(LogDataPartKind.EndBuffer, LogDataKind.Unknown, 0);
-        *(byte**)(_currentData  + sizeof(LogDataHeader)) = _beginData; // In order to recover the original buffer to return to the pool
-        *(byte**)(_currentData + sizeof(LogDataHeader) + sizeof(nint)) = beginDataBuffer; // In order to switch to the next buffer
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EndDataBuffer, LogDataKind.Unknown, 0);
+        *(byte**)(currentData + sizeof(LogDataHeader)) = _beginData; // In order to recover the original buffer to return to the pool
+        *(byte**)(currentData + sizeof(LogDataHeader) + sizeof(nint)) = beginDataBuffer; // In order to switch to the next buffer
 
         // Update the next data buffer
         UpdateUnmanaged(beginDataBuffer, endDataBuffer);
@@ -116,13 +120,6 @@ internal unsafe class LogMessageWriter
 
     public void AppendEventId(LogEventId eventId)
     {
-        // Write the managed part
-        var currentObject = _currentObject;
-        if (currentObject >= _endObject) AllocateManaged();
-        Unsafe.AsRef<object>(currentObject) = eventId.Name;
-        // Move to next managed slot
-        _currentObject = currentObject + 1;
-
         // Write the unmanaged part
         var size = sizeof(LogDataHeader) + sizeof(int) + sizeof(nint);
         var endData = _currentData + size;
@@ -131,54 +128,50 @@ internal unsafe class LogMessageWriter
         var currentData = _currentData;
         *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EventId, LogDataKind.Unknown, 0);
         *(int*)(currentData + sizeof(LogDataHeader)) = eventId.Id;
-        *(void**)(currentData + sizeof(LogDataHeader) + sizeof(int)) = currentObject;
+        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(int)) = WriteObject(eventId.Name);
         _currentData = currentData + size;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private nint WriteObject(object? obj)
+    {
+        var currentObject = _currentObject;
+        if (currentObject >= _endObject) AllocateManaged();
+        Unsafe.AsRef<object?>(currentObject) = obj;
+        _currentObject = currentObject + 1;
+        return (nint)currentObject;
     }
 
     public void AppendException(Exception? exception)
     {
-        // Write the managed part
-        var currentObject = _currentObject;
-        if (currentObject >= _endObject) AllocateManaged();
-        Unsafe.AsRef<object?>(currentObject) = exception;
-        // Move to next managed slot
-        _currentObject = currentObject + 1;
-
         // Write the unmanaged part
-        var size = sizeof(LogDataHeader) + MinDataSize;
+        var size = sizeof(LogDataHeader) + sizeof(nint);
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
         *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.Exception, LogDataKind.Unknown, 0);
-        *(void**)(currentData + sizeof(LogDataHeader)) = currentObject;
+        *(nint*)(currentData + sizeof(LogDataHeader)) = WriteObject(exception);
         _currentData = currentData + size;
     }
 
     public void AppendLiteral(string s)
     {
-        // Write the managed part
-        var currentObject = _currentObject;
-        if (currentObject >= _endObject) AllocateManaged();
-        Unsafe.AsRef<object>(currentObject) = s;
-        // Move to next managed slot
-        _currentObject = currentObject + 1;
-
         // Write the unmanaged part
-        var size = sizeof(LogDataHeader) + MinDataSize;
+        var size = sizeof(LogDataHeader) + sizeof(nint);
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
         *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.MessagePart, LogDataKind.String, 0);
-        *(void**)(currentData + sizeof(LogDataHeader)) = currentObject;
+        *(nint*)(currentData + sizeof(LogDataHeader)) = WriteObject(s);
         _currentData = currentData + size;
     }
 
     public void AppendLiteral(ReadOnlySpan<char> s)
     {
         var size = sizeof(LogDataHeader) + sizeof(int) + s.Length * 2;
-        size = AlignHelper.AlignUp(size, MinDataSize);
+        size = AlignHelper.AlignUp(size, sizeof(nint));
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged(size); // We are passing the size because we don't know if we have enough space to write the data
 
@@ -191,7 +184,7 @@ internal unsafe class LogMessageWriter
     public void AppendLiteral(ReadOnlySpan<byte> s)
     {
         var size = sizeof(LogDataHeader) + sizeof(int) + s.Length;
-        size = AlignHelper.AlignUp(size, MinDataSize);
+        size = AlignHelper.AlignUp(size, sizeof(nint));
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged(size); // We are passing the size because we don't know if we have enough space to write the data
 
@@ -203,13 +196,6 @@ internal unsafe class LogMessageWriter
 
     public void AppendFormatted(string s, int alignment)
     {
-        // Write the managed part
-        var currentObject = _currentObject;
-        if (currentObject >= _endObject) AllocateManaged();
-        Unsafe.AsRef<object>(currentObject) = s;
-        // Move to next managed slot
-        _currentObject = currentObject + 1;
-
         // Write the unmanaged part
         var size = sizeof(LogDataHeader) + sizeof(int) + sizeof(nint);
         var endData = _currentData + size;
@@ -218,7 +204,7 @@ internal unsafe class LogMessageWriter
         var currentData = _currentData;
         *(LogDataHeader*)currentData = LogDataHeader.Aligned(LogDataPartKind.MessagePart, LogDataKind.String, 0);
         *(int*)(currentData + sizeof(LogDataHeader)) = alignment;
-        *(void**)(currentData + sizeof(LogDataHeader) + sizeof(int)) = currentObject;
+        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(int)) = WriteObject(s);
         _currentData = currentData + size;
     }
 
@@ -226,7 +212,7 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted(ReadOnlySpan<char> s, int alignment)
     {
         var size = sizeof(LogDataHeader) + sizeof(int) + sizeof(int) + s.Length * 2;
-        size = AlignHelper.AlignUp(size, MinDataSize);
+        size = AlignHelper.AlignUp(size, sizeof(nint));
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged(size); // We are passing the size because we don't know if we have enough space to write the data
 
@@ -241,7 +227,7 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted(ReadOnlySpan<byte> s, int alignment)
     {
         var size = sizeof(LogDataHeader) + sizeof(int) + sizeof(int) + s.Length;
-        size = AlignHelper.AlignUp(size, MinDataSize);
+        size = AlignHelper.AlignUp(size, sizeof(nint));
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged(size); // We are passing the size because we don't know if we have enough space to write the data
 
@@ -256,9 +242,8 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted(bool value)
     {
         // Write the unmanaged part
-        var size = AlignHelper.AlignUp(sizeof(bool), MinDataSize);
-        var length = (ushort)Math.Max(size / MinDataSize, 1);
-        size += sizeof(LogDataHeader);
+        const int length = 1;
+        var size = sizeof(LogDataHeader) + sizeof(nint);
 
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
@@ -273,8 +258,8 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted(bool value, int alignment)
     {
         // Write the unmanaged part
-        var size = AlignHelper.AlignUp(sizeof(bool), MinDataSize);
-        var length = (ushort)Math.Max(size / MinDataSize, 1);
+        var size = AlignHelper.AlignUp(sizeof(bool), sizeof(nint));
+        var length = (ushort)Math.Max(size / sizeof(nint), 1);
 
         size += sizeof(LogDataHeader) + sizeof(int);
         var endData = _currentData + size;
@@ -291,9 +276,9 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted<T>(T value) where T : unmanaged, ISpanFormattable
     {
         // Write the unmanaged part
-        var size = AlignHelper.AlignUp(sizeof(T), MinDataSize);
+        var size = AlignHelper.AlignUp(sizeof(T), sizeof(nint));
         var dataKind = LogDataKindExtension.ToDataKind<T>();
-        var length = (ushort)Math.Max(size / MinDataSize, 1);
+        var length = (ushort)Math.Max(size / sizeof(nint), 1);
 
         size += sizeof(LogDataHeader);
         byte* currentData;
@@ -324,9 +309,9 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted<T>(T value, int alignment) where T : unmanaged, ISpanFormattable
     {
         // Write the unmanaged part
-        var size = AlignHelper.AlignUp(sizeof(T), MinDataSize);
+        var size = AlignHelper.AlignUp(sizeof(T), sizeof(nint));
         var dataKind = LogDataKindExtension.ToDataKind<T>();
-        var length = (ushort)Math.Max(size / MinDataSize, 1);
+        var length = (ushort)Math.Max(size / sizeof(nint), 1);
 
         size += sizeof(LogDataHeader);
         byte* currentData;
@@ -361,9 +346,9 @@ internal unsafe class LogMessageWriter
     public void AppendFormatted<T>(T value, int alignment, string? format) where T : unmanaged, ISpanFormattable
     {
         // Write the unmanaged part
-        var size = AlignHelper.AlignUp(sizeof(T), MinDataSize);
+        var size = AlignHelper.AlignUp(sizeof(T), sizeof(nint));
         var dataKind = LogDataKindExtension.ToDataKind<T>();
-        var length = (ushort)Math.Max(size / MinDataSize, 1);
+        var length = (ushort)Math.Max(size / sizeof(nint), 1);
 
         size += sizeof(LogDataHeader);
         byte* currentData;
