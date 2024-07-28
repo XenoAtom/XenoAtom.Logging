@@ -2,6 +2,9 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
 namespace XenoAtom.Logging;
 
 public sealed partial class Logger
@@ -19,6 +22,8 @@ public sealed partial class Logger
 
     public bool IsEnabled(LogLevel level) => level >= _level;
 
+    internal LoggerOverflowMode OverflowMode => _state?.OverflowMode ?? LoggerOverflowMode.Default;
+
     public LogBeginScope BeginScope(LogProperties properties)
     {
         // TODO: make a Roslyn analyzer to check if the properties passed are inlined expressions
@@ -32,7 +37,7 @@ public sealed partial class Logger
         return new LogBeginScope(this);
     }
 
-    internal void Update(ComputedLoggerState state)
+    internal void Configure(ComputedLoggerState state)
     {
         _level = state.Level;
         _state = state;
@@ -40,7 +45,16 @@ public sealed partial class Logger
 
     internal LogWriter[] GetLogWriters(LogLevel level) => _state?.WritersPerLevel[(int)level] ?? [];
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Log(in InterpolatedLogMessageInternal message)
     {
+        if (_state is null) ThrowLogManagerNotInitialized();
+        message.Log();
+    }
+
+    [DoesNotReturn, MethodImpl(MethodImplOptions.NoInlining)]
+    private void ThrowLogManagerNotInitialized()
+    {
+        throw new InvalidOperationException("The LogManager is not initialized. Call LogManager.Initialize(config) first");
     }
 }

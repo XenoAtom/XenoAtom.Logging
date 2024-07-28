@@ -13,12 +13,21 @@ public sealed class LogManager
     private static readonly ConcurrentDictionary<string, Logger> Loggers = new();
     private static LogManager? _instance;
     private readonly LogManagerConfig _config;
+    private readonly LogMessageProcessor _processor;
 
     internal static TimeProvider TimeProvider => _instance?._config.TimeProvider ?? TimeProvider.System;
+
+    internal static LogMessageProcessor? Processor => _instance?._processor;
 
     private LogManager(LogManagerConfig config)
     {
         _config = config;
+        _processor = config.Kind switch
+        {
+            LogManagerKind.Async => new LogMessageAsyncProcessor(config),
+            LogManagerKind.Sync => new LogMessageSyncProcessor(config),
+            _ => throw new ArgumentOutOfRangeException()
+        };
         config.ApplyChangesCallback = Configure;
     }
 
@@ -30,7 +39,13 @@ public sealed class LogManager
         }
 
         _instance = new LogManager(config);
+        _instance.Initialize();
         _instance.Configure();
+    }
+
+    private void Initialize()
+    {
+        _processor.Initialize();
     }
 
     public static void Shutdown()
@@ -100,10 +115,12 @@ public sealed class LogManager
 
             // The final level is the minimum level defined by the last config or the root level
             var finalLevel = _config.RootLogger.MinimumLevel ?? LogLevel.None;
+            var finalOverflowMode = _config.RootLogger.OverflowMode;
 
             foreach (var loggerConfig in loggerConfigMatches)
             {
                 finalLevel = loggerConfig.MinimumLevel ?? finalLevel;
+                finalOverflowMode = loggerConfig.OverflowMode ?? finalOverflowMode;
 
                 // If a config doesn't include parent writers, we will clear all writers
                 if (!loggerConfig.IncludeParentWriters)
@@ -138,14 +155,14 @@ public sealed class LogManager
                 levelToWriters[level].Clear();
             }
 
-            ComputedLoggerState state = new(finalLevel);
+            ComputedLoggerState state = new(finalLevel, finalOverflowMode ?? LoggerOverflowMode.Default);
             for(int level = 0; level < (int)LogLevel.None; level++)
             {
                 var writers = levelToWriters[level];
                 state.WritersPerLevel[level] = writers.Count == 0 ? [] : levelToWriters[level].ToArray();
             }
 
-            logger.Update(state);
+            logger.Configure(state);
         }
     }
 

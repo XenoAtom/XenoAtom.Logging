@@ -9,12 +9,15 @@ namespace XenoAtom.Logging;
 
 internal class ComputedLoggerState
 {
-    public ComputedLoggerState(LogLevel level)
+    public ComputedLoggerState(LogLevel level, LoggerOverflowMode overflowMode)
     {
         Level = level;
+        OverflowMode = overflowMode;
     }
 
     public readonly LogLevel Level;
+
+    public readonly LoggerOverflowMode OverflowMode;
 
     public LogWritersPerLevel WritersPerLevel;
 

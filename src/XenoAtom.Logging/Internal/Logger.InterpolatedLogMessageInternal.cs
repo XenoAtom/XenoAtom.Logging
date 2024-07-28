@@ -14,36 +14,36 @@ public sealed partial class Logger
         private readonly LogMessageWriter? _writer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(LogLevel level, string msg)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, string msg)
         {
-            _writer = LogBufferManager.Current.Allocate();
-            _writer.BeginMessage(level);
+            _writer = LogMessageManager.Current.Allocate();
+            _writer.BeginMessage(logger, level);
             _writer.AppendLiteral(msg);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(LogLevel level, LogEventId eventId, string msg)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, string msg)
         {
-            _writer = LogBufferManager.Current.Allocate();
-            _writer.BeginMessage(level);
+            _writer = LogMessageManager.Current.Allocate();
+            _writer.BeginMessage(logger, level);
             _writer.AppendEventId(eventId);
             _writer.AppendLiteral(msg);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(LogLevel level, Exception? exception, string msg)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, Exception? exception, string msg)
         {
-            _writer = LogBufferManager.Current.Allocate();
-            _writer.BeginMessage(level);
+            _writer = LogMessageManager.Current.Allocate();
+            _writer.BeginMessage(logger, level);
             _writer.AppendException(exception);
             _writer.AppendLiteral(msg);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(LogLevel level, LogEventId eventId, Exception? exception, string msg)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, Exception? exception, string msg)
         {
-            _writer = LogBufferManager.Current.Allocate();
-            _writer.BeginMessage(level);
+            _writer = LogMessageManager.Current.Allocate();
+            _writer.BeginMessage(logger, level);
             _writer.AppendEventId(eventId);
             _writer.AppendException(exception);
             _writer.AppendLiteral(msg);
@@ -60,7 +60,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
             }
         }
@@ -77,7 +77,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendProperties(properties);
             }
@@ -95,7 +95,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
             }
@@ -114,7 +114,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
                 _writer.AppendProperties(properties);
@@ -133,7 +133,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendException(exception);
             }
@@ -152,7 +152,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendException(exception);
                 _writer.AppendProperties(properties);
@@ -172,7 +172,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
                 _writer.AppendException(exception);
@@ -193,7 +193,7 @@ public sealed partial class Logger
             enabled = localEnabled;
             if (localEnabled)
             {
-                _writer = LogBufferManager.Current.Allocate();
+                _writer = LogMessageManager.Current.Allocate();
                 _writer.BeginMessage(logger, level);
                 _writer.AppendEventId(eventId);
                 _writer.AppendException(exception);
@@ -250,5 +250,12 @@ public sealed partial class Logger
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AppendFormatted<T>(T? value, int alignment, string? format) where T : unmanaged, ISpanFormattable => _writer!.AppendFormatted(value, alignment, format);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Log()
+        {
+            if (_writer is null) return;
+            _writer.Log();
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace XenoAtom.Logging;
 
 internal enum LogDataKind : byte
 {
-    Unknown,
+    None,
     SpanChar,
     SpanByte,
     String,

@@ -15,7 +15,7 @@ public sealed class LoggerConfig
 
     public LogLevel? MinimumLevel { get; set; }
 
-    public LogMessageBufferExhaustionStrategy BufferExhaustionStrategy { get; set; } = LogMessageBufferExhaustionStrategy.Default;
+    public LoggerOverflowMode? OverflowMode { get; set; }
 
     public bool IncludeParentWriters { get; set; } = true;
 

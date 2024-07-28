@@ -8,17 +8,19 @@ namespace XenoAtom.Logging;
 
 internal unsafe class LogMessageWriter
 {
-    private readonly LogBufferManager _bufferManager;
+    private readonly LogMessageManager _messageManager;
+    private LoggerOverflowMode _overflowMode;
     private void** _beginObject;
     private void** _currentObject;
     private void** _endObject;
     private byte* _beginData;
+    private byte* _beginMessage;
     private byte* _currentData;
     private byte* _endData;
 
-    internal LogMessageWriter(LogBufferManager bufferManager)
+    internal LogMessageWriter(LogMessageManager messageManager)
     {
-        _bufferManager = bufferManager;
+        _messageManager = messageManager;
     }
 
     public void Initialize(void** currentObject, void** endObject, byte* currentData, byte* endData)
@@ -27,6 +29,7 @@ internal unsafe class LogMessageWriter
         _currentObject = currentObject;
         _endObject = endObject;
         _beginData = currentData;
+        _beginMessage = currentData;
         _currentData = currentData;
         _endData = endData;
     }
@@ -39,22 +42,11 @@ internal unsafe class LogMessageWriter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateUnmanaged(byte* beginData, byte* endData)
+    private void UpdateUnmanaged(byte* beginMessage, byte* endData)
     {
-        _currentData = beginData;
+        _beginMessage = beginMessage;
+        _currentData = beginMessage;
         _endData = endData;
-    }
-
-    public void BeginMessage(LogLevel level)
-    {
-        var size = sizeof(LogDataHeader) + sizeof(int);
-        var endData = _currentData + size;
-        if (endData > _endData) AllocateUnmanaged();
-
-        var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.BeginLiteralMessage, LogDataKind.Unknown, 0);
-        *(LogLevel*)(currentData + sizeof(LogDataHeader)) = level;
-        _currentData = currentData + size;
     }
 
     public void BeginMessage(Logger logger, LogLevel level)
@@ -65,12 +57,14 @@ internal unsafe class LogMessageWriter
         // - nint Logger
         // - nint Thread
         // - DateTimeOffset Timestamp
+        _overflowMode = logger.OverflowMode;
+
         var size = sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint) + sizeof(DateTimeOffset);
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.BeginMessage, LogDataKind.Unknown, 0);
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.BeginMessage, LogDataKind.None, 0);
         *(LogLevel*)(currentData + sizeof(LogDataHeader)) = level;
         *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel)) = WriteObject(logger);
         *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint)) = WriteObject(Thread.CurrentThread);
@@ -80,13 +74,16 @@ internal unsafe class LogMessageWriter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void EndMessage()
+    public void Log()
     {
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EndMessage, LogDataKind.Unknown, 0);
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EndMessage, LogDataKind.None, 0);
         currentData += sizeof(LogDataHeader);
         _currentData = currentData;
 
+        _messageManager.UpdateNextDataPointer(currentData);
+
+        _messageManager.Log(new LogMessageHandler((nint)_beginMessage));
         // TODO: Flush the message
     }
 
@@ -94,7 +91,7 @@ internal unsafe class LogMessageWriter
     public void EndDataBuffer(byte* beginDataBuffer, byte* endDataBuffer)
     {
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EndDataBuffer, LogDataKind.Unknown, 0);
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EndDataBuffer, LogDataKind.None, 0);
         *(byte**)(currentData + sizeof(LogDataHeader)) = _beginData; // In order to recover the original buffer to return to the pool
         *(byte**)(currentData + sizeof(LogDataHeader) + sizeof(nint)) = beginDataBuffer; // In order to switch to the next buffer
 
@@ -110,7 +107,7 @@ internal unsafe class LogMessageWriter
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EventId, LogDataKind.Unknown, 0);
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.EventId, LogDataKind.None, 0);
         *(int*)(currentData + sizeof(LogDataHeader)) = eventId.Id;
         *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(int)) = WriteObject(eventId.Name);
         _currentData = currentData + size;
@@ -134,7 +131,7 @@ internal unsafe class LogMessageWriter
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.Exception, LogDataKind.Unknown, 0);
+        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.Exception, LogDataKind.None, 0);
         *(nint*)(currentData + sizeof(LogDataHeader)) = WriteObject(exception);
         _currentData = currentData + size;
     }
@@ -266,7 +263,7 @@ internal unsafe class LogMessageWriter
 
         size += sizeof(LogDataHeader);
         byte* currentData;
-        if (dataKind == LogDataKind.Unknown)
+        if (dataKind == LogDataKind.None)
         {
             size += sizeof(SpanFormattableFunctionPointer);
             var endData = _currentData + size;
@@ -299,7 +296,7 @@ internal unsafe class LogMessageWriter
 
         size += sizeof(LogDataHeader);
         byte* currentData;
-        if (dataKind == LogDataKind.Unknown)
+        if (dataKind == LogDataKind.None)
         {
             size += sizeof(SpanFormattableFunctionPointer) + sizeof(int);
             var endData = _currentData + size;
@@ -336,7 +333,7 @@ internal unsafe class LogMessageWriter
 
         size += sizeof(LogDataHeader);
         byte* currentData;
-        if (dataKind == LogDataKind.Unknown)
+        if (dataKind == LogDataKind.None)
         {
             size += sizeof(SpanFormattableFunctionPointer) + sizeof(int) + sizeof(nint);
             var endData = _currentData + size;
@@ -410,12 +407,14 @@ internal unsafe class LogMessageWriter
         }
     }
 
-    private void AllocateManaged() => _bufferManager.AllocateNextManaged(this);
+    private void AllocateManaged() => _messageManager.AllocateNextManaged(this);
 
-    private void AllocateUnmanaged(int size = 0) => _bufferManager.AllocateNextUnmanaged(this, size);
+    private void AllocateUnmanaged(int size = 0) => _messageManager.AllocateNextUnmanaged(this, _overflowMode, size);
 
     public void AppendProperties(LogProperties properties)
     {
         
     }
 }
+
+internal readonly record struct LogMessageHandler(nint Pointer);

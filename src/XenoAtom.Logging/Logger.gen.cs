@@ -1347,7 +1347,7 @@ partial class LoggerExtensions
     public static void Trace(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
-        logger.Log(new(LogLevel.Trace, msg));
+        logger.Log(new(logger, LogLevel.Trace, msg));
     }
 
 
@@ -1357,7 +1357,7 @@ partial class LoggerExtensions
     public static void Trace(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
-        logger.Log(new(LogLevel.Trace, msg));
+        logger.Log(new(logger, LogLevel.Trace, msg));
     }
 
     /// <summary>
@@ -1366,7 +1366,7 @@ partial class LoggerExtensions
     public static void Trace(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
-        logger.Log(new(LogLevel.Trace, eventId, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, msg));
     }
 
     /// <summary>
@@ -1375,7 +1375,7 @@ partial class LoggerExtensions
     public static void Trace(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
-        logger.Log(new(LogLevel.Trace, eventId, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, msg));
     }
 
     /// <summary>
@@ -1385,7 +1385,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(LogLevel.Trace, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, exception, msg));
     }
 
     /// <summary>
@@ -1395,7 +1395,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(LogLevel.Trace, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, exception, msg));
     }
 
     /// <summary>
@@ -1405,7 +1405,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(LogLevel.Trace, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1415,7 +1415,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(LogLevel.Trace, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1423,7 +1423,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Trace(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.TraceInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
@@ -1473,7 +1472,7 @@ partial class LoggerExtensions
     public static void Debug(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
-        logger.Log(new(LogLevel.Debug, msg));
+        logger.Log(new(logger, LogLevel.Debug, msg));
     }
 
 
@@ -1483,7 +1482,7 @@ partial class LoggerExtensions
     public static void Debug(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
-        logger.Log(new(LogLevel.Debug, msg));
+        logger.Log(new(logger, LogLevel.Debug, msg));
     }
 
     /// <summary>
@@ -1492,7 +1491,7 @@ partial class LoggerExtensions
     public static void Debug(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
-        logger.Log(new(LogLevel.Debug, eventId, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, msg));
     }
 
     /// <summary>
@@ -1501,7 +1500,7 @@ partial class LoggerExtensions
     public static void Debug(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
-        logger.Log(new(LogLevel.Debug, eventId, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, msg));
     }
 
     /// <summary>
@@ -1511,7 +1510,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(LogLevel.Debug, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, exception, msg));
     }
 
     /// <summary>
@@ -1521,7 +1520,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(LogLevel.Debug, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, exception, msg));
     }
 
     /// <summary>
@@ -1531,7 +1530,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(LogLevel.Debug, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1541,7 +1540,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(LogLevel.Debug, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1549,7 +1548,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Debug(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.DebugInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
@@ -1599,7 +1597,7 @@ partial class LoggerExtensions
     public static void Info(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
-        logger.Log(new(LogLevel.Info, msg));
+        logger.Log(new(logger, LogLevel.Info, msg));
     }
 
 
@@ -1609,7 +1607,7 @@ partial class LoggerExtensions
     public static void Info(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
-        logger.Log(new(LogLevel.Info, msg));
+        logger.Log(new(logger, LogLevel.Info, msg));
     }
 
     /// <summary>
@@ -1618,7 +1616,7 @@ partial class LoggerExtensions
     public static void Info(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
-        logger.Log(new(LogLevel.Info, eventId, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, msg));
     }
 
     /// <summary>
@@ -1627,7 +1625,7 @@ partial class LoggerExtensions
     public static void Info(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
-        logger.Log(new(LogLevel.Info, eventId, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, msg));
     }
 
     /// <summary>
@@ -1637,7 +1635,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(LogLevel.Info, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, exception, msg));
     }
 
     /// <summary>
@@ -1647,7 +1645,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(LogLevel.Info, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, exception, msg));
     }
 
     /// <summary>
@@ -1657,7 +1655,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(LogLevel.Info, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1667,7 +1665,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(LogLevel.Info, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1675,7 +1673,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Info(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.InfoInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
@@ -1725,7 +1722,7 @@ partial class LoggerExtensions
     public static void Warn(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
-        logger.Log(new(LogLevel.Warn, msg));
+        logger.Log(new(logger, LogLevel.Warn, msg));
     }
 
 
@@ -1735,7 +1732,7 @@ partial class LoggerExtensions
     public static void Warn(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
-        logger.Log(new(LogLevel.Warn, msg));
+        logger.Log(new(logger, LogLevel.Warn, msg));
     }
 
     /// <summary>
@@ -1744,7 +1741,7 @@ partial class LoggerExtensions
     public static void Warn(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
-        logger.Log(new(LogLevel.Warn, eventId, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, msg));
     }
 
     /// <summary>
@@ -1753,7 +1750,7 @@ partial class LoggerExtensions
     public static void Warn(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
-        logger.Log(new(LogLevel.Warn, eventId, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, msg));
     }
 
     /// <summary>
@@ -1763,7 +1760,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(LogLevel.Warn, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, exception, msg));
     }
 
     /// <summary>
@@ -1773,7 +1770,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(LogLevel.Warn, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, exception, msg));
     }
 
     /// <summary>
@@ -1783,7 +1780,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(LogLevel.Warn, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1793,7 +1790,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(LogLevel.Warn, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1801,7 +1798,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Warn(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.WarnInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
@@ -1851,7 +1847,7 @@ partial class LoggerExtensions
     public static void Error(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
-        logger.Log(new(LogLevel.Error, msg));
+        logger.Log(new(logger, LogLevel.Error, msg));
     }
 
 
@@ -1861,7 +1857,7 @@ partial class LoggerExtensions
     public static void Error(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
-        logger.Log(new(LogLevel.Error, msg));
+        logger.Log(new(logger, LogLevel.Error, msg));
     }
 
     /// <summary>
@@ -1870,7 +1866,7 @@ partial class LoggerExtensions
     public static void Error(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
-        logger.Log(new(LogLevel.Error, eventId, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, msg));
     }
 
     /// <summary>
@@ -1879,7 +1875,7 @@ partial class LoggerExtensions
     public static void Error(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
-        logger.Log(new(LogLevel.Error, eventId, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, msg));
     }
 
     /// <summary>
@@ -1889,7 +1885,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(LogLevel.Error, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, exception, msg));
     }
 
     /// <summary>
@@ -1899,7 +1895,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(LogLevel.Error, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, exception, msg));
     }
 
     /// <summary>
@@ -1909,7 +1905,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(LogLevel.Error, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1919,7 +1915,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(LogLevel.Error, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, exception, msg));
     }
 
     /// <summary>
@@ -1927,7 +1923,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Error(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.ErrorInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
@@ -1977,7 +1972,7 @@ partial class LoggerExtensions
     public static void Fatal(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
-        logger.Log(new(LogLevel.Fatal, msg));
+        logger.Log(new(logger, LogLevel.Fatal, msg));
     }
 
 
@@ -1987,7 +1982,7 @@ partial class LoggerExtensions
     public static void Fatal(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
-        logger.Log(new(LogLevel.Fatal, msg));
+        logger.Log(new(logger, LogLevel.Fatal, msg));
     }
 
     /// <summary>
@@ -1996,7 +1991,7 @@ partial class LoggerExtensions
     public static void Fatal(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
-        logger.Log(new(LogLevel.Fatal, eventId, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, msg));
     }
 
     /// <summary>
@@ -2005,7 +2000,7 @@ partial class LoggerExtensions
     public static void Fatal(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
-        logger.Log(new(LogLevel.Fatal, eventId, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, msg));
     }
 
     /// <summary>
@@ -2015,7 +2010,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(LogLevel.Fatal, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, exception, msg));
     }
 
     /// <summary>
@@ -2025,7 +2020,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(LogLevel.Fatal, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, exception, msg));
     }
 
     /// <summary>
@@ -2035,7 +2030,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(LogLevel.Fatal, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, exception, msg));
     }
 
     /// <summary>
@@ -2045,7 +2040,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(LogLevel.Fatal, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, exception, msg));
     }
 
     /// <summary>
@@ -2053,7 +2048,6 @@ partial class LoggerExtensions
     /// </summary>
     public static void Fatal(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.FatalInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
-
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.

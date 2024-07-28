@@ -10,21 +10,22 @@ namespace XenoAtom.Logging;
 public sealed class LogManagerConfig
 {
     internal readonly Dictionary<string, LoggerConfig> LoggerConfigs = new();
-    private readonly LoggerConfigCollection _loggerConfigCollection;
 
     internal Action? ApplyChangesCallback;
 
     public LogManagerConfig()
     {
         RootLogger = new LoggerConfig("");
-        _loggerConfigCollection = new LoggerConfigCollection(this);
+        Loggers = new LoggerConfigCollection(this);
     }
+
+    public LogManagerKind Kind { get; init; } = LogManagerKind.Async;
     
     public TimeProvider TimeProvider { get; set; } = TimeProvider.System;
     
     public LoggerConfig RootLogger { get; }
 
-    public LoggerConfigCollection Loggers => _loggerConfigCollection;
+    public LoggerConfigCollection Loggers { get; }
 
     public LoggerConfig GetLoggerConfig(string loggerName)
     {
@@ -57,7 +58,7 @@ public sealed class LogManagerConfig
 }
 
 /// <summary>
-/// A collection of 
+/// A collection of <see cref="LoggerConfig"/>.
 /// </summary>
 public class LoggerConfigCollection : IEnumerable<LoggerConfig>
 {

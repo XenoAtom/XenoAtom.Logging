@@ -4,15 +4,9 @@
 
 namespace XenoAtom.Logging;
 
-public enum LogMessageBufferExhaustionStrategy
+public enum LogManagerKind
 {
-    DropAndNotify,
+    Async,
 
-    Drop,
-
-    Block,
-
-    Allocate,
-
-    Default = DropAndNotify
+    Sync,
 }

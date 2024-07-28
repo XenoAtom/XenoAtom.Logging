@@ -9,20 +9,27 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// A LogBufferManager, per thread, that can be used to allocate a buffer for a log message.
 /// </summary>
-internal unsafe class LogBufferManager
+internal unsafe class LogMessageManager
 {
     [ThreadStatic]
-    private static LogBufferManager? _current;
+    private static LogMessageManager? _current;
 
     private UnsafeObjectPool<LogMessageWriter> _logMessageWriters;
+    private readonly LogMessageProcessor _processor;
 
-    public LogBufferManager()
+    public LogMessageManager()
     {
         _logMessageWriters = new UnsafeObjectPool<LogMessageWriter>(4);
+        _processor = LogManager.Processor!;
     }
 
-    public static LogBufferManager Current => _current ??= new LogBufferManager();
-    
+    public static LogMessageManager Current => _current ??= new LogMessageManager();
+
+    public void Log(LogMessageHandler message)
+    {
+        _processor.Log(message);
+    }
+
 
     public LogMessageWriter Allocate()
     {
@@ -37,10 +44,8 @@ internal unsafe class LogBufferManager
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public void AllocateNextUnmanaged(LogMessageWriter writer, int size)
+    public void AllocateNextUnmanaged(LogMessageWriter writer, LoggerOverflowMode overflowMode, int size)
     {
-
-
         // TODO: pass buffer
         writer.EndDataBuffer(null, null);
     }
@@ -48,5 +53,10 @@ internal unsafe class LogBufferManager
     internal static LogDataHeader Test()
     {
         return new LogDataHeader(LogDataPartKind.MessagePart, LogDataKind.String, 1);
+    }
+
+    public void UpdateNextDataPointer(byte* nextUnalignedMessageData)
+    {
+        
     }
 }

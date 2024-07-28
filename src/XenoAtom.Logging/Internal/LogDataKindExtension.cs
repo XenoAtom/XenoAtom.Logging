@@ -32,6 +32,6 @@ internal static class LogDataKindExtension
         if (typeof(T) == typeof(TimeOnly)) return LogDataKind.TimeOnly;
         if (typeof(T) == typeof(Version)) return LogDataKind.Version;
         if (typeof(T).IsEnum) return LogDataKind.Enum;
-        return LogDataKind.Unknown;
+        return LogDataKind.None;
     }
 }
