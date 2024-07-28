@@ -5,7 +5,7 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 
-namespace XenoAtom.Logging.Writers;
+namespace XenoAtom.Logging.Helpers;
 
 public ref struct LogStringBuffer
 {

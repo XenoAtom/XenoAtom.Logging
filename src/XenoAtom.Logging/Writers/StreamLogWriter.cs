@@ -4,6 +4,7 @@
 
 using System.Text;
 using XenoAtom.Logging.Formatters;
+using XenoAtom.Logging.Helpers;
 
 namespace XenoAtom.Logging.Writers;
 

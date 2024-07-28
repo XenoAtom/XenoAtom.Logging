@@ -5,14 +5,14 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 
-namespace XenoAtom.Logging.Writers;
+namespace XenoAtom.Logging.Helpers;
 
 public ref struct LogFormatterBuffer
 {
     private byte[]? _charBuffer;
 
     internal const int DefaultFormatterBufferSize = 16384;
-    
+
     public ReadOnlySpan<char> Format(in LogMessage logMessage, LogFormatter formatter, ref LogMessageFormatSegments segments)
     {
         _charBuffer ??= ArrayPool<byte>.Shared.Rent(DefaultFormatterBufferSize);
