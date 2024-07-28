@@ -12,6 +12,7 @@ public abstract class LogWriter : IDisposable
     private LogFilter[] _acceptFilters; // Frozen array of accept filters (to avoid multi-threading issues)
     private LogFilter[] _rejectFilters; // Frozen array of reject filters (to avoid multi-threading issues)
     private bool _hasFilters;
+    private long _configVersion;
 
     public const int DefaultFormatterBufferSize = 16384;
 
@@ -59,12 +60,19 @@ public abstract class LogWriter : IDisposable
     /// <summary>
     /// Internal method to freeze the configuration of this writer, called by <see cref="LogManager"/>
     /// </summary>
-    internal void Configure()
+    internal void Configure(long configVersion)
     {
+        // Don't reconfigure if the version is the same
+        if (_configVersion == configVersion)
+        {
+            return;
+        }
+
         // Freeze the filters to avoid multi-threading issues
         _acceptFilters = AcceptFilters.ToArray();
         _rejectFilters = RejectFilters.ToArray();
         _hasFilters = _acceptFilters.Length > 0 || _rejectFilters.Length > 0;
+        _configVersion = configVersion;
     }
 
     /// <summary>

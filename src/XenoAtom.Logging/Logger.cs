@@ -39,8 +39,8 @@ public sealed partial class Logger
 
     internal void Configure(ComputedLoggerState state)
     {
-        _level = state.Level;
         _state = state;
+        _level = state.Level;
     }
 
     internal LogWriter[] GetLogWriters(LogLevel level) => _state?.WritersPerLevel[(int)level] ?? [];
