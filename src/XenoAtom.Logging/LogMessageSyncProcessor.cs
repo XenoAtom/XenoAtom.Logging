@@ -4,13 +4,15 @@
 
 namespace XenoAtom.Logging;
 
-internal class LogMessageSyncProcessor : LogMessageProcessor
+public sealed class LogMessageSyncProcessor : LogMessageProcessor, ILogMessageProcessorFactory
 {
-    public LogMessageSyncProcessor(LogManagerConfig config) : base(config)
+    private LogMessageSyncProcessor(LogManagerConfig config) : base(config)
     {
     }
 
-    public override void Log(LogMessageHandler message)
+    static LogMessageProcessor ILogMessageProcessorFactory.Create(LogManagerConfig config) => new LogMessageSyncProcessor(config);
+
+    internal override void Log(LogMessageHandle message)
     {
         throw new NotImplementedException();
     }

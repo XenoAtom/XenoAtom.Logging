@@ -20,26 +20,23 @@ public sealed class LogManager
 
     internal static LogMessageProcessor? Processor => _instance?._processor;
 
-    private LogManager(LogManagerConfig config)
+    private LogManager(LogManagerConfig config, LogMessageProcessor processor)
     {
         _config = config;
-        _processor = config.Kind switch
-        {
-            LogManagerKind.Async => new LogMessageAsyncProcessor(config),
-            LogManagerKind.Sync => new LogMessageSyncProcessor(config),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        _processor = processor;
         config.ApplyChangesCallback = Configure;
     }
 
-    public static void Initialize(LogManagerConfig config)
+    public static void Initialize(LogManagerConfig config) => Initialize<LogMessageAsyncProcessor>(config);
+
+    public static void Initialize<TMessageProcessorFactory>(LogManagerConfig config) where TMessageProcessorFactory: LogMessageProcessor, ILogMessageProcessorFactory
     {
         if (_instance != null)
         {
             throw new InvalidOperationException("The LogManager is already initialized");
         }
 
-        _instance = new LogManager(config);
+        _instance = new LogManager(config, TMessageProcessorFactory.Create(config));
         _instance.Initialize();
         _instance.Configure();
     }

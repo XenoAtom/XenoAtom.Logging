@@ -5,9 +5,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace XenoAtom.Logging;
+namespace XenoAtom.Logging.Helpers;
 
-internal struct UnsafeObjectPool<T> where T: class
+internal struct UnsafeObjectPool<T> where T : class
 {
     private T? _cached;
     private T?[] _items;
@@ -22,7 +22,7 @@ internal struct UnsafeObjectPool<T> where T: class
         _items = new T?[capacity];
         _count = 0;
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T? Rent()
     {

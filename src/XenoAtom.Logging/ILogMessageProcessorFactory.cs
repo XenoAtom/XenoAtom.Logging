@@ -4,9 +4,7 @@
 
 namespace XenoAtom.Logging;
 
-public enum LogManagerKind
+public interface ILogMessageProcessorFactory
 {
-    Async,
-
-    Sync,
+    static abstract LogMessageProcessor Create(LogManagerConfig config);
 }

@@ -4,10 +4,17 @@
 
 using System.Runtime.CompilerServices;
 
-namespace XenoAtom.Logging;
+namespace XenoAtom.Logging.Helpers;
 
 internal static class AlignHelper
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int AlignUp(int value, int alignment) => value + alignment - 1 & ~(alignment - 1);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static nint AlignUp(nint value, int alignment) => value + alignment - 1 & ~(alignment - 1);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static nint AlignDown(nint value, int alignment) => value & ~(alignment - 1);
+
 }

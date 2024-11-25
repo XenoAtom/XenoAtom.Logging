@@ -19,12 +19,12 @@ public sealed class LogManagerConfig
         Loggers = new LoggerConfigCollection(this);
     }
 
-    public LogManagerKind Kind { get; init; } = LogManagerKind.Async;
-    
     public TimeProvider TimeProvider { get; set; } = TimeProvider.System;
     
     public LoggerConfig RootLogger { get; }
 
+    public LoggerOverflowMode? OverflowMode { get; set; }
+    
     public LoggerConfigCollection Loggers { get; }
 
     public LoggerConfig GetLoggerConfig(string loggerName)

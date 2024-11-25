@@ -3,6 +3,7 @@
 // See license.txt file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
+using XenoAtom.Logging.Helpers;
 
 namespace XenoAtom.Logging;
 
@@ -22,12 +23,16 @@ internal unsafe class LogMessageWriter
     {
         _messageManager = messageManager;
     }
-
-    public void Initialize(void** currentObject, void** endObject, byte* currentData, byte* endData)
+    
+    public void InitializeObjectPointers(void** currentObject, void** endObject)
     {
         _beginObject = currentObject;
         _currentObject = currentObject;
         _endObject = endObject;
+    }
+
+    public void InitializeDataPointers(byte* currentData, byte* endData)
+    {
         _beginData = currentData;
         _beginMessage = currentData;
         _currentData = currentData;
@@ -35,14 +40,14 @@ internal unsafe class LogMessageWriter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateManaged(void** beginObject, void** endObject)
+    public void UpdateObjectPointers(void** beginObject, void** endObject)
     {
         _currentObject = beginObject;
         _endObject = endObject;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UpdateUnmanaged(byte* beginMessage, byte* endData)
+    public void UpdateDataPointers(byte* beginMessage, byte* endData)
     {
         _beginMessage = beginMessage;
         _currentData = beginMessage;
@@ -59,16 +64,17 @@ internal unsafe class LogMessageWriter
         // - DateTimeOffset Timestamp
         _overflowMode = logger.OverflowMode;
 
-        var size = sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint) + sizeof(DateTimeOffset);
+        var size = sizeof(nint) + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint) + sizeof(DateTimeOffset);
         var endData = _currentData + size;
         if (endData > _endData) AllocateUnmanaged();
 
         var currentData = _currentData;
-        *(LogDataHeader*)currentData = new LogDataHeader(LogDataPartKind.BeginMessage, LogDataKind.None, 0);
-        *(LogLevel*)(currentData + sizeof(LogDataHeader)) = level;
-        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel)) = WriteObject(logger);
-        *(nint*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint)) = WriteObject(Thread.CurrentThread);
-        *(DateTimeOffset*)(currentData + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint)) = LogManager.TimeProvider.GetUtcNow();
+        *(nint*)currentData = 0; // Pointer to next message
+        *(LogDataHeader*)(currentData + sizeof(nint))= new LogDataHeader(LogDataPartKind.BeginMessage, LogDataKind.None, 0);
+        *(LogLevel*)(currentData + sizeof(nint) + sizeof(LogDataHeader)) = level;
+        *(nint*)(currentData + sizeof(nint) + sizeof(LogDataHeader) + sizeof(LogLevel)) = WriteObject(logger);
+        *(nint*)(currentData + sizeof(nint) + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint)) = WriteObject(Thread.CurrentThread);
+        *(DateTimeOffset*)(currentData + sizeof(nint) + sizeof(LogDataHeader) + sizeof(LogLevel) + sizeof(nint) + sizeof(nint)) = LogManager.TimeProvider.GetUtcNow();
 
         _currentData = currentData + size;
     }
@@ -83,7 +89,7 @@ internal unsafe class LogMessageWriter
 
         _messageManager.UpdateNextDataPointer(currentData);
 
-        _messageManager.Log(new LogMessageHandler((nint)_beginMessage));
+        _messageManager.Log(new LogMessageHandle((nint)_beginMessage));
         // TODO: Flush the message
     }
 
@@ -96,7 +102,7 @@ internal unsafe class LogMessageWriter
         *(byte**)(currentData + sizeof(LogDataHeader) + sizeof(nint)) = beginDataBuffer; // In order to switch to the next buffer
 
         // Update the next data buffer
-        UpdateUnmanaged(beginDataBuffer, endDataBuffer);
+        UpdateDataPointers(beginDataBuffer, endDataBuffer);
     }
 
     public void AppendEventId(LogEventId eventId)
@@ -417,4 +423,9 @@ internal unsafe class LogMessageWriter
     }
 }
 
-internal readonly record struct LogMessageHandler(nint Pointer);
+internal readonly unsafe record struct LogMessageHandle(nint Pointer)
+{
+    public bool IsNull => Pointer == 0;
+
+    public ref LogMessageHandle Next => ref *((LogMessageHandle*)Pointer);
+}
