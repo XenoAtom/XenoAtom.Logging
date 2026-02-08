@@ -92,7 +92,9 @@ internal unsafe class LogMessageManager
         {
             StackLevel = stackLevel;
             Buffer = buffer;
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
             BufferPointer = *(nint*)&buffer;
+#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
             var pointerToElement0 = (nint)(Unsafe.AsPointer(ref buffer[0]));
             AlignedFirstElement = AlignHelper.AlignUp(pointerToElement0, CpuHelper.CacheLineSize);
 #pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type

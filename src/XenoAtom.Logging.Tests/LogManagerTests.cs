@@ -51,7 +51,9 @@ public class LogManagerTests
         }
 
         var array = GC.AllocateArray<object>(1024, true);
+#pragma warning disable CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
         var ptrArray = *(object**)(&array);
+#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type
         ref var str = ref array[0];
         var ptr = (nint)(void*)Unsafe.AsPointer(ref str);
         TestContext.WriteLine($"Base 0x{(nint)ptrArray:X16}");
