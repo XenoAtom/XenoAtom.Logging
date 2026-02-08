@@ -5,7 +5,7 @@
 namespace XenoAtom.Logging;
 
 /// <summary>
-/// Configuration for a <see cref="Writer"/>
+/// Configuration for a <see cref="LogWriter"/>.
 /// </summary>
 /// <param name="writer">The log writer instance.</param>
 public sealed class LogWriterConfig(LogWriter writer)
@@ -31,8 +31,8 @@ public sealed class LogWriterConfig(LogWriter writer)
     public LogLevel MinimumLevel { get; set; } = writer.MinimumLevel;
 
     /// <summary>
-    /// Converts an instance of <see cref="Writer"/> to an instance of <see cref="LogWriterConfig"/>.
+    /// Converts an instance of <see cref="LogWriter"/> to an instance of <see cref="LogWriterConfig"/>.
     /// </summary>
-    /// <param name="writer"></param>
-    public static implicit operator LogWriterConfig(LogWriter writer)  => new(writer);
+    /// <param name="writer">The source writer.</param>
+    public static explicit operator LogWriterConfig(LogWriter writer)  => new(writer);
 }

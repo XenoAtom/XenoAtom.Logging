@@ -270,7 +270,7 @@ partial class LoggerExtensions
     public static void <#= logType #>(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
-        logger.Log(new(logger, LogLevel.<#= logType #>, msg));
+        logger.Log(new(logger, LogLevel.<#= logType #>, properties, msg));
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ partial class LoggerExtensions
     public static void <#= logType #>(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
-        logger.Log(new(logger, LogLevel.<#= logType #>, eventId, msg));
+        logger.Log(new(logger, LogLevel.<#= logType #>, eventId, properties, msg));
     }
 
     /// <summary>
@@ -308,7 +308,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
 
-        logger.Log(new(logger, LogLevel.<#= logType #>, exception, msg));
+        logger.Log(new(logger, LogLevel.<#= logType #>, exception, properties, msg));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ partial class LoggerExtensions
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
 
-        logger.Log(new(logger, LogLevel.<#= logType #>, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.<#= logType #>, eventId, exception, properties, msg));
     }
 
     /// <summary>

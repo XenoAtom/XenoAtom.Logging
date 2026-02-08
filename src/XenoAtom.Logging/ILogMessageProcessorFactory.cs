@@ -4,7 +4,15 @@
 
 namespace XenoAtom.Logging;
 
+/// <summary>
+/// Defines a factory contract used by <see cref="LogManager"/> to create message processors.
+/// </summary>
 public interface ILogMessageProcessorFactory
 {
+    /// <summary>
+    /// Creates a processor for the specified configuration.
+    /// </summary>
+    /// <param name="config">The active log manager configuration.</param>
+    /// <returns>A new message processor instance.</returns>
     static abstract LogMessageProcessor Create(LogManagerConfig config);
 }

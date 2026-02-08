@@ -48,8 +48,17 @@ public enum LogLevel
     None,
 }
 
+/// <summary>
+/// Provides conversion helpers for <see cref="LogLevel"/>.
+/// </summary>
 public static class LogLevelExtensions
 {
+    /// <summary>
+    /// Converts a level to its short uppercase representation.
+    /// </summary>
+    /// <param name="level">The level to convert.</param>
+    /// <returns>The short text representation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The level is not supported.</exception>
     public static string ToShortString(this LogLevel level) => level switch
     {
         LogLevel.Trace => "TRACE",
@@ -61,6 +70,12 @@ public static class LogLevelExtensions
         _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
     };
 
+    /// <summary>
+    /// Converts a level to its long text representation.
+    /// </summary>
+    /// <param name="level">The level to convert.</param>
+    /// <returns>The long text representation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The level is not supported.</exception>
     public static string ToLongString(this LogLevel level) => level switch
     {
         LogLevel.Trace => "Trace",
@@ -72,6 +87,12 @@ public static class LogLevelExtensions
         _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
     };
 
+    /// <summary>
+    /// Converts a level to its three-letter representation.
+    /// </summary>
+    /// <param name="level">The level to convert.</param>
+    /// <returns>The three-letter text representation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The level is not supported.</exception>
     public static string ToTriString(this LogLevel level) => level switch
     {
         LogLevel.Trace => "TRC",

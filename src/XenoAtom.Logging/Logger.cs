@@ -7,49 +7,66 @@ using System.Runtime.CompilerServices;
 
 namespace XenoAtom.Logging;
 
+/// <summary>
+/// Represents a logger bound to a category name.
+/// </summary>
+/// <remarks>
+/// Instances are safe for concurrent log calls after <see cref="LogManager"/> initialization.
+/// </remarks>
 public sealed partial class Logger
 {
-    private LogLevel _level;
+    private int _level;
     private ComputedLoggerState? _state;
 
     internal Logger(string name)
     {
         Name = name;
-        _level = LogLevel.None;
+        _level = (int)LogLevel.None;
     }
 
+    /// <summary>
+    /// Gets the logger category name.
+    /// </summary>
     public string Name { get; }
 
-    public bool IsEnabled(LogLevel level) => level >= _level;
+    /// <summary>
+    /// Determines whether this logger is enabled for the specified <paramref name="level"/>.
+    /// </summary>
+    /// <param name="level">The log level to evaluate.</param>
+    /// <returns><see langword="true"/> when the level is enabled; otherwise <see langword="false"/>.</returns>
+    public bool IsEnabled(LogLevel level) => (int)level >= Volatile.Read(ref _level);
 
-    internal LoggerOverflowMode OverflowMode => _state?.OverflowMode ?? LoggerOverflowMode.Default;
+    internal LoggerOverflowMode OverflowMode => Volatile.Read(ref _state)?.OverflowMode ?? LoggerOverflowMode.Default;
 
+    /// <summary>
+    /// Begins a logging scope that appends <paramref name="properties"/> to subsequent log messages.
+    /// </summary>
+    /// <param name="properties">The scope properties.</param>
+    /// <returns>A scope token that must be disposed to close the scope.</returns>
     public LogBeginScope BeginScope(LogProperties properties)
     {
-        // TODO: make a Roslyn analyzer to check if the properties passed are inlined expressions
-
-        // Copy properties to current global scope
-
-
-        //LogBufferManager.Current.
-
-
-        return new LogBeginScope(this);
+        var token = LogScopeContext.Push(in properties);
+        return new LogBeginScope(token);
     }
 
     internal void Configure(ComputedLoggerState state)
     {
-        _state = state;
-        _level = state.Level;
+        Volatile.Write(ref _state, state);
+        Volatile.Write(ref _level, (int)state.Level);
     }
 
-    internal LogWriter[] GetLogWriters(LogLevel level) => _state?.WritersPerLevel[(int)level] ?? [];
+    internal LogWriter[] GetLogWriters(LogLevel level) => Volatile.Read(ref _state)?.WritersPerLevel[(int)level] ?? [];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Log(in InterpolatedLogMessageInternal message)
     {
-        if (_state is null) ThrowLogManagerNotInitialized();
+        if (Volatile.Read(ref _state) is null) ThrowLogManagerNotInitialized();
         message.Log();
+    }
+
+    internal void ResetAfterShutdown()
+    {
+        Volatile.Write(ref _state, null);
     }
 
     [DoesNotReturn, MethodImpl(MethodImplOptions.NoInlining)]

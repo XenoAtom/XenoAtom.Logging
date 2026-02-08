@@ -11,7 +11,7 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// Allows to associate <see cref="LogMessageFormatSegmentKind"/> to a range of characters in a formatted log message.
 /// </summary>
-public unsafe ref struct LogMessageFormatSegments
+public unsafe ref struct LogMessageFormatSegments : IDisposable
 {
     private byte[]? _segments;
     private int _count;
@@ -60,12 +60,12 @@ public unsafe ref struct LogMessageFormatSegments
     }
 
     /// <summary>
-    /// Gets the span of segments.
+    /// Gets the span of segments currently stored in this instance.
     /// </summary>
     /// <remarks>
-    /// This method is unsafe to call when elements are being added to the segments.
+    /// Do not cache the returned span across calls that mutate this instance.
     /// </remarks>
-    public readonly ReadOnlySpan<LogMessageFormatSegment> UnsafeAsSpan()
+    public readonly ReadOnlySpan<LogMessageFormatSegment> AsSpan()
     {
         var segments = _segments;
         return segments is null ? default : MemoryMarshal.Cast<byte, LogMessageFormatSegment>(segments).Slice(0, _count);
@@ -109,5 +109,10 @@ public unsafe ref struct LogMessageFormatSegments
     }
 }
 
-
+/// <summary>
+/// Describes a typed segment in a formatted log message.
+/// </summary>
+/// <param name="Start">The start character index of the segment.</param>
+/// <param name="Length">The segment length in characters.</param>
+/// <param name="Kind">The semantic kind of the segment.</param>
 public readonly record struct LogMessageFormatSegment(int Start, int Length, LogMessageFormatSegmentKind Kind);

@@ -6,11 +6,20 @@
     <File Path="../.gitignore" />
     <File Path="../license.txt" />
     <File Path="../readme.md" />
+    <File Path="../samples/readme.md" />
+    <File Path="XenoAtom.Logging.Benchmark/readme.md" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="dotnet-releaser.toml" />
     <File Path="global.json" />
   </Folder>
+  <Project Path="XenoAtom.Logging.Generators/XenoAtom.Logging.Generators.csproj" />
+  <Folder Name="/samples/">
+    <Project Path="../samples/FileJsonLogging/FileJsonLogging.csproj" />
+    <Project Path="../samples/HelloLogging/HelloLogging.csproj" />
+  </Folder>
+  <Project Path="XenoAtom.Logging.Benchmark/XenoAtom.Logging.Benchmark.csproj" />
   <Project Path="XenoAtom.Logging.Tests/XenoAtom.Logging.Tests.csproj" />
   <Project Path="XenoAtom.Logging/XenoAtom.Logging.csproj" />
+  <Project Path="XenoAtom.Logging.Terminal/XenoAtom.Logging.Terminal.csproj" />
 </Solution>

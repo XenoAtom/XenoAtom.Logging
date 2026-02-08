@@ -8,12 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="MSTest" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\XenoAtom.Logging.Generators\XenoAtom.Logging.Generators.csproj" />
     <ProjectReference Include="..\XenoAtom.Logging\XenoAtom.Logging.csproj" />
+    <ProjectReference Include="..\XenoAtom.Logging.Terminal\XenoAtom.Logging.Terminal.csproj" />
   </ItemGroup>
 
 </Project>

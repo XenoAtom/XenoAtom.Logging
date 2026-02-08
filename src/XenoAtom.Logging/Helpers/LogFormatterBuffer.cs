@@ -7,12 +7,22 @@ using System.Runtime.InteropServices;
 
 namespace XenoAtom.Logging.Helpers;
 
+/// <summary>
+/// Provides a pooled character buffer used by <see cref="LogFormatter"/> implementations.
+/// </summary>
 public ref struct LogFormatterBuffer
 {
     private byte[]? _charBuffer;
 
     internal const int DefaultFormatterBufferSize = 16384;
 
+    /// <summary>
+    /// Formats a message into the pooled buffer using the provided formatter.
+    /// </summary>
+    /// <param name="logMessage">The message to format.</param>
+    /// <param name="formatter">The formatter used to render text.</param>
+    /// <param name="segments">Associated formatting segments.</param>
+    /// <returns>A span over the formatted characters.</returns>
     public ReadOnlySpan<char> Format(in LogMessage logMessage, LogFormatter formatter, ref LogMessageFormatSegments segments)
     {
         _charBuffer ??= ArrayPool<byte>.Shared.Rent(DefaultFormatterBufferSize);
@@ -26,9 +36,13 @@ public ref struct LogFormatterBuffer
             span = buffer;
         }
 
+        _charBuffer = buffer;
         return MemoryMarshal.Cast<byte, char>(span).Slice(0, charsWritten);
     }
 
+    /// <summary>
+    /// Returns any rented buffers to the shared pool.
+    /// </summary>
     public void Dispose()
     {
         if (_charBuffer != null)

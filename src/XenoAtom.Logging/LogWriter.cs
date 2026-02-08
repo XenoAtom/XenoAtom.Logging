@@ -7,6 +7,10 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// The base class for a log writer.
 /// </summary>
+/// <remarks>
+/// Writer instances can receive concurrent calls to <see cref="LogInternal"/> depending on processor mode.
+/// Configure filters before initialization and avoid mutating filter collections while logging is active.
+/// </remarks>
 public abstract class LogWriter : IDisposable
 {
     private LogFilter[] _acceptFilters; // Frozen array of accept filters (to avoid multi-threading issues)
@@ -14,6 +18,9 @@ public abstract class LogWriter : IDisposable
     private bool _hasFilters;
     private long _configVersion;
 
+    /// <summary>
+    /// Default formatter buffer size used by writers.
+    /// </summary>
     public const int DefaultFormatterBufferSize = 16384;
 
     /// <summary>
@@ -33,6 +40,9 @@ public abstract class LogWriter : IDisposable
     /// <summary>
     /// Gets the filters to accept a log message. By default, if no accept filters are defined, all log messages are accepted.
     /// </summary>
+    /// <remarks>
+    /// Mutate this collection only during configuration updates, then call <see cref="LogManagerConfig.ApplyChanges"/>.
+    /// </remarks>
     public List<LogFilter> AcceptFilters { get; } = new();
 
     /// <summary>
@@ -40,6 +50,7 @@ public abstract class LogWriter : IDisposable
     /// </summary>
     /// <remarks>
     /// The reject filters are applied before the accept filters and will return immediately if a filter rejects the log message.
+    /// Mutate this collection only during configuration updates, then call <see cref="LogManagerConfig.ApplyChanges"/>.
     /// </remarks>
     public List<LogFilter> RejectFilters { get; } = new();
 

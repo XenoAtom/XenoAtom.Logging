@@ -1,3 +1,243 @@
 # XenoAtom.Logging User Guide
 
-This is a default project description.
+This guide covers configuration, logging APIs, properties/scopes, processors, and terminal integration.
+
+If you are looking specifically for the new template-based text formatting system, see [`doc/log-formatter.md`](log-formatter.md).
+
+## 1. Initialize and shutdown
+
+```csharp
+using XenoAtom.Logging;
+using XenoAtom.Logging.Writers;
+
+var config = new LogManagerConfig
+{
+    RootLogger =
+    {
+        MinimumLevel = LogLevel.Info,
+        Writers =
+        {
+            new FileLogWriter("logs/app.log")
+        }
+    }
+};
+
+LogManager.Initialize(config); // sync processor by default
+
+var logger = LogManager.GetLogger("App.Main");
+logger.Info("Application started");
+
+LogManager.Shutdown();
+```
+
+If you need asynchronous processing, initialize with:
+
+```csharp
+LogManager.Initialize<LogMessageAsyncProcessor>(config);
+```
+
+You can quickly check lifecycle state with `LogManager.IsInitialized`.
+
+## 2. Logger hierarchy and levels
+
+- `RootLogger` defines baseline level/writers.
+- `Loggers.Add("A.B", LogLevel.Warn)` overrides by logger name prefix.
+- `IncludeParentWriters` controls whether child logger configs inherit parent/root writers.
+
+```csharp
+config.RootLogger.MinimumLevel = LogLevel.Info;
+config.Loggers.Add("App.Http", LogLevel.Debug);
+```
+
+## 3. Message APIs
+
+Use generated methods from `LoggerExtensions`:
+
+```csharp
+logger.Trace("...");
+logger.Debug($"value = {42}");
+logger.Info(new LogEventId(10, "UserLogin"), "logged in");
+logger.Error(new InvalidOperationException("boom"), "failed");
+```
+
+The interpolated handlers are designed for allocation-aware capture on the hot path.
+
+## 4. Properties and scopes
+
+Attach structured values to one message with `LogProperties`:
+
+```csharp
+var properties = new LogProperties
+{
+    ("UserId", 42),
+    ("Tenant", "alpha")
+};
+logger.Info(properties, $"processed request");
+```
+
+Attach contextual properties to all logs in a scope:
+
+```csharp
+using (logger.BeginScope(new LogProperties { ("RequestId", 1234) }))
+{
+    logger.Info("inside request scope");
+}
+```
+
+## 5. Async queue and overflow behavior
+
+`LogMessageAsyncProcessor` uses `LogManagerConfig.AsyncLogMessageQueueCapacity` and `LoggerOverflowMode`.
+
+- `Drop`: drop new logs when saturated.
+- `DropAndNotify`: drop and optionally notify.
+- `Block`: producer blocks until queue has capacity.
+- `Allocate`: grow past configured capacity.
+
+```csharp
+config.AsyncLogMessageQueueCapacity = 4096;
+config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
+```
+
+You can inspect runtime async pressure and drop counters:
+
+```csharp
+var diagnostics = LogManager.GetDiagnostics();
+if (diagnostics.IsAsyncProcessor)
+{
+    Console.WriteLine(
+        $"Queue {diagnostics.AsyncQueueLength}/{diagnostics.AsyncQueueCapacity} " +
+        $"Dropped={diagnostics.DroppedMessages}");
+}
+```
+
+## 6. Writers
+
+### `StreamLogWriter`
+
+- Formats log entries via `LogFormatter` (default: `StandardLogFormatter`)
+- Encodes text using the configured `Encoding`
+- Writes bytes to the target stream
+- Supports optional `AutoFlush` for immediate stream flush per entry
+
+### `FileLogWriter`
+
+- Writes formatted text to a file path
+- Supports rolling by size (`FileSizeLimitBytes`)
+- Supports rolling by UTC interval (`FileRollingInterval.Hourly`/`Daily`)
+- Supports archived file retention (`RetainedFileCountLimit`)
+- Supports archive timestamp clock mode (`ArchiveTimestampMode`)
+- Supports optional durable flush (`FlushToDisk`)
+- Supports write/roll failure policies (`FailureMode`, `RetryCount`, `RetryDelay`, `FailureHandler`)
+
+```csharp
+var fileWriter = new FileLogWriter(
+    new FileLogWriterOptions("logs/app.log")
+    {
+        FileSizeLimitBytes = 10 * 1024 * 1024,
+        RollingInterval = FileRollingInterval.Daily,
+        RetainedFileCountLimit = 14
+    });
+```
+
+### `JsonFileLogWriter`
+
+- Convenience wrapper over `FileLogWriter` configured with `JsonLogFormatter`
+- Emits one JSON object per line for ingestion systems
+- Supports `JsonLogFormatterOptions` for schema profile, naming policy, and field inclusion toggles
+
+```csharp
+var jsonWriter = new JsonFileLogWriter("logs/app.jsonl");
+```
+
+```csharp
+using XenoAtom.Logging.Formatters;
+
+var ecsWriter = new JsonFileLogWriter(
+    new FileLogWriterOptions("logs/app.ecs.jsonl"),
+    new JsonLogFormatterOptions
+    {
+        SchemaProfile = JsonLogSchemaProfile.ElasticCommonSchema,
+        IncludeScopes = false
+    });
+```
+
+When `SchemaProfile` is `ElasticCommonSchema`, field names are fixed by ECS and `FieldNamingPolicy` is ignored.
+
+### `TerminalLogWriter` (`XenoAtom.Logging.Terminal`)
+
+- Terminal rendering is outside the core package
+- Uses `XenoAtom.Terminal` for ANSI/markup-aware output
+- Core package does not depend on `System.Console`
+- Supports rich segment styling (`writer.Styles`) and markup payload rendering
+
+```csharp
+using XenoAtom.Logging.Writers;
+using XenoAtom.Terminal;
+using XenoAtom.Terminal.Backends;
+
+var backend = new InMemoryTerminalBackend();
+using (Terminal.Open(backend, force: true))
+{
+    var terminalWriter = new TerminalLogWriter(Terminal.Instance);
+    config.RootLogger.Writers.Add(terminalWriter);
+}
+```
+
+Markup payload logging is available via terminal-specific extensions:
+
+```csharp
+logger.InfoMarkup("[green]ready[/]");
+logger.ErrorMarkup($"[red]failed[/] id={requestId}");
+```
+
+Style configuration example:
+
+```csharp
+terminalWriter.Styles.Clear();
+terminalWriter.Styles.SetStyle(LogMessageFormatSegmentKind.Timestamp, "dim");
+terminalWriter.Styles.SetLevelStyle(LogLevel.Warn, "bold yellow");
+terminalWriter.Styles.SetLevelStyle(LogLevel.Error, "bold white on red");
+```
+
+## 7. Notes on performance
+
+- Best hot-path behavior is achieved with enabled log calls that use supported interpolated values (string, bool, unmanaged `ISpanFormattable` values, spans).
+- Formatting and sink I/O are performed on the consumer side (especially with async processing).
+- For throughput-sensitive scenarios, prefer long-lived writers and avoid frequent reconfiguration.
+
+## 8. Thread-safety guidance
+
+- `LogManager` and `Logger` are safe for concurrent logging calls.
+- Configure `LogManagerConfig`, `LoggerConfig.Writers`, and writer filter collections from a single thread.
+- Apply runtime changes through `LogManagerConfig.ApplyChanges()` after you finish mutating configuration.
+- `LogProperties` is a mutable value type; avoid copying populated instances and dispose only the owner instance.
+
+## 9. Source-generated logging
+
+Use `[LogMethod]` on static partial methods to generate strongly-typed logging wrappers from message templates.
+
+```csharp
+public static partial class AppLogs
+{
+    [LogMethod(LogLevel.Info, "User {userId} connected")]
+    public static partial void UserConnected(Logger logger, int userId);
+}
+```
+
+See [`doc/source-generator.md`](source-generator.md) for full details and diagnostics.
+
+## 10. Additional docs
+
+- Changelog: [`CHANGELOG.md`](../CHANGELOG.md)
+- Log formatters: [`log-formatter.md`](log-formatter.md)
+- Filtering and routing: [`filtering.md`](filtering.md)
+- File and JSON writers: [`file-writer.md`](file-writer.md)
+- Shutdown semantics: [`shutdown.md`](shutdown.md)
+- Terminal sink: [`terminal.md`](terminal.md)
+- Terminal visual examples: [`terminal-visuals.md`](terminal-visuals.md)
+- Native AOT and trimming: [`aot.md`](aot.md)
+- Package consumption: [`packages.md`](packages.md)
+- Source generators: [`source-generator.md`](source-generator.md)
+- Benchmarks: [`benchmarks.md`](benchmarks.md)
+- Thread safety: [`thread-safety.md`](thread-safety.md)
+- Samples: [`samples/readme.md`](../samples/readme.md)

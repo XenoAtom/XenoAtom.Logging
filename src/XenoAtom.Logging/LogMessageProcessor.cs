@@ -7,19 +7,30 @@ using System.Runtime.CompilerServices;
 
 namespace XenoAtom.Logging;
 
+/// <summary>
+/// Base type for components that process log messages.
+/// </summary>
 public abstract class LogMessageProcessor : IDisposable
 {
     private protected LogMessageProcessor(LogManagerConfig config)
     {
-        // TODO: Fetch configuration from LogManagerConfig
-        BufferPool = new LogBufferPool(1024, 4096);
+        Config = config;
     }
 
-    internal LogBufferPool BufferPool;
+    /// <summary>
+    /// Gets the active configuration used by this processor.
+    /// </summary>
+    protected LogManagerConfig Config { get; }
 
-    internal abstract void Log(LogMessageHandle message);
+    internal abstract bool Log(LogMessageInternal message, LoggerOverflowMode overflowMode);
 
+    /// <summary>
+    /// Releases resources used by this processor.
+    /// </summary>
     public abstract void Dispose();
 
+    /// <summary>
+    /// Initializes the processor before messages are dispatched.
+    /// </summary>
     public abstract void Initialize();
 }

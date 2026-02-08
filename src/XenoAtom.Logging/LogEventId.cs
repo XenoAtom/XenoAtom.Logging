@@ -11,7 +11,13 @@ namespace XenoAtom.Logging;
 /// <param name="Name">The short name of this log event.</param>
 public readonly record struct LogEventId(int Id, string? Name)
 {
+    /// <summary>
+    /// Gets an empty event id.
+    /// </summary>
     public static LogEventId Empty { get; } = new(0, null);
 
+    /// <summary>
+    /// Gets a value indicating whether this event id is empty.
+    /// </summary>
     public bool IsEmpty => Id == 0 && Name is null;
 }

@@ -7,29 +7,54 @@ using System.Runtime.InteropServices;
 
 namespace XenoAtom.Logging.Helpers;
 
+/// <summary>
+/// Provides a pooled UTF-16 character buffer for incremental text construction.
+/// </summary>
 public ref struct LogStringBuffer
 {
-    private byte[] _byteBuffer;
+    private const int DefaultMinimumSize = 256;
+    private byte[]? _byteBuffer;
     private int _byteCount;
 
-    [Obsolete("Use LogStringBuffer(int minimumSize) instead", error: true)]
+    /// <summary>
+    /// Initializes a new buffer with a default minimum capacity.
+    /// </summary>
     public LogStringBuffer()
+        : this(DefaultMinimumSize)
     {
     }
 
+    /// <summary>
+    /// Initializes a new buffer with at least <paramref name="minimumSize"/> bytes.
+    /// </summary>
+    /// <param name="minimumSize">The minimum initial byte capacity.</param>
     public LogStringBuffer(int minimumSize)
     {
         _byteBuffer = ArrayPool<byte>.Shared.Rent(minimumSize);
         _byteCount = 0;
     }
 
-    public ReadOnlySpan<char> UnsafeAsSpan() => MemoryMarshal.Cast<byte, char>(_byteBuffer.AsSpan(0, _byteCount));
-
-    public void Append(ReadOnlySpan<char> text)
+    /// <summary>
+    /// Returns a span over the currently written characters.
+    /// </summary>
+    /// <returns>A span over buffered characters.</returns>
+    /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
+    public ReadOnlySpan<char> UnsafeAsSpan()
     {
-        // Char directly to byte[] without encoding
+        var byteBuffer = _byteBuffer ?? throw new ObjectDisposedException(nameof(LogStringBuffer));
+        return MemoryMarshal.Cast<byte, char>(byteBuffer.AsSpan(0, _byteCount));
+    }
+
+    /// <summary>
+    /// Appends text to the buffer.
+    /// </summary>
+    /// <param name="text">The text to append.</param>
+    /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
+    public void Append(scoped ReadOnlySpan<char> text)
+    {
+        var byteBuffer = _byteBuffer ?? throw new ObjectDisposedException(nameof(LogStringBuffer));
+
         var textBytes = MemoryMarshal.Cast<char, byte>(text);
-        var byteBuffer = _byteBuffer;
         var byteCount = _byteCount + textBytes.Length;
         if (byteBuffer.Length < byteCount)
         {
@@ -44,13 +69,19 @@ public ref struct LogStringBuffer
         _byteCount = byteCount;
     }
 
+    /// <summary>
+    /// Returns any rented buffers to the shared pool.
+    /// </summary>
     public void Dispose()
     {
         var byteBuffer = _byteBuffer;
-        if (byteBuffer != null)
+        if (byteBuffer is null)
         {
-            ArrayPool<byte>.Shared.Return(byteBuffer);
-            byteBuffer = null!;
+            return;
         }
+
+        ArrayPool<byte>.Shared.Return(byteBuffer);
+        _byteBuffer = null;
+        _byteCount = 0;
     }
 }

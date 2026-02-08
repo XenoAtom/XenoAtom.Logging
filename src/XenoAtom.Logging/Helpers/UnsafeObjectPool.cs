@@ -27,10 +27,7 @@ internal struct UnsafeObjectPool<T> where T : class
     public T? Rent()
     {
         var cached = _cached;
-        if (cached is null)
-        {
-            return cached;
-        }
+        if (cached is null) return TryRentFromItems();
 
         var count = _count;
         if (count > 0)
@@ -47,6 +44,20 @@ internal struct UnsafeObjectPool<T> where T : class
         }
 
         return cached;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private T? TryRentFromItems()
+    {
+        var count = _count;
+        if (count == 0) return null;
+
+        count--;
+        ref var item = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(_items), count);
+        var result = item;
+        item = null;
+        _count = count;
+        return result;
     }
 
     public void Return(T item)

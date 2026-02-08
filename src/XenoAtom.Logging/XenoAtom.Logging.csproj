@@ -3,21 +3,23 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
 
     <!-- Enable AOT analyzers -->
     <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>This is a default project description</Description>
+    <Description>High-performance structured logging runtime for .NET with allocation-aware sync and async processing, structured properties, and production-grade file/json sinks.</Description>
     <Copyright>Alexandre Mutel</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Alexandre Mutel</Authors>
-    <PackageTags>tag1;tag2;tag3</PackageTags>
+    <PackageTags>logging;structured-logging;high-performance;zero-allocation;async;file-logging;json</PackageTags>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageIcon>XenoAtom.Logging.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/xoofx/XenoAtom.Logging</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/XenoAtom/XenoAtom.Logging</PackageProjectUrl>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <!--Add support for sourcelink-->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -41,6 +43,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\XenoAtom.Logging.Generators\XenoAtom.Logging.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

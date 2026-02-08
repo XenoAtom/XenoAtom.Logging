@@ -7,10 +7,19 @@ using System.Text;
 
 namespace XenoAtom.Logging.Helpers;
 
+/// <summary>
+/// Provides a pooled byte buffer used to encode text for output writers.
+/// </summary>
 public ref struct LogEncoderBuffer
 {
     private byte[]? _byteBuffer;
 
+    /// <summary>
+    /// Encodes UTF-16 text into bytes using the specified <paramref name="encoding"/>.
+    /// </summary>
+    /// <param name="text">The text to encode.</param>
+    /// <param name="encoding">The target encoding.</param>
+    /// <returns>A span over the encoded bytes.</returns>
     public ReadOnlySpan<byte> Encode(ReadOnlySpan<char> text, Encoding encoding)
     {
         var byteBuffer = _byteBuffer;
@@ -26,13 +35,16 @@ public ref struct LogEncoderBuffer
         return new ReadOnlySpan<byte>(byteBuffer, 0, byteCount);
     }
 
+    /// <summary>
+    /// Returns any rented buffers to the shared pool.
+    /// </summary>
     public void Dispose()
     {
         var byteBuffer = _byteBuffer;
         if (byteBuffer != null)
         {
             ArrayPool<byte>.Shared.Return(byteBuffer);
-            byteBuffer = null;
+            _byteBuffer = null;
         }
     }
 }

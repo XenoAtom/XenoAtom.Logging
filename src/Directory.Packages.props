@@ -4,8 +4,15 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.2" />
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="MSTest" Version="4.1.0" />
-    <PackageVersion Include="ZLogger" Version="2.5.3" />
+    <PackageVersion Include="Serilog" Version="4.3.0" />
+    <PackageVersion Include="XenoAtom.Terminal" Version="1.6.0" />
+    <PackageVersion Include="ZeroLog" Version="2.6.0" />
+    <PackageVersion Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
 </Project>
