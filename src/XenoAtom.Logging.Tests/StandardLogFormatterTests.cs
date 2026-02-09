@@ -32,7 +32,7 @@ public class StandardLogFormatterTests
         logger.Info("hello");
 
         var message = writer.Single();
-        Assert.IsTrue(message.Text.Contains(" INF   Tests.Formatter.Tri", StringComparison.Ordinal), message.Text);
+        Assert.IsTrue(message.Text.Contains(" INF Tests.Formatter.Tri", StringComparison.Ordinal), message.Text);
         Assert.IsTrue(message.Text.EndsWith("hello", StringComparison.Ordinal));
         CollectionAssert.AreEqual(
             new[]
@@ -56,7 +56,7 @@ public class StandardLogFormatterTests
         logger.Info("hello");
 
         var message = writer.Single();
-        Assert.IsTrue(message.Text.Contains(" INFO  Tests.Formatter.Short", StringComparison.Ordinal), message.Text);
+        Assert.IsTrue(message.Text.Contains(" INFO Tests.Formatter.Short", StringComparison.Ordinal), message.Text);
     }
 
     [TestMethod]
@@ -84,7 +84,7 @@ public class StandardLogFormatterTests
         logger.Warn("hello");
 
         var message = writer.Single();
-        Assert.IsTrue(message.Text.Contains(" W     Tests.Formatter.Char", StringComparison.Ordinal), message.Text);
+        Assert.IsTrue(message.Text.Contains(" W Tests.Formatter.Char", StringComparison.Ordinal), message.Text);
     }
 
     [TestMethod]
@@ -226,7 +226,7 @@ public class StandardLogFormatterTests
         logger.Info("detailed");
 
         var message = writer.Single();
-        Assert.IsTrue(message.Text.Contains(" INFO  [", StringComparison.Ordinal), message.Text);
+        Assert.IsTrue(message.Text.Contains(" INFO [", StringComparison.Ordinal), message.Text);
     }
 
     [TestMethod]
