@@ -2,6 +2,7 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using System.Buffers;
 using System.Globalization;
 using System.Text;
 using XenoAtom.Logging.Formatters;
@@ -218,15 +219,28 @@ public class FileLogWriter : LogWriter
     {
         using var formatterBuffer = new LogFormatterBuffer();
         var segments = new LogMessageFormatSegments(_useSegments);
+        char[]? strippedBuffer = null;
 
         try
         {
             var formatter = Formatter;
             var text = formatterBuffer.Format(logMessage, formatter, ref segments);
+            if (logMessage.IsMarkup && text.Length > 0)
+            {
+                strippedBuffer = ArrayPool<char>.Shared.Rent(MarkupStripper.GetMaxOutputLength(text.Length));
+                var charsWritten = MarkupStripper.Strip(text, strippedBuffer);
+                text = strippedBuffer.AsSpan(0, charsWritten);
+            }
+
             WriteEntry(logMessage.Timestamp, text);
         }
         finally
         {
+            if (strippedBuffer is not null)
+            {
+                ArrayPool<char>.Shared.Return(strippedBuffer);
+            }
+
             segments.Dispose();
         }
     }

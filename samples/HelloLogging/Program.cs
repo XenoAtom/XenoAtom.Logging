@@ -1,6 +1,8 @@
 using XenoAtom.Logging;
 using XenoAtom.Logging.Writers;
 using XenoAtom.Terminal;
+using XenoAtom.Terminal.UI;
+using XenoAtom.Terminal.UI.Controls;
 
 var terminalWriter = new TerminalLogWriter(Terminal.Instance)
 {
@@ -39,7 +41,7 @@ using (var startupProperties = new LogProperties
     ("Instance", 1),
 })
 {
-    logger.Info(startupProperties, $"Booting service");
+    logger.Info("Booting service", startupProperties);
 }
 
 using (var requestScope = new LogProperties
@@ -54,7 +56,7 @@ using (logger.BeginScope(requestScope))
 
     using var queryProperties = new LogProperties();
     queryProperties.Add("sql", "SELECT * FROM customers WHERE active = 1");
-    logger.Trace(queryProperties, $"Preparing query");
+    logger.Trace("Preparing query", queryProperties);
 }
 
 try
@@ -68,6 +70,16 @@ catch (Exception exception)
 }
 
 logger.WarnMarkup("[yellow]Retry scheduled in 5 seconds[/]");
+
+var summaryTable = new Table()
+    .Headers("Step", "Status", "Duration")
+    .AddRow("Initialize", "OK", "00:00.045")
+    .AddRow("ResolveDependencies", "OK", "00:00.010")
+    .AddRow("ProcessRequest", "FAILED", "00:00.003");
+
+logger.Info(summaryTable, "Run summary");
+logger.InfoMarkup(summaryTable, "[bold]Attached visual summary[/] [gray](terminal sink only)[/]");
+
 logger.FatalMarkup("[bold white on red]Demo completed[/]");
 
 LogManager.Shutdown();

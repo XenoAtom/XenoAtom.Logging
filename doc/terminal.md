@@ -6,6 +6,7 @@ It supports:
 
 - rich segment styling (timestamp, level, logger name, event id, exception)
 - markup payload rendering via `Logger.*Markup(...)` extension methods
+- visual attachments (`XenoAtom.Terminal.UI.Visual`) rendered under the log line
 - escaped interpolated markup values via `AnsiMarkupInterpolatedStringHandler`
 
 For details on template-based text formatting and segment kinds, see `doc/log-formatter.md`.
@@ -99,6 +100,29 @@ logger.InfoMarkup($"User input: {userInput}");
 ```
 
 The rendered text includes the literal `[red]not a tag[/]` value instead of interpreting it as markup tags.
+
+## Visual attachments
+
+`TerminalLogWriter` renders `Visual` attachments (from `XenoAtom.Terminal.UI`) after the formatted message line:
+
+```csharp
+using XenoAtom.Terminal.UI;
+using XenoAtom.Terminal.UI.Controls;
+
+var table = new Table()
+    .Headers("Step", "Status")
+    .AddRow("Build", "OK")
+    .AddRow("Deploy", "Done");
+
+logger.Info(table, "Deployment summary");
+logger.InfoMarkup(table, "[bold]Deployment report[/]");
+```
+
+Behavior by sink:
+
+- `TerminalLogWriter`: renders the text line, then renders the attached `Visual`
+- `FileLogWriter` / `StreamLogWriter`: write only text payload
+- `JsonLogFormatter`: writes message/fields, attachment visuals are not serialized
 
 ## Testing
 

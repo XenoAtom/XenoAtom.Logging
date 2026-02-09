@@ -51,6 +51,25 @@ public class FileLogWriterTests
     }
 
     [TestMethod]
+    public void FileLogWriter_StripsMarkupPayloads()
+    {
+        var filePath = Path.Combine(_tempDirectory, "markup.log");
+        var writer = new FileLogWriter(new FileLogWriterOptions(filePath) { AutoFlush = true });
+        var config = CreateConfig(writer);
+
+        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.File.Markup");
+        logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
+        LogManager.Shutdown();
+
+        var lines = File.ReadAllLines(filePath);
+        Assert.AreEqual(1, lines.Length);
+        Assert.IsTrue(lines[0].Contains("ready ok", StringComparison.Ordinal));
+        Assert.IsFalse(lines[0].Contains("[green]", StringComparison.Ordinal));
+        Assert.IsFalse(lines[0].Contains("[bold]", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
     public void FileLogWriter_RollsBySize_AndAppliesRetention()
     {
         var filePath = Path.Combine(_tempDirectory, "app.log");

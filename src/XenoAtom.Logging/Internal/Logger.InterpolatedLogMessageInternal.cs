@@ -63,7 +63,8 @@ public sealed partial class Logger
             LogLevel level,
             LogEventId eventId,
             LogPropertiesSnapshot properties,
-            Exception? exception,
+            object? attachment,
+            bool isMarkup,
             int initialTextCapacity)
         {
             var timestamp = LogManager.TimeProvider.GetUtcNow();
@@ -78,20 +79,27 @@ public sealed partial class Logger
                 scope,
                 eventId,
                 properties,
-                exception,
+                attachment,
+                isMarkup,
                 CultureInfo.InvariantCulture,
                 initialTextCapacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, LogPropertiesSnapshot properties, Exception? exception)
+        private InterpolatedLogMessageInternal(
+            Logger logger,
+            LogLevel level,
+            LogEventId eventId,
+            LogPropertiesSnapshot properties,
+            object? attachment,
+            bool isMarkup)
         {
             _overflowMode = ResolveOverflowMode(logger);
 
             if (TryCreateMessage(logger, level, _overflowMode, out var message, out _syncSlot))
             {
                 _message = message;
-                InitializeMessage(message!, logger, level, eventId, properties, exception, initialTextCapacity: 0);
+                InitializeMessage(message!, logger, level, eventId, properties, attachment, isMarkup, initialTextCapacity: 0);
             }
             else
             {
@@ -103,7 +111,7 @@ public sealed partial class Logger
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public InterpolatedLogMessageInternal(Logger logger, LogLevel level, string msg)
-            : this(logger, level, LogEventId.Empty, LogPropertiesSnapshot.Empty, exception: null)
+            : this(logger, level, LogEventId.Empty, LogPropertiesSnapshot.Empty, attachment: null, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -113,7 +121,7 @@ public sealed partial class Logger
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogProperties properties, string msg)
-            : this(logger, level, LogEventId.Empty, properties.Snapshot(), exception: null)
+            : this(logger, level, LogEventId.Empty, properties.Snapshot(), attachment: null, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -123,7 +131,7 @@ public sealed partial class Logger
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, string msg)
-            : this(logger, level, eventId, LogPropertiesSnapshot.Empty, exception: null)
+            : this(logger, level, eventId, LogPropertiesSnapshot.Empty, attachment: null, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -133,7 +141,7 @@ public sealed partial class Logger
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, LogProperties properties, string msg)
-            : this(logger, level, eventId, properties.Snapshot(), exception: null)
+            : this(logger, level, eventId, properties.Snapshot(), attachment: null, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -142,8 +150,8 @@ public sealed partial class Logger
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, Exception? exception, string msg)
-            : this(logger, level, LogEventId.Empty, LogPropertiesSnapshot.Empty, exception)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, object? attachment, string msg)
+            : this(logger, level, LogEventId.Empty, LogPropertiesSnapshot.Empty, attachment, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -152,8 +160,8 @@ public sealed partial class Logger
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, Exception? exception, LogProperties properties, string msg)
-            : this(logger, level, LogEventId.Empty, properties.Snapshot(), exception)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, object? attachment, LogProperties properties, string msg)
+            : this(logger, level, LogEventId.Empty, properties.Snapshot(), attachment, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -162,8 +170,8 @@ public sealed partial class Logger
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, Exception? exception, string msg)
-            : this(logger, level, eventId, LogPropertiesSnapshot.Empty, exception)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, object? attachment, string msg)
+            : this(logger, level, eventId, LogPropertiesSnapshot.Empty, attachment, isMarkup: false)
         {
             if (_message is not null)
             {
@@ -172,8 +180,25 @@ public sealed partial class Logger
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, Exception? exception, LogProperties properties, string msg)
-            : this(logger, level, eventId, properties.Snapshot(), exception)
+        public InterpolatedLogMessageInternal(Logger logger, LogLevel level, LogEventId eventId, object? attachment, LogProperties properties, string msg)
+            : this(logger, level, eventId, properties.Snapshot(), attachment, isMarkup: false)
+        {
+            if (_message is not null)
+            {
+                _message.AppendLiteral(msg);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal InterpolatedLogMessageInternal(
+            Logger logger,
+            LogLevel level,
+            LogEventId eventId,
+            LogPropertiesSnapshot properties,
+            object? attachment,
+            bool isMarkup,
+            ReadOnlySpan<char> msg)
+            : this(logger, level, eventId, properties, attachment, isMarkup)
         {
             if (_message is not null)
             {
@@ -187,7 +212,7 @@ public sealed partial class Logger
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             Logger logger,
             out bool enabled)
-            : this(level, literalLength, formattedCount, LogEventId.Empty, exception: null, logger, properties: default, hasProperties: false, out enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment: null, isMarkup: false, logger, properties: default, hasProperties: false, out enabled)
         {
         }
 
@@ -198,7 +223,7 @@ public sealed partial class Logger
             Logger logger,
             LogProperties properties,
             out bool enabled)
-            : this(level, literalLength, formattedCount, LogEventId.Empty, exception: null, logger, properties, hasProperties: true, out enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment: null, isMarkup: false, logger, properties, hasProperties: true, out enabled)
         {
         }
 
@@ -209,7 +234,7 @@ public sealed partial class Logger
             LogEventId eventId,
             Logger logger,
             out bool enabled)
-            : this(level, literalLength, formattedCount, eventId, exception: null, logger, properties: default, hasProperties: false, out enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment: null, isMarkup: false, logger, properties: default, hasProperties: false, out enabled)
         {
         }
 
@@ -221,7 +246,7 @@ public sealed partial class Logger
             Logger logger,
             LogProperties properties,
             out bool enabled)
-            : this(level, literalLength, formattedCount, eventId, exception: null, logger, properties, hasProperties: true, out enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment: null, isMarkup: false, logger, properties, hasProperties: true, out enabled)
         {
         }
 
@@ -229,10 +254,10 @@ public sealed partial class Logger
             LogLevel level,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
-            Exception? exception,
+            object? attachment,
             Logger logger,
             out bool enabled)
-            : this(level, literalLength, formattedCount, LogEventId.Empty, exception, logger, properties: default, hasProperties: false, out enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment, isMarkup: false, logger, properties: default, hasProperties: false, out enabled)
         {
         }
 
@@ -240,11 +265,11 @@ public sealed partial class Logger
             LogLevel level,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
-            Exception? exception,
+            object? attachment,
             Logger logger,
             LogProperties properties,
             out bool enabled)
-            : this(level, literalLength, formattedCount, LogEventId.Empty, exception, logger, properties, hasProperties: true, out enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment, isMarkup: false, logger, properties, hasProperties: true, out enabled)
         {
         }
 
@@ -253,10 +278,10 @@ public sealed partial class Logger
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
-            Exception? exception,
+            object? attachment,
             Logger logger,
             out bool enabled)
-            : this(level, literalLength, formattedCount, eventId, exception, logger, properties: default, hasProperties: false, out enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment, isMarkup: false, logger, properties: default, hasProperties: false, out enabled)
         {
         }
 
@@ -265,11 +290,63 @@ public sealed partial class Logger
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
             [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
             LogEventId eventId,
-            Exception? exception,
+            object? attachment,
             Logger logger,
             LogProperties properties,
             out bool enabled)
-            : this(level, literalLength, formattedCount, eventId, exception, logger, properties, hasProperties: true, out enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment, isMarkup: false, logger, properties, hasProperties: true, out enabled)
+        {
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            object? attachment,
+            bool isMarkup,
+            Logger logger,
+            out bool enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment, isMarkup, logger, properties: default, hasProperties: false, out enabled)
+        {
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            object? attachment,
+            bool isMarkup,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+            : this(level, literalLength, formattedCount, LogEventId.Empty, attachment, isMarkup, logger, properties, hasProperties: true, out enabled)
+        {
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            LogEventId eventId,
+            object? attachment,
+            bool isMarkup,
+            Logger logger,
+            out bool enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment, isMarkup, logger, properties: default, hasProperties: false, out enabled)
+        {
+        }
+
+        public InterpolatedLogMessageInternal(
+            LogLevel level,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int literalLength,
+            [SuppressMessage("ReSharper", "UnusedParameter.Local")] int formattedCount,
+            LogEventId eventId,
+            object? attachment,
+            bool isMarkup,
+            Logger logger,
+            LogProperties properties,
+            out bool enabled)
+            : this(level, literalLength, formattedCount, eventId, attachment, isMarkup, logger, properties, hasProperties: true, out enabled)
         {
         }
 
@@ -278,7 +355,8 @@ public sealed partial class Logger
             int literalLength,
             int formattedCount,
             LogEventId eventId,
-            Exception? exception,
+            object? attachment,
+            bool isMarkup,
             Logger logger,
             LogProperties properties,
             bool hasProperties,
@@ -307,7 +385,7 @@ public sealed partial class Logger
 
             _message = message;
             var estimatedTextLength = Math.Max(0, literalLength + (formattedCount * 8));
-            InitializeMessage(message!, logger, level, eventId, propertiesSnapshot, exception, estimatedTextLength);
+            InitializeMessage(message!, logger, level, eventId, propertiesSnapshot, attachment, isMarkup, estimatedTextLength);
         }
 
         public bool IsLoggerEnabled => _message is not null;
@@ -324,14 +402,14 @@ public sealed partial class Logger
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AppendException(Exception? exception)
+        public void AppendException(object? attachment)
         {
             if (_message is null)
             {
                 return;
             }
 
-            // Exception is immutable in the internal message once initialized for now.
+            // Attachment is immutable in the internal message once initialized for now.
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

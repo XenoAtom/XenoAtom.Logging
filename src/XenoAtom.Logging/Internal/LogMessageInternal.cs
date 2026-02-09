@@ -25,7 +25,8 @@ internal sealed class LogMessageInternal
     public DateTimeOffset Timestamp { get; private set; }
     public LogEventId EventId { get; private set; } = LogEventId.Empty;
     public Thread Thread { get; private set; } = null!;
-    public Exception? Exception { get; private set; }
+    public object? Attachment { get; private set; }
+    public bool IsMarkup { get; private set; }
     public LogScopeSnapshot Scope { get; private set; } = LogScopeSnapshot.Empty;
     public LogPropertiesSnapshot Properties { get; private set; } = LogPropertiesSnapshot.Empty;
     public long SequenceId { get; set; }
@@ -44,7 +45,8 @@ internal sealed class LogMessageInternal
         LogScopeSnapshot scope,
         LogEventId eventId,
         LogPropertiesSnapshot properties,
-        Exception? exception,
+        object? attachment,
+        bool isMarkup,
         IFormatProvider formatProvider,
         int initialTextCapacity)
     {
@@ -55,7 +57,8 @@ internal sealed class LogMessageInternal
         Scope = scope;
         EventId = eventId;
         Properties = properties;
-        Exception = exception;
+        Attachment = attachment;
+        IsMarkup = isMarkup;
         FormatProvider = formatProvider;
         _textLength = 0;
         EnsureTextCapacity(initialTextCapacity);
@@ -74,7 +77,8 @@ internal sealed class LogMessageInternal
         Timestamp = default;
         EventId = LogEventId.Empty;
         Thread = null!;
-        Exception = null;
+        Attachment = null;
+        IsMarkup = false;
         FormatProvider = CultureInfo.InvariantCulture;
         _textLength = 0;
     }

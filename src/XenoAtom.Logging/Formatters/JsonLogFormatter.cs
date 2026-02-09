@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.Globalization;
+using XenoAtom.Logging.Helpers;
 
 namespace XenoAtom.Logging.Formatters;
 
@@ -187,7 +188,7 @@ public sealed record class JsonLogFormatter : LogFormatter
             return false;
         }
 
-        if (!TryWriteStringField(_messageField, logMessage.Text, destination, ref position, ref hasField))
+        if (!TryWriteMessageField(logMessage, destination, ref position, ref hasField))
         {
             return false;
         }
@@ -334,11 +335,6 @@ public sealed record class JsonLogFormatter : LogFormatter
         var index = 0;
         foreach (var property in properties)
         {
-            if (IsInternalPropertyName(property.Name))
-            {
-                continue;
-            }
-
             if (index > 0 && !TryAppend(',', destination, ref position))
             {
                 return false;
@@ -371,8 +367,25 @@ public sealed record class JsonLogFormatter : LogFormatter
         return TryAppend(']', destination, ref position);
     }
 
-    private static bool IsInternalPropertyName(ReadOnlySpan<char> name)
-        => name.StartsWith("__xenoatom.logging.".AsSpan(), StringComparison.Ordinal);
+    private bool TryWriteMessageField(in LogMessage logMessage, Span<char> destination, ref int position, ref bool hasField)
+    {
+        var text = logMessage.Text;
+        if (!logMessage.IsMarkup || text.IsEmpty)
+        {
+            return TryWriteStringField(_messageField, text, destination, ref position, ref hasField);
+        }
+
+        var rentedBuffer = ArrayPool<char>.Shared.Rent(MarkupStripper.GetMaxOutputLength(text.Length));
+        try
+        {
+            var charsWritten = MarkupStripper.Strip(text, rentedBuffer);
+            return TryWriteStringField(_messageField, rentedBuffer.AsSpan(0, charsWritten), destination, ref position, ref hasField);
+        }
+        finally
+        {
+            ArrayPool<char>.Shared.Return(rentedBuffer);
+        }
+    }
 
     private static bool TryWriteStringField(string name, string value, Span<char> destination, ref int position, ref bool hasField)
         => TryWriteStringField(name, value.AsSpan(), destination, ref position, ref hasField);

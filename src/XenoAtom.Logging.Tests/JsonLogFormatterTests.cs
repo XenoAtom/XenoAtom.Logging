@@ -190,21 +190,20 @@ public class JsonLogFormatterTests
     }
 
     [TestMethod]
-    public void JsonLogFormatter_DoesNotEmitInternalTransportProperties()
+    public void JsonLogFormatter_StripsMarkupPayloadFromMessage()
     {
         var writer = new JsonCaptureWriter(new JsonLogFormatter(includeProperties: true, includeScopes: false));
         var config = CreateConfig(writer);
 
         LogManager.Initialize<LogMessageSyncProcessor>(config);
-        var logger = LogManager.GetLogger("Tests.Json.InternalProperties");
-        logger.InfoMarkup("[green]ok[/]");
+        var logger = LogManager.GetLogger("Tests.Json.Markup");
+        logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
 
         Assert.AreEqual(1, writer.Messages.Count);
         using var document = JsonDocument.Parse(writer.Messages[0]);
         var root = document.RootElement;
 
-        Assert.IsTrue(root.TryGetProperty("properties", out var properties));
-        Assert.AreEqual(0, properties.GetArrayLength());
+        Assert.AreEqual("ready ok", root.GetProperty("message").GetString());
     }
 
     private static LogManagerConfig CreateConfig(LogWriter writer)

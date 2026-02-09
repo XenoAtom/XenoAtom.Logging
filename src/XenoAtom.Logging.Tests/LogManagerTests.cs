@@ -179,6 +179,39 @@ public class LogManagerTests
 
         Assert.AreEqual(1, writer.Messages.Count);
         Assert.AreEqual(exception, writer.Messages[0].Exception);
+        Assert.AreSame(exception, writer.Messages[0].Attachment);
+    }
+
+    [TestMethod]
+    public void Attachment_IsDecoded()
+    {
+        var writer = new BufferLogWriter();
+        var config = CreateConfig(writer, LogLevel.Trace);
+
+        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.Attachment");
+        var attachment = new object();
+
+        logger.Info(attachment, "payload");
+
+        Assert.AreEqual(1, writer.Messages.Count);
+        Assert.AreSame(attachment, writer.Messages[0].Attachment);
+        Assert.IsNull(writer.Messages[0].Exception);
+        Assert.IsFalse(writer.Messages[0].IsMarkup);
+    }
+
+    [TestMethod]
+    public void MarkupFlag_IsPropagated()
+    {
+        var writer = new BufferLogWriter();
+        var config = CreateConfig(writer, LogLevel.Trace);
+
+        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.MarkupFlag");
+        logger.InfoMarkup("[green]ready[/]");
+
+        Assert.AreEqual(1, writer.Messages.Count);
+        Assert.IsTrue(writer.Messages[0].IsMarkup);
     }
 
     [TestMethod]
@@ -538,6 +571,8 @@ public class LogManagerTests
                     logMessage.Text.ToString(),
                     logMessage.EventId,
                     logMessage.Exception,
+                    logMessage.Attachment,
+                    logMessage.IsMarkup,
                     logMessage.Timestamp,
                     logMessage.Thread.ManagedThreadId));
         }
@@ -591,6 +626,8 @@ public class LogManagerTests
         string Text,
         LogEventId EventId,
         Exception? Exception,
+        object? Attachment,
+        bool IsMarkup,
         DateTime Timestamp,
         int ManagedThreadId);
 }

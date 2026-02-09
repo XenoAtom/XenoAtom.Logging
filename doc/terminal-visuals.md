@@ -22,6 +22,32 @@ System.InvalidOperationException: boom
 
 The underlying message payload can include markup tags (for example `[green]ready[/]`), and `TerminalLogWriter` renders them when `EnableMarkupMessages` is enabled.
 
+## Visual attachment example
+
+You can attach `XenoAtom.Terminal.UI.Visual` objects directly to log calls:
+
+```csharp
+var table = new Table()
+    .Headers("Step", "Status", "Duration")
+    .AddRow("Initialize", "OK", "00:00.045")
+    .AddRow("ProcessRequest", "FAILED", "00:00.003");
+
+logger.Info(table, "Run summary");
+logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
+```
+
+Rendered output:
+
+```text
+2026-02-09 18:21:04.7604120 INF Sample.Terminal: Run summary
+┌───────────────┬────────┬───────────┐
+│ Step          │ Status │ Duration  │
+├───────────────┼────────┼───────────┤
+│ Initialize    │ OK     │ 00:00.045 │
+│ ProcessRequest│ FAILED │ 00:00.003 │
+└───────────────┴────────┴───────────┘
+```
+
 ## Style customization sample
 
 ```csharp
@@ -43,4 +69,4 @@ See also:
 
 - [`terminal.md`](terminal.md)
 - [`log-formatter.md`](log-formatter.md)
-
+- [`../samples/HelloLogging/Program.cs`](../samples/HelloLogging/Program.cs)

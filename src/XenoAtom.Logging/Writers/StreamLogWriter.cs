@@ -2,6 +2,7 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using System.Buffers;
 using System.Text;
 using XenoAtom.Logging.Formatters;
 using XenoAtom.Logging.Helpers;
@@ -102,13 +103,26 @@ public class StreamLogWriter : LogWriter
     {
         using var formatterBuffer = new LogFormatterBuffer();
         var segments = new LogMessageFormatSegments(UseSegments);
+        char[]? strippedBuffer = null;
         try
         {
             var span = formatterBuffer.Format(logMessage, Formatter, ref segments);
+            if (logMessage.IsMarkup && span.Length > 0)
+            {
+                strippedBuffer = ArrayPool<char>.Shared.Rent(MarkupStripper.GetMaxOutputLength(span.Length));
+                var charsWritten = MarkupStripper.Strip(span, strippedBuffer);
+                span = strippedBuffer.AsSpan(0, charsWritten);
+            }
+
             Write(logMessage.Level, span, in segments);
         }
         finally
         {
+            if (strippedBuffer is not null)
+            {
+                ArrayPool<char>.Shared.Return(strippedBuffer);
+            }
+
             segments.Dispose();
         }
     }

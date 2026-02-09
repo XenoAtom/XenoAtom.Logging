@@ -33,7 +33,7 @@ public class LogScopeAndPropertiesTests
             ("Name", "Ada"),
         };
 
-        logger.Info(properties, $"hello");
+        logger.Info("hello", properties);
 
         Assert.AreEqual(1, writer.Messages.Count);
         var message = writer.Messages[0];
@@ -79,7 +79,7 @@ public class LogScopeAndPropertiesTests
         var logger = LogManager.GetLogger("Tests.Properties.Contains");
 
         var properties = new LogProperties { ("UserId", 42), ("Name", "Ada") };
-        logger.Info(properties, $"hello");
+        logger.Info("hello", properties);
 
         Assert.AreEqual(1, writer.MatchCount);
     }

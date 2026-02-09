@@ -9,23 +9,18 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// Markup-aware logging extension methods for <see cref="Logger"/>.
 /// </summary>
-/// <remarks>
-/// These methods mark the message payload as markup so <see cref="Writers.TerminalLogWriter"/> can render it through
-/// <see cref="XenoAtom.Terminal.TerminalInstance.WriteMarkup(string)"/>.
-/// </remarks>
 public static class LoggerMarkupExtensions
 {
-    internal const string MarkupPropertyName = "__xenoatom.logging.terminal.markup";
-
     /// <summary>
     /// Logs a markup message with the specified level.
     /// </summary>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="level">The log level.</param>
-    /// <param name="markupMessage">The markup message to log.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, string markupMessage)
+        => LogMarkup(logger, level, attachment: null, markupMessage);
+
+    /// <summary>
+    /// Logs a markup message with the specified level and attachment.
+    /// </summary>
+    public static void LogMarkup(this Logger logger, LogLevel level, object? attachment, string markupMessage)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(markupMessage);
@@ -35,27 +30,19 @@ public static class LoggerMarkupExtensions
             return;
         }
 
-        var properties = CreateMarkupProperties();
-        try
-        {
-            LogMarkupCore(logger, level, properties, markupMessage.AsSpan());
-        }
-        finally
-        {
-            properties.Dispose();
-        }
+        LogMarkupCore(logger, level, attachment, markupMessage.AsSpan());
     }
 
     /// <summary>
     /// Logs a markup message with the specified level and structured properties.
     /// </summary>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="level">The log level.</param>
-    /// <param name="properties">The structured properties to include.</param>
-    /// <param name="markupMessage">The markup message to log.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, string markupMessage)
+        => LogMarkup(logger, level, properties, attachment: null, markupMessage);
+
+    /// <summary>
+    /// Logs a markup message with the specified level, structured properties, and attachment.
+    /// </summary>
+    public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, object? attachment, string markupMessage)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(markupMessage);
@@ -65,26 +52,19 @@ public static class LoggerMarkupExtensions
             return;
         }
 
-        var mergedProperties = CreateMarkupProperties(properties);
-        try
-        {
-            LogMarkupCore(logger, level, mergedProperties, markupMessage.AsSpan());
-        }
-        finally
-        {
-            mergedProperties.Dispose();
-        }
+        LogMarkupCore(logger, level, properties, attachment, markupMessage.AsSpan());
     }
 
     /// <summary>
-    /// Logs a markup message with the specified level using an interpolated markup handler.
+    /// Logs an interpolated markup message with the specified level.
     /// </summary>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="level">The log level.</param>
-    /// <param name="markupMessage">The interpolated markup handler.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="logger"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, ref AnsiMarkupInterpolatedStringHandler markupMessage)
+        => LogMarkup(logger, level, attachment: null, ref markupMessage);
+
+    /// <summary>
+    /// Logs an interpolated markup message with the specified level and attachment.
+    /// </summary>
+    public static void LogMarkup(this Logger logger, LogLevel level, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage)
     {
         try
         {
@@ -95,15 +75,7 @@ public static class LoggerMarkupExtensions
                 return;
             }
 
-            var properties = CreateMarkupProperties();
-            try
-            {
-                LogMarkupCore(logger, level, properties, markupMessage.WrittenSpan);
-            }
-            finally
-            {
-                properties.Dispose();
-            }
+            LogMarkupCore(logger, level, attachment, markupMessage.WrittenSpan);
         }
         finally
         {
@@ -112,15 +84,15 @@ public static class LoggerMarkupExtensions
     }
 
     /// <summary>
-    /// Logs a markup message with the specified level and structured properties using an interpolated markup handler.
+    /// Logs an interpolated markup message with the specified level and structured properties.
     /// </summary>
-    /// <param name="logger">The logger instance.</param>
-    /// <param name="level">The log level.</param>
-    /// <param name="properties">The structured properties to include.</param>
-    /// <param name="markupMessage">The interpolated markup handler.</param>
-    /// <exception cref="ArgumentNullException">If <paramref name="logger"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage)
+        => LogMarkup(logger, level, properties, attachment: null, ref markupMessage);
+
+    /// <summary>
+    /// Logs an interpolated markup message with the specified level, structured properties, and attachment.
+    /// </summary>
+    public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage)
     {
         try
         {
@@ -131,15 +103,7 @@ public static class LoggerMarkupExtensions
                 return;
             }
 
-            var mergedProperties = CreateMarkupProperties(properties);
-            try
-            {
-                LogMarkupCore(logger, level, mergedProperties, markupMessage.WrittenSpan);
-            }
-            finally
-            {
-                mergedProperties.Dispose();
-            }
+            LogMarkupCore(logger, level, properties, attachment, markupMessage.WrittenSpan);
         }
         finally
         {
@@ -147,166 +111,130 @@ public static class LoggerMarkupExtensions
         }
     }
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Trace"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Trace"/> level.</summary>
     public static void TraceMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Trace, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Trace"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Trace"/> level.</summary>
+    public static void TraceMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Trace, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Trace"/> level.</summary>
     public static void TraceMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Trace, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Trace"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Trace"/> level.</summary>
+    public static void TraceMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Trace, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Trace"/> level.</summary>
     public static void TraceMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Trace, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Trace"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Trace"/> level.</summary>
+    public static void TraceMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Trace, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Trace"/> level.</summary>
     public static void TraceMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Trace, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Trace"/> level.</summary>
+    public static void TraceMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Trace, properties, attachment, ref markupMessage);
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Debug"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Debug"/> level.</summary>
     public static void DebugMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Debug, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Debug"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Debug"/> level.</summary>
+    public static void DebugMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Debug, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Debug"/> level.</summary>
     public static void DebugMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Debug, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Debug"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Debug"/> level.</summary>
+    public static void DebugMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Debug, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Debug"/> level.</summary>
     public static void DebugMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Debug, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Debug"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Debug"/> level.</summary>
+    public static void DebugMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Debug, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Debug"/> level.</summary>
     public static void DebugMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Debug, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Debug"/> level.</summary>
+    public static void DebugMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Debug, properties, attachment, ref markupMessage);
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Info"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Info"/> level.</summary>
     public static void InfoMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Info, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Info"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Info"/> level.</summary>
+    public static void InfoMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Info, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Info"/> level.</summary>
     public static void InfoMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Info, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Info"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Info"/> level.</summary>
+    public static void InfoMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Info, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Info"/> level.</summary>
     public static void InfoMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Info, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Info"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Info"/> level.</summary>
+    public static void InfoMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Info, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Info"/> level.</summary>
     public static void InfoMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Info, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Info"/> level.</summary>
+    public static void InfoMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Info, properties, attachment, ref markupMessage);
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Warn"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Warn"/> level.</summary>
     public static void WarnMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Warn, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Warn"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Warn"/> level.</summary>
+    public static void WarnMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Warn, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Warn"/> level.</summary>
     public static void WarnMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Warn, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Warn"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Warn"/> level.</summary>
+    public static void WarnMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Warn, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Warn"/> level.</summary>
     public static void WarnMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Warn, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Warn"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Warn"/> level.</summary>
+    public static void WarnMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Warn, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Warn"/> level.</summary>
     public static void WarnMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Warn, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Warn"/> level.</summary>
+    public static void WarnMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Warn, properties, attachment, ref markupMessage);
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Error"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Error"/> level.</summary>
     public static void ErrorMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Error, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Error"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Error"/> level.</summary>
+    public static void ErrorMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Error, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Error"/> level.</summary>
     public static void ErrorMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Error, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Error"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Error"/> level.</summary>
+    public static void ErrorMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Error, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Error"/> level.</summary>
     public static void ErrorMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Error, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Error"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Error"/> level.</summary>
+    public static void ErrorMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Error, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Error"/> level.</summary>
     public static void ErrorMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Error, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Error"/> level.</summary>
+    public static void ErrorMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Error, properties, attachment, ref markupMessage);
 
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Fatal"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message at <see cref="LogLevel.Fatal"/> level.</summary>
     public static void FatalMarkup(this Logger logger, string markupMessage) => logger.LogMarkup(LogLevel.Fatal, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Fatal"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs a markup message with attachment at <see cref="LogLevel.Fatal"/> level.</summary>
+    public static void FatalMarkup(this Logger logger, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Fatal, attachment, markupMessage);
+    /// <summary>Logs a markup message with structured properties at <see cref="LogLevel.Fatal"/> level.</summary>
     public static void FatalMarkup(this Logger logger, LogProperties properties, string markupMessage) => logger.LogMarkup(LogLevel.Fatal, properties, markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Fatal"/> level.
-    /// </summary>
+    /// <summary>Logs a markup message with properties and attachment at <see cref="LogLevel.Fatal"/> level.</summary>
+    public static void FatalMarkup(this Logger logger, LogProperties properties, object? attachment, string markupMessage) => logger.LogMarkup(LogLevel.Fatal, properties, attachment, markupMessage);
+    /// <summary>Logs an interpolated markup message at <see cref="LogLevel.Fatal"/> level.</summary>
     public static void FatalMarkup(this Logger logger, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Fatal, ref markupMessage);
-
-    /// <summary>
-    /// Logs a markup message with <see cref="LogLevel.Fatal"/> level and structured properties.
-    /// </summary>
+    /// <summary>Logs an interpolated markup message with attachment at <see cref="LogLevel.Fatal"/> level.</summary>
+    public static void FatalMarkup(this Logger logger, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Fatal, attachment, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties at <see cref="LogLevel.Fatal"/> level.</summary>
     public static void FatalMarkup(this Logger logger, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Fatal, properties, ref markupMessage);
+    /// <summary>Logs an interpolated markup message with properties and attachment at <see cref="LogLevel.Fatal"/> level.</summary>
+    public static void FatalMarkup(this Logger logger, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage) => logger.LogMarkup(LogLevel.Fatal, properties, attachment, ref markupMessage);
 
-    private static void LogMarkupCore(Logger logger, LogLevel level, LogProperties properties, ReadOnlySpan<char> markupMessage)
+    private static void LogMarkupCore(Logger logger, LogLevel level, object? attachment, ReadOnlySpan<char> markupMessage)
     {
-        switch (level)
-        {
-            case LogLevel.Trace:
-                logger.Trace(properties, $"{markupMessage}");
-                break;
-            case LogLevel.Debug:
-                logger.Debug(properties, $"{markupMessage}");
-                break;
-            case LogLevel.Info:
-                logger.Info(properties, $"{markupMessage}");
-                break;
-            case LogLevel.Warn:
-                logger.Warn(properties, $"{markupMessage}");
-                break;
-            case LogLevel.Error:
-                logger.Error(properties, $"{markupMessage}");
-                break;
-            case LogLevel.Fatal:
-                logger.Fatal(properties, $"{markupMessage}");
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(level), level, "Only Trace, Debug, Info, Warn, Error and Fatal are supported.");
-        }
+        logger.Log(new Logger.InterpolatedLogMessageInternal(
+            logger,
+            level,
+            LogEventId.Empty,
+            LogPropertiesSnapshot.Empty,
+            attachment,
+            isMarkup: true,
+            markupMessage));
     }
 
-    private static LogProperties CreateMarkupProperties()
+    private static void LogMarkupCore(Logger logger, LogLevel level, LogProperties properties, object? attachment, ReadOnlySpan<char> markupMessage)
     {
-        var properties = new LogProperties();
-        properties.Add(MarkupPropertyName, true);
-        return properties;
-    }
-
-    private static LogProperties CreateMarkupProperties(LogProperties properties)
-    {
-        var mergedProperties = new LogProperties();
-        mergedProperties.AddRange(properties);
-        mergedProperties.Add(MarkupPropertyName, true);
-        return mergedProperties;
+        logger.Log(new Logger.InterpolatedLogMessageInternal(
+            logger,
+            level,
+            LogEventId.Empty,
+            properties.Snapshot(),
+            attachment,
+            isMarkup: true,
+            markupMessage));
     }
 
     private static void ValidateMarkupLevel(LogLevel level)

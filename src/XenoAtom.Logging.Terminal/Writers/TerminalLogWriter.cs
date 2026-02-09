@@ -6,6 +6,7 @@ using System.Buffers;
 using XenoAtom.Logging.Formatters;
 using XenoAtom.Logging.Helpers;
 using XenoAtom.Terminal;
+using XenoAtom.Terminal.UI;
 
 namespace XenoAtom.Logging.Writers;
 
@@ -14,9 +15,6 @@ namespace XenoAtom.Logging.Writers;
 /// </summary>
 public sealed class TerminalLogWriter : LogWriter
 {
-    private static ReadOnlySpan<char> MarkupPropertyName => LoggerMarkupExtensions.MarkupPropertyName.AsSpan();
-    private static ReadOnlySpan<char> MarkupTrueValue => bool.TrueString.AsSpan();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TerminalLogWriter"/> class using <see cref="XenoAtom.Terminal.Terminal.Instance"/>.
     /// </summary>
@@ -90,11 +88,12 @@ public sealed class TerminalLogWriter : LogWriter
         {
             var text = formatterBuffer.Format(logMessage, Formatter, ref segments);
 
-            var hasMarkupMessage = EnableMarkupMessages && ContainsMarkupPayload(logMessage.Properties);
+            var hasMarkupMessage = EnableMarkupMessages && logMessage.IsMarkup;
             if (!EnableRichFormatting && !hasMarkupMessage)
             {
                 Terminal.Write(text);
                 Terminal.WriteLine();
+                WriteAttachment(logMessage.Attachment);
                 return;
             }
 
@@ -102,6 +101,7 @@ public sealed class TerminalLogWriter : LogWriter
             {
                 Terminal.WriteMarkup(text);
                 Terminal.WriteLine();
+                WriteAttachment(logMessage.Attachment);
                 return;
             }
 
@@ -110,11 +110,13 @@ public sealed class TerminalLogWriter : LogWriter
             {
                 Terminal.WriteMarkup(text);
                 Terminal.WriteLine();
+                WriteAttachment(logMessage.Attachment);
                 return;
             }
 
             WriteMarkupLine(text, segmentSpan, logMessage.Level, hasMarkupMessage);
             Terminal.WriteLine();
+            WriteAttachment(logMessage.Attachment);
         }
         finally
         {
@@ -210,8 +212,13 @@ public sealed class TerminalLogWriter : LogWriter
         }
     }
 
-    private static bool ContainsMarkupPayload(LogPropertiesReader properties)
-        => properties.Contains(MarkupPropertyName, MarkupTrueValue);
+    private void WriteAttachment(object? attachment)
+    {
+        if (attachment is Visual visual)
+        {
+            Terminal.Write(visual);
+        }
+    }
 
     private string? ResolveSegmentStyle(LogMessageFormatSegmentKind kind, LogLevel level)
     {

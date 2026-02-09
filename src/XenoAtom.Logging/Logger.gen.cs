@@ -70,10 +70,10 @@ partial class Logger
         public TraceInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceInterpolatedLogMessage"/> struct.
@@ -81,11 +81,11 @@ partial class Logger
         public TraceInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceInterpolatedLogMessage"/> struct.
@@ -94,10 +94,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceInterpolatedLogMessage"/> struct.
@@ -106,11 +106,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Trace, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -291,10 +291,10 @@ partial class Logger
         public DebugInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugInterpolatedLogMessage"/> struct.
@@ -302,11 +302,11 @@ partial class Logger
         public DebugInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugInterpolatedLogMessage"/> struct.
@@ -315,10 +315,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugInterpolatedLogMessage"/> struct.
@@ -327,11 +327,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Debug, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -512,10 +512,10 @@ partial class Logger
         public InfoInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoInterpolatedLogMessage"/> struct.
@@ -523,11 +523,11 @@ partial class Logger
         public InfoInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoInterpolatedLogMessage"/> struct.
@@ -536,10 +536,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InfoInterpolatedLogMessage"/> struct.
@@ -548,11 +548,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Info, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -733,10 +733,10 @@ partial class Logger
         public WarnInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WarnInterpolatedLogMessage"/> struct.
@@ -744,11 +744,11 @@ partial class Logger
         public WarnInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WarnInterpolatedLogMessage"/> struct.
@@ -757,10 +757,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WarnInterpolatedLogMessage"/> struct.
@@ -769,11 +769,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Warn, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -954,10 +954,10 @@ partial class Logger
         public ErrorInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorInterpolatedLogMessage"/> struct.
@@ -965,11 +965,11 @@ partial class Logger
         public ErrorInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorInterpolatedLogMessage"/> struct.
@@ -978,10 +978,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorInterpolatedLogMessage"/> struct.
@@ -990,11 +990,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Error, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -1175,10 +1175,10 @@ partial class Logger
         public FatalInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FatalInterpolatedLogMessage"/> struct.
@@ -1186,11 +1186,11 @@ partial class Logger
         public FatalInterpolatedLogMessage(
                 int literalLength,
                 int formattedCount,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FatalInterpolatedLogMessage"/> struct.
@@ -1199,10 +1199,10 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, eventId, exception, logger, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, eventId, attachment, logger, out enabled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FatalInterpolatedLogMessage"/> struct.
@@ -1211,11 +1211,11 @@ partial class Logger
                 int literalLength,
                 int formattedCount,
                 LogEventId eventId,
-                Exception? exception,
+                object? attachment,
                 Logger logger,
                 LogProperties properties,
                 out bool enabled)
-            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, eventId, exception, logger, properties, out enabled);
+            => Internal = new InterpolatedLogMessageInternal(LogLevel.Fatal, literalLength, formattedCount, eventId, attachment, logger, properties, out enabled);
 
         /// <summary>
         /// Appends a literal span of chars to the interpolated log message.
@@ -1381,41 +1381,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, Exception? exception, string msg)
+    public static void Trace(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(logger, LogLevel.Trace, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Trace(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(logger, LogLevel.Trace, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Trace, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Trace(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(logger, LogLevel.Trace, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Trace(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Trace)) return;
 
-        logger.Log(new(logger, LogLevel.Trace, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Trace, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -1445,25 +1445,25 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.TraceInterpolatedLogMessage msg)
+    public static void Trace(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.TraceInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.TraceInterpolatedLogMessage msg)
+    public static void Trace(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.TraceInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.TraceInterpolatedLogMessage msg)
+    public static void Trace(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.TraceInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Trace"/> level.
     /// </summary>
-    public static void Trace(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.TraceInterpolatedLogMessage msg)
+    public static void Trace(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.TraceInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -1506,41 +1506,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, Exception? exception, string msg)
+    public static void Debug(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(logger, LogLevel.Debug, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Debug(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(logger, LogLevel.Debug, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Debug, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Debug(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(logger, LogLevel.Debug, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Debug(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Debug)) return;
 
-        logger.Log(new(logger, LogLevel.Debug, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Debug, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -1570,25 +1570,25 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.DebugInterpolatedLogMessage msg)
+    public static void Debug(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.DebugInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.DebugInterpolatedLogMessage msg)
+    public static void Debug(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.DebugInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.DebugInterpolatedLogMessage msg)
+    public static void Debug(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.DebugInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Debug"/> level.
     /// </summary>
-    public static void Debug(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.DebugInterpolatedLogMessage msg)
+    public static void Debug(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.DebugInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -1631,41 +1631,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, Exception? exception, string msg)
+    public static void Info(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(logger, LogLevel.Info, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Info(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(logger, LogLevel.Info, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Info, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Info(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(logger, LogLevel.Info, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Info(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Info)) return;
 
-        logger.Log(new(logger, LogLevel.Info, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Info, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -1695,25 +1695,25 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.InfoInterpolatedLogMessage msg)
+    public static void Info(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.InfoInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.InfoInterpolatedLogMessage msg)
+    public static void Info(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.InfoInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.InfoInterpolatedLogMessage msg)
+    public static void Info(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.InfoInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Info"/> level.
     /// </summary>
-    public static void Info(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.InfoInterpolatedLogMessage msg)
+    public static void Info(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.InfoInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -1756,41 +1756,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, Exception? exception, string msg)
+    public static void Warn(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(logger, LogLevel.Warn, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Warn(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(logger, LogLevel.Warn, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Warn, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Warn(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(logger, LogLevel.Warn, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Warn(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Warn)) return;
 
-        logger.Log(new(logger, LogLevel.Warn, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Warn, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -1820,25 +1820,25 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.WarnInterpolatedLogMessage msg)
+    public static void Warn(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.WarnInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.WarnInterpolatedLogMessage msg)
+    public static void Warn(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.WarnInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.WarnInterpolatedLogMessage msg)
+    public static void Warn(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.WarnInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Warn"/> level.
     /// </summary>
-    public static void Warn(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.WarnInterpolatedLogMessage msg)
+    public static void Warn(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.WarnInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -1881,41 +1881,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, Exception? exception, string msg)
+    public static void Error(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(logger, LogLevel.Error, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Error(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(logger, LogLevel.Error, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Error, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Error(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(logger, LogLevel.Error, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Error(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Error)) return;
 
-        logger.Log(new(logger, LogLevel.Error, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Error, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -1945,25 +1945,25 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.ErrorInterpolatedLogMessage msg)
+    public static void Error(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.ErrorInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.ErrorInterpolatedLogMessage msg)
+    public static void Error(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.ErrorInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.ErrorInterpolatedLogMessage msg)
+    public static void Error(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.ErrorInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Error"/> level.
     /// </summary>
-    public static void Error(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.ErrorInterpolatedLogMessage msg)
+    public static void Error(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.ErrorInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
@@ -2006,41 +2006,41 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, Exception? exception, string msg)
+    public static void Fatal(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(logger, LogLevel.Fatal, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, Exception? exception, string msg, LogProperties properties)
+    public static void Fatal(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(logger, LogLevel.Fatal, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Fatal, attachment, properties, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, LogEventId eventId, Exception? exception, string msg)
+    public static void Fatal(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(logger, LogLevel.Fatal, eventId, exception, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, attachment, msg));
     }
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, LogEventId eventId, Exception? exception, string msg, LogProperties properties)
+    public static void Fatal(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.Fatal)) return;
 
-        logger.Log(new(logger, LogLevel.Fatal, eventId, exception, properties, msg));
+        logger.Log(new(logger, LogLevel.Fatal, eventId, attachment, properties, msg));
     }
 
     /// <summary>
@@ -2070,24 +2070,24 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, Exception? exception, [InterpolatedStringHandlerArgument("exception", "logger")] ref Logger.FatalInterpolatedLogMessage msg)
+    public static void Fatal(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.FatalInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("exception", "logger", "properties")] ref Logger.FatalInterpolatedLogMessage msg)
+    public static void Fatal(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.FatalInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, LogEventId eventId, Exception? exception, [InterpolatedStringHandlerArgument("eventId", "exception", "logger")] ref Logger.FatalInterpolatedLogMessage msg)
+    public static void Fatal(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.FatalInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.Fatal"/> level.
     /// </summary>
-    public static void Fatal(this Logger logger, LogEventId eventId, Exception? exception, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "exception", "logger", "properties")] ref Logger.FatalInterpolatedLogMessage msg)
+    public static void Fatal(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.FatalInterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 }

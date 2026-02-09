@@ -6,6 +6,7 @@
 
 - `XenoAtom.Logging.Terminal` rich segment styling
 - markup logging APIs (`InfoMarkup`, `WarnMarkup`, `ErrorMarkup`, `FatalMarkup`)
+- visual attachments with `XenoAtom.Terminal.UI` (`Table` attached to log messages)
 - scoped and per-message `LogProperties`
 - `LogEventId` and exception logging
 

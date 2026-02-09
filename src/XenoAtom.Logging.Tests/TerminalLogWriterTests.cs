@@ -4,6 +4,8 @@
 
 using XenoAtom.Logging.Writers;
 using XenoAtom.Terminal.Backends;
+using XenoAtom.Terminal.UI;
+using XenoAtom.Terminal.UI.Controls;
 
 namespace XenoAtom.Logging.Tests;
 
@@ -192,6 +194,70 @@ public class TerminalLogWriterTests
         Assert.IsTrue(output.Contains("warn=[red]INJECT[/]", StringComparison.Ordinal));
         Assert.IsTrue(output.Contains("error=[red]INJECT[/]", StringComparison.Ordinal));
         Assert.IsTrue(output.Contains("fatal=[red]INJECT[/]", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void TerminalLogWriter_RendersVisualAttachment()
+    {
+        var backend = new InMemoryTerminalBackend();
+        using (global::XenoAtom.Terminal.Terminal.Open(backend, force: true))
+        {
+            var config = new LogManagerConfig
+            {
+                RootLogger =
+                {
+                    MinimumLevel = LogLevel.Trace,
+                    Writers =
+                    {
+                        new TerminalLogWriter(global::XenoAtom.Terminal.Terminal.Instance)
+                    }
+                }
+            };
+
+            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            var logger = LogManager.GetLogger("Tests.TerminalVisual");
+            var table = new Table();
+            table.Headers("Task", "State").AddRow("Build", "OK");
+
+            logger.Info(table, "build summary");
+        }
+
+        var output = backend.GetOutText();
+        Assert.IsTrue(output.Contains("build summary", StringComparison.Ordinal));
+        Assert.IsTrue(output.Contains("Task", StringComparison.Ordinal));
+        Assert.IsTrue(output.Contains("Build", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void TerminalLogWriter_RendersVisualAttachmentWithMarkupMessage()
+    {
+        var backend = new InMemoryTerminalBackend();
+        using (global::XenoAtom.Terminal.Terminal.Open(backend, force: true))
+        {
+            var config = new LogManagerConfig
+            {
+                RootLogger =
+                {
+                    MinimumLevel = LogLevel.Trace,
+                    Writers =
+                    {
+                        new TerminalLogWriter(global::XenoAtom.Terminal.Terminal.Instance)
+                    }
+                }
+            };
+
+            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            var logger = LogManager.GetLogger("Tests.TerminalVisual.Markup");
+            var table = new Table();
+            table.Headers("Task", "State").AddRow("Deploy", "Done");
+
+            logger.InfoMarkup(table, "[green]deployment complete[/]");
+        }
+
+        var output = backend.GetOutText();
+        Assert.IsTrue(output.Contains("deployment complete", StringComparison.Ordinal));
+        Assert.IsTrue(output.Contains("Deploy", StringComparison.Ordinal));
+        Assert.IsFalse(output.Contains("[green]", StringComparison.Ordinal));
     }
 
     [TestMethod]

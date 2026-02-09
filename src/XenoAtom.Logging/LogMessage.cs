@@ -70,9 +70,22 @@ public readonly ref struct LogMessage
     public LogPropertiesReader Properties => new(_internalMessage.Properties);
 
     /// <summary>
+    /// Gets the attachment associated with this message.
+    /// </summary>
+    public object? Attachment => _internalMessage.Attachment;
+
+    /// <summary>
     /// Gets the exception attached to this message.
     /// </summary>
-    public Exception? Exception => _internalMessage.Exception;
+    /// <remarks>
+    /// This property is a convenience view over <see cref="Attachment"/>.
+    /// </remarks>
+    public Exception? Exception => _internalMessage.Attachment as Exception;
+
+    /// <summary>
+    /// Gets a value indicating whether <see cref="Text"/> contains markup tags.
+    /// </summary>
+    public bool IsMarkup => _internalMessage.IsMarkup;
 
     /// <summary>
     /// Gets the format provider for format-sensitive rendering.

@@ -60,6 +60,24 @@ public class StreamLogWriterTests
     }
 
     [TestMethod]
+    public void StreamLogWriter_StripsMarkupPayloads()
+    {
+        using var stream = new MemoryStream();
+        var writer = new StreamLogWriter(stream, Encoding.UTF8);
+        var config = CreateConfig(writer);
+
+        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.Stream.Markup");
+        logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
+        LogManager.Shutdown();
+
+        var text = Encoding.UTF8.GetString(stream.ToArray());
+        Assert.IsTrue(text.Contains("ready ok", StringComparison.Ordinal));
+        Assert.IsFalse(text.Contains("[green]", StringComparison.Ordinal));
+        Assert.IsFalse(text.Contains("[bold]", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
     public void StreamLogWriter_OwnsStreamFalse_DoesNotDisposeUnderlyingStream()
     {
         using var stream = new MemoryStream();

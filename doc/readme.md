@@ -1,8 +1,21 @@
 # XenoAtom.Logging User Guide
 
-This guide covers configuration, logging APIs, properties/scopes, processors, and terminal integration.
+This guide covers configuration, logging APIs, properties/scopes, processors, formatter behavior, and terminal integration.
 
-If you are looking specifically for the new template-based text formatting system, see [`doc/log-formatter.md`](log-formatter.md).
+If you are looking specifically for the template-based text formatting system, see [`log-formatter.md`](log-formatter.md).
+
+## Documentation map
+
+- [`log-formatter.md`](log-formatter.md): text formatter templates, generated formatters, `LevelFormat`/`TimestampFormat`
+- [`terminal.md`](terminal.md): terminal writer, markup methods, visual attachments
+- [`terminal-visuals.md`](terminal-visuals.md): rendered examples and styling walkthrough
+- [`file-writer.md`](file-writer.md): file rolling, retention, and failure modes
+- [`filtering.md`](filtering.md): writer filters and routing patterns
+- [`thread-safety.md`](thread-safety.md): concurrency guarantees and mutation guidance
+- [`shutdown.md`](shutdown.md): shutdown and flush guarantees
+- [`source-generator.md`](source-generator.md): `LogMethod` usage and diagnostics
+- [`benchmarks.md`](benchmarks.md): benchmark suites and interpretation notes
+- [`../samples/readme.md`](../samples/readme.md): runnable samples
 
 ## 1. Initialize and shutdown
 
