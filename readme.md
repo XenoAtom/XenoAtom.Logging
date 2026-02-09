@@ -45,7 +45,11 @@ dotnet add package XenoAtom.Logging.Terminal
   - Runtime diagnostics via `LogManager.GetDiagnostics()`
   - NativeAOT and trimming oriented (`IsAotCompatible`, `IsTrimmable`)
 
-![Screenshot](img/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/XenoAtom/XenoAtom.Logging/main/img/screenshot.png)
+
+And the integration with LogControl:
+
+![Integration with LogControl](https://raw.githubusercontent.com/XenoAtom/XenoAtom.Logging/main/img/xenoatom-logcontrol.webm)
 
 > [!NOTE]
 > XenoAtom.Logging does not aim to be compatible with `Microsoft.Extensions.Logging` today. A bridge may be added later, but the runtime is designed to stand on its own.
