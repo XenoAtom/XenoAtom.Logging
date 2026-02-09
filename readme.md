@@ -1,12 +1,16 @@
 # XenoAtom.Logging [![ci](https://github.com/XenoAtom/XenoAtom.Logging/actions/workflows/ci.yml/badge.svg)](https://github.com/XenoAtom/XenoAtom.Logging/actions/workflows/ci.yml) [![NuGet](https://img.shields.io/nuget/v/XenoAtom.Logging.svg)](https://www.nuget.org/packages/XenoAtom.Logging/)
 
-<img align="right" width="160px" height="160px" src="https://raw.githubusercontent.com/XenoAtom/XenoAtom.Logging/main/img/XenoAtom.Logging.png">
+<img align="right" width="256px" height="256px" src="https://raw.githubusercontent.com/XenoAtom/XenoAtom.Logging/main/img/XenoAtom.Logging.png">
 
-`XenoAtom.Logging` is a high-performance structured logging runtime for .NET with an allocation-aware hot path and sync/async processing modes.
+XenoAtom.Logging is a high-performance structured logging runtime for .NET, designed for **zero allocations on the hot path** and predictable throughput in both sync and async modes.
+It includes a high-efficiency interpolated logging API, structured properties/scopes, source-generated formatters, and production-grade file/JSON sinks.
 
-## Requirements
+> [!NOTE]
+> This library is pre-1.0. The API is largely stable but may still see breaking changes.
 
-- .NET 10 SDK/runtime (`net10.0`)
+## Requirements (.NET 10 / C# 14)
+
+XenoAtom.Logging targets `net10.0` and requires the .NET 10 SDK (C# 14).
 
 ## Installation
 
@@ -15,24 +19,41 @@ dotnet add package XenoAtom.Logging
 dotnet add package XenoAtom.Logging.Terminal
 ```
 
-## Features
+## ✨ Features
 
-- Interpolated-string handler based logging API (`Trace`, `Debug`, `Info`, `Warn`, `Error`, `Fatal`)
-- Sync and async message processors with configurable overflow mode
-- Runtime diagnostics via `LogManager.GetDiagnostics()`
-- Scoped and per-message properties (`BeginScope`, `LogProperties`)
-- Formatter + segment model for rich sinks
-- Production file sinks (`FileLogWriter`, `JsonFileLogWriter`) with rolling and retention
-- Dependency-minimal core package (`XenoAtom.Logging`)
-- Terminal sink package (`XenoAtom.Logging.Terminal`) powered by `XenoAtom.Terminal`
+- **Performance-first (zero allocations on the hot path)**:
+  - Allocation-aware interpolated-string handlers (`Trace`/`Debug`/`Info`/`Warn`/`Error`/`Fatal`)
+  - Formatting into `Span<char>` with pooled buffers and optional segment metadata
+- **Sync by default, async when you need it**:
+  - Default processor is synchronous (`LogMessageSyncProcessor`)
+  - Optional async processor (`LogMessageAsyncProcessor`) with bounded queue and overflow policy (`Drop`, `DropAndNotify`, `Block`, `Allocate`)
+- **Structured logging**:
+  - Per-message properties (`LogProperties`)
+  - Scopes (`BeginScope`) captured as snapshots
+- **Template-driven text formatting (source generation)**:
+  - `LogFormatter` base class with shared settings (`LevelFormat`, `TimestampFormat`)
+  - Generated template formatters (e.g. `StandardLogFormatter`) and segment kinds for rich sinks
+- **Terminal integration without `System.Console`**:
+  - `XenoAtom.Logging.Terminal` uses `XenoAtom.Terminal` for markup-aware output
+  - **Visual attachments**: log calls can attach `XenoAtom.Terminal.UI.Visual` (tables, layouts, rich widgets)
+  - Terminal docs: https://xenoatom.github.io/terminal
+- **Production file and JSON sinks**:
+  - Rolling + retention (`FileLogWriter`, `JsonFileLogWriter`)
+  - Failure policies and durability options
+- **Operational support**:
+  - Runtime diagnostics via `LogManager.GetDiagnostics()`
+  - NativeAOT and trimming oriented (`IsAotCompatible`, `IsTrimmable`)
+
+> [!NOTE]
+> XenoAtom.Logging does not aim to be compatible with `Microsoft.Extensions.Logging` today. A bridge may be added later, but the runtime is designed to stand on its own.
 
 ## Package layout
 
-- `XenoAtom.Logging`: core runtime, formatters, stream/file/json writers
-- `XenoAtom.Logging` also ships the source generator/analyzers in-package (`analyzers/dotnet/cs`)
-- `XenoAtom.Logging.Terminal`: terminal/ANSI sink using `XenoAtom.Terminal` (core library does not use `System.Console`)
+- `XenoAtom.Logging`: core runtime, formatters, stream/file/JSON writers
+- `XenoAtom.Logging` also ships the generators/analyzers in-package (`analyzers/dotnet/cs`)
+- `XenoAtom.Logging.Terminal`: terminal sink using `XenoAtom.Terminal` and `XenoAtom.Terminal.UI`
 
-## Quick start
+## 🚀 Quick start
 
 ```csharp
 using XenoAtom.Logging;
@@ -56,7 +77,7 @@ var config = new LogManagerConfig
     }
 };
 
-LogManager.Initialize(config);
+LogManager.Initialize(config); // sync processor by default
 
 var logger = LogManager.GetLogger("Sample");
 logger.Info($"Hello {42}");
@@ -64,14 +85,37 @@ logger.Info($"Hello {42}");
 LogManager.Shutdown();
 ```
 
-With `XenoAtom.Logging.Terminal`, you can emit markup-aware messages:
+Enable async processing:
+
+```csharp
+LogManager.Initialize<LogMessageAsyncProcessor>(config);
+```
+
+## 🖥️ Terminal markup and visuals
+
+Markup payload logging (terminal sink):
 
 ```csharp
 logger.InfoMarkup("[green]ready[/]");
-logger.ErrorMarkup($"[red]failed[/] id={requestId}");
+logger.ErrorMarkup($"[bold red]failed[/] id={requestId}");
 ```
 
-`TerminalLogWriter` also exposes `Styles` for per-segment and per-level rich style customization.
+Visual attachments via `XenoAtom.Terminal.UI` (rendered under the log line by `TerminalLogWriter`):
+
+```csharp
+using XenoAtom.Terminal.UI;
+using XenoAtom.Terminal.UI.Controls;
+
+var table = new Table()
+    .Headers("Step", "Status", "Duration")
+    .AddRow("Initialize", "OK", "00:00.045")
+    .AddRow("ProcessRequest", "FAILED", "00:00.003");
+
+logger.Info(table, "Run summary");
+logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
+```
+
+`TerminalLogWriter` also exposes `Styles` and `SegmentStyleResolver` for per-segment and per-level styling.
 
 ## Thread safety
 
@@ -81,26 +125,20 @@ logger.ErrorMarkup($"[red]failed[/] id={requestId}");
 
 See [`doc/thread-safety.md`](doc/thread-safety.md) for detailed guidance.
 
-## Documentation
+## 📖 Documentation
 
 - User guide: [`doc/readme.md`](doc/readme.md)
-- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
-- Package consumption: [`doc/packages.md`](doc/packages.md)
-- Native AOT and trimming: [`doc/aot.md`](doc/aot.md)
-- Filtering and routing: [`doc/filtering.md`](doc/filtering.md)
-- Shutdown semantics: [`doc/shutdown.md`](doc/shutdown.md)
+- Template-based log formatters: [`doc/log-formatter.md`](doc/log-formatter.md)
+- Terminal sink and visuals: [`doc/terminal.md`](doc/terminal.md), [`doc/terminal-visuals.md`](doc/terminal-visuals.md)
 - File and JSON writers: [`doc/file-writer.md`](doc/file-writer.md)
 - Benchmarks: [`doc/benchmarks.md`](doc/benchmarks.md)
-- Source-generated logging: [`doc/source-generator.md`](doc/source-generator.md)
-- Terminal sink: [`doc/terminal.md`](doc/terminal.md)
-- Terminal visual examples: [`doc/terminal-visuals.md`](doc/terminal-visuals.md)
-- Thread safety: [`doc/thread-safety.md`](doc/thread-safety.md)
+- Source-generated logging (`[LogMethod]`): [`doc/source-generator.md`](doc/source-generator.md)
 - Samples: [`samples/readme.md`](samples/readme.md)
 
-## License
+## 🪪 License
 
 This software is released under the [BSD-2-Clause license](https://opensource.org/licenses/BSD-2-Clause).
 
-## Author
+## 🤗 Author
 
 Alexandre Mutel aka [xoofx](https://xoofx.github.io).
