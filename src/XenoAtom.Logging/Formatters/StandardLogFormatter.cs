@@ -6,7 +6,7 @@ namespace XenoAtom.Logging.Formatters;
 
 /// <summary>
 /// Standard single-line text format.
-/// <c>2026-02-09 12:34:56.1234567 INFO  MyApp.Service [42:Connect] Hello world | System.Exception: ...</c>
+/// <c>2026-02-09 12:34:56.1234567 INF MyApp.Service [42:Connect] Hello world | System.Exception: ...</c>
 /// </summary>
-[LogFormatter("{Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} {Level,-5} {LoggerName}{? [{EventId}]?} {Text}{? | {Exception}?}")]
+[LogFormatter("{Timestamp:yyyy-MM-dd HH:mm:ss.fffffff} {Level} {LoggerName}{? [{EventId}]?} {Text}{? | {Exception}?}")]
 public sealed partial record StandardLogFormatter : LogFormatter;
