@@ -34,12 +34,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="XenoAtom.Terminal.UI" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\XenoAtom.Logging\XenoAtom.Logging.csproj" />
-    <PackageReference Include="XenoAtom.Terminal" />
-
     <!-- uncomment if there is something to change in XenoAtom.Terminal -->
     <!--<ProjectReference Include="..\..\..\XenoAtom.Terminal\src\XenoAtom.Terminal\XenoAtom.Terminal.csproj" />-->
   </ItemGroup>
