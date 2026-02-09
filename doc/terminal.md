@@ -1,12 +1,13 @@
 # XenoAtom.Logging.Terminal
 
-`XenoAtom.Logging.Terminal` provides terminal output for XenoAtom.Logging using `XenoAtom.Terminal`.
+`XenoAtom.Logging.Terminal` provides terminal output for XenoAtom.Logging using `XenoAtom.Terminal` and `XenoAtom.Terminal.UI`.
 
 It supports:
 
 - rich segment styling (timestamp, level, logger name, event id, exception)
 - markup payload rendering via `Logger.*Markup(...)` extension methods
 - visual attachments (`XenoAtom.Terminal.UI.Visual`) rendered under the log line
+- `LogControl` sink integration for fullscreen UI apps
 - escaped interpolated markup values via `AnsiMarkupInterpolatedStringHandler`
 
 For details on template-based text formatting and segment kinds, see `doc/log-formatter.md`.
@@ -44,6 +45,33 @@ using (Terminal.Open(backend, force: true))
     logger.Info("Hello terminal");
     LogManager.Shutdown();
 }
+```
+
+## Writers
+
+### `TerminalLogWriter`
+
+- Writes to a `TerminalInstance`
+- Supports rich segment styling + markup payload rendering
+- Renders `Visual` attachments after the log line
+
+### `TerminalLogControlWriter`
+
+- Writes to a `LogControl` (`XenoAtom.Terminal.UI.Controls`)
+- Uses the same formatting/styling pipeline as `TerminalLogWriter`
+- Marshals background thread writes to the UI thread (`logControl.App.Post(...)` when available)
+- Does not render attachments by default (override point lives in the shared base)
+
+```csharp
+using XenoAtom.Logging.Writers;
+using XenoAtom.Terminal.UI.Controls;
+
+var logControl = new LogControl();
+var writer = new TerminalLogControlWriter(logControl)
+{
+    EnableRichFormatting = true,
+    EnableMarkupMessages = true
+};
 ```
 
 ## Rich styling
@@ -131,5 +159,11 @@ Use `InMemoryTerminalBackend` to assert output deterministically in tests.
 ## Sample
 
 See `samples/HelloLogging/Program.cs` for a complete terminal demo with rich styling, markup logs, scopes, event IDs, and exception output.
+
+See `samples/HelloLogControl/Program.cs` for a fullscreen `LogControl` demo with:
+
+- explanatory `Markup` + `TextBlock` content
+- buttons that emit plain and markup logs
+- background thread logging at regular intervals
 
 For a quick rendered-output walkthrough, see [`terminal-visuals.md`](terminal-visuals.md).

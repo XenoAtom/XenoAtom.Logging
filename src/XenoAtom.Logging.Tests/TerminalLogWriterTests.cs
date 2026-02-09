@@ -2,6 +2,8 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using System.Diagnostics;
+using System.Threading;
 using XenoAtom.Logging.Writers;
 using XenoAtom.Terminal.Backends;
 using XenoAtom.Terminal.UI;
@@ -422,6 +424,87 @@ public class TerminalLogWriterTests
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual("RequestId", list[0].Name);
             Assert.AreEqual("42", list[0].Value);
+        }
+    }
+
+    [TestMethod]
+    public void TerminalLogControlWriter_InfoMarkup_WritesIntoLogControl()
+    {
+        var logControl = new LogControl();
+        var writer = new TerminalLogControlWriter(logControl);
+        var config = new LogManagerConfig
+        {
+            RootLogger =
+            {
+                MinimumLevel = LogLevel.Trace,
+                Writers =
+                {
+                    writer
+                }
+            }
+        };
+
+        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.Terminal.LogControl");
+        logger.InfoMarkup("[green]danger[/] plain");
+        logger.Info("second line");
+        LogManager.Shutdown();
+
+        Assert.AreEqual(2, logControl.Count);
+        logControl.Search("danger");
+        Assert.AreEqual(1, logControl.MatchCount);
+        logControl.Search("[green]");
+        Assert.AreEqual(0, logControl.MatchCount);
+    }
+
+    [TestMethod]
+    public void TerminalLogControlWriter_BackgroundThread_MarshalsToUiThread()
+    {
+        var backend = new InMemoryTerminalBackend();
+        using (global::XenoAtom.Terminal.Terminal.Open(backend, force: true))
+        {
+            var logControl = new LogControl();
+            var writer = new TerminalLogControlWriter(logControl);
+            var config = new LogManagerConfig
+            {
+                RootLogger =
+                {
+                    MinimumLevel = LogLevel.Trace,
+                    Writers =
+                    {
+                        writer
+                    }
+                }
+            };
+
+            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            var logger = LogManager.GetLogger("Tests.Terminal.LogControl.Background");
+            using var started = new ManualResetEventSlim(false);
+            var worker = Task.Run(() =>
+            {
+                started.Wait();
+                logger.Info("from worker thread");
+            });
+
+            var stopwatch = Stopwatch.StartNew();
+            global::XenoAtom.Terminal.Terminal.Instance.Run(logControl, () =>
+            {
+                started.Set();
+                if (logControl.Count > 0)
+                {
+                    return TerminalLoopResult.Stop;
+                }
+
+                return stopwatch.Elapsed >= TimeSpan.FromSeconds(2) ? TerminalLoopResult.Stop : TerminalLoopResult.Continue;
+            });
+
+            worker.Wait(TimeSpan.FromSeconds(2));
+            LogManager.Shutdown();
+
+            Assert.IsTrue(worker.IsCompletedSuccessfully);
+            Assert.IsTrue(logControl.Count > 0);
+            logControl.Search("from worker thread");
+            Assert.IsTrue(logControl.MatchCount > 0);
         }
     }
 }

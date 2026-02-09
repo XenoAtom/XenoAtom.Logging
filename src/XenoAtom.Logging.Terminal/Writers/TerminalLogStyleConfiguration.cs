@@ -5,7 +5,7 @@
 namespace XenoAtom.Logging.Writers;
 
 /// <summary>
-/// Provides style mappings used by <see cref="TerminalLogWriter"/> when rendering rich terminal output.
+/// Provides style mappings used by <see cref="TerminalLogWriterBase"/> when rendering rich terminal output.
 /// </summary>
 /// <remarks>
 /// Styles are markup style tokens understood by <c>XenoAtom.Terminal</c> (for example <c>bold red</c> or <c>gray</c>).

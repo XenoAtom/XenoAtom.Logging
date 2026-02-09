@@ -35,6 +35,7 @@ dotnet add package XenoAtom.Logging.Terminal
   - Generated template formatters (e.g. `StandardLogFormatter`) and segment kinds for rich sinks
 - **Terminal integration without `System.Console`**:
   - `XenoAtom.Logging.Terminal` uses `XenoAtom.Terminal` for markup-aware output
+  - `TerminalLogControlWriter` targets `XenoAtom.Terminal.UI.Controls.LogControl` for fullscreen/log-viewer apps
   - **Visual attachments**: log calls can attach `XenoAtom.Terminal.UI.Visual` (tables, layouts, rich widgets)
   - Terminal docs: https://xenoatom.github.io/terminal
 - **Production file and JSON sinks**:
@@ -117,7 +118,7 @@ logger.Info(table, "Run summary");
 logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
 ```
 
-`TerminalLogWriter` also exposes `Styles` and `SegmentStyleResolver` for per-segment and per-level styling.
+`TerminalLogWriter` and `TerminalLogControlWriter` both expose `Styles` and `SegmentStyleResolver` for per-segment and per-level styling.
 
 ## Thread safety
 
@@ -136,6 +137,7 @@ See [`doc/thread-safety.md`](doc/thread-safety.md) for detailed guidance.
 - Benchmarks: [`doc/benchmarks.md`](doc/benchmarks.md)
 - Source-generated logging (`[LogMethod]`): [`doc/source-generator.md`](doc/source-generator.md)
 - Samples: [`samples/readme.md`](samples/readme.md)
+  - Includes `HelloLogControl` (fullscreen `LogControl` + background logging demo)
 
 ## 🪪 License
 

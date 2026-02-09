@@ -16,6 +16,21 @@ Run it from the repository root:
 dotnet run --project samples/HelloLogging/HelloLogging.csproj -c Release
 ```
 
+## HelloLogControl
+
+`HelloLogControl` demonstrates:
+
+- `TerminalLogControlWriter` writing into `XenoAtom.Terminal.UI.Controls.LogControl`
+- rich formatter styling + markup logs in a fullscreen UI
+- button-driven log generation
+- background-thread logging marshaled onto the UI thread
+
+Run it from the repository root:
+
+```sh
+dotnet run --project samples/HelloLogControl/HelloLogControl.csproj -c Release
+```
+
 ## FileJsonLogging
 
 `FileJsonLogging` demonstrates:

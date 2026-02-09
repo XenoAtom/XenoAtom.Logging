@@ -14,6 +14,7 @@
   <Project Path="XenoAtom.Logging.Generators/XenoAtom.Logging.Generators.csproj" />
   <Folder Name="/samples/">
     <Project Path="../samples/FileJsonLogging/FileJsonLogging.csproj" />
+    <Project Path="../samples/HelloLogControl/HelloLogControl.csproj" Id="cf8e951e-bc09-4283-a821-17c06c0d2c7d" />
     <Project Path="../samples/HelloLogging/HelloLogging.csproj" />
   </Folder>
   <Project Path="XenoAtom.Logging.Benchmark/XenoAtom.Logging.Benchmark.csproj" />

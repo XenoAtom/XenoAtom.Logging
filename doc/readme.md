@@ -212,6 +212,23 @@ terminalWriter.Styles.SetLevelStyle(LogLevel.Warn, "bold yellow");
 terminalWriter.Styles.SetLevelStyle(LogLevel.Error, "bold white on red");
 ```
 
+### `TerminalLogControlWriter` (`XenoAtom.Logging.Terminal`)
+
+- Writes to `XenoAtom.Terminal.UI.Controls.LogControl`
+- Uses the same rich formatting/markup pipeline as `TerminalLogWriter`
+- Marshals background logging calls to the UI thread when hosted in a running `TerminalApp`
+
+```csharp
+using XenoAtom.Terminal.UI.Controls;
+
+var logControl = new LogControl();
+var controlWriter = new TerminalLogControlWriter(logControl)
+{
+    EnableRichFormatting = true,
+    EnableMarkupMessages = true
+};
+```
+
 ## 7. Notes on performance
 
 - Best hot-path behavior is achieved with enabled log calls that use supported interpolated values (string, bool, unmanaged `ISpanFormattable` values, spans).
