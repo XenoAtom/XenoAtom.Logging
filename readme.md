@@ -29,8 +29,8 @@ dotnet add package XenoAtom.Logging.Terminal
 ## Package layout
 
 - `XenoAtom.Logging`: core runtime, formatters, stream/file/json writers
+- `XenoAtom.Logging` also ships the source generator/analyzers in-package (`analyzers/dotnet/cs`)
 - `XenoAtom.Logging.Terminal`: terminal/ANSI sink using `XenoAtom.Terminal` (core library does not use `System.Console`)
-- `XenoAtom.Logging.Generators`: source generator + analyzer for attribute-based logging methods
 
 ## Quick start
 

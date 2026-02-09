@@ -28,9 +28,16 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <LoggingSourceGenAssembly>$(MSBuildThisFileDirectory)..\XenoAtom.Logging.Generators\bin\$(Configuration)\netstandard2.0\XenoAtom.Logging.Generators.dll</LoggingSourceGenAssembly>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)../../img/XenoAtom.Logging.png" Pack="true" PackagePath="/" />
     <None Include="$(MSBuildThisFileDirectory)../../readme.md" Pack="true" PackagePath="/" />
+    <!-- Ship the source generator with the main package (no separate generator NuGet package). -->
+    <None Include="$(LoggingSourceGenAssembly)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(LoggingSourceGenAssembly).pdb" Condition="Exists('$(LoggingSourceGenAssembly).pdb')" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="Logger.gen.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

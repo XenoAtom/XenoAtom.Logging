@@ -1,6 +1,6 @@
 # Source-generated logging
 
-`XenoAtom.Logging` includes a source generator and analyzer package (`XenoAtom.Logging.Generators`) enabled through the core project.
+`XenoAtom.Logging` includes source generators and analyzers embedded in the core package.
 
 This generator covers two features:
 

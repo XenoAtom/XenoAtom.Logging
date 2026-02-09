@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <IsRoslynComponent>true</IsRoslynComponent>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IsPackable>true</IsPackable>
+    <IsPackable>false</IsPackable>
     <!-- RS1036: Generated source uses C# latest features and is intended for modern SDK projects. -->
     <!-- RS2008: Diagnostic descriptors are created in helper code paths not tied to analyzer registration. -->
     <!-- RS1032/RS1042: This package intentionally contains source generators only (no standalone analyzer release tracking). -->
@@ -28,15 +28,6 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)../../img/XenoAtom.Logging.png" Pack="true" PackagePath="/" />
-    <None Include="$(MSBuildThisFileDirectory)../../readme.md" Pack="true" PackagePath="/" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
