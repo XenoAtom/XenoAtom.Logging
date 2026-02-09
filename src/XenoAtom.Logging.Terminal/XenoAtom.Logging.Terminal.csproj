@@ -7,6 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsAotCompatible>true</IsAotCompatible>
     <IsTrimmable>true</IsTrimmable>
+    <RootNamespace>XenoAtom.Logging</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
