@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>High-performance structured logging runtime for .NET with allocation-aware sync and async processing, structured properties, and production-grade file/json sinks.</Description>
+    <Description>Zero-alloc structured logging for .NET — fast formatters, rich terminal visuals, production-ready file &amp; JSON sinks.</Description>
     <Copyright>Alexandre Mutel</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Alexandre Mutel</Authors>
