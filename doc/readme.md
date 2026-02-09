@@ -85,7 +85,7 @@ var properties = new LogProperties
     ("UserId", 42),
     ("Tenant", "alpha")
 };
-logger.Info(properties, $"processed request");
+logger.Info(properties: properties, msg: $"processed request");
 ```
 
 Attach contextual properties to all logs in a scope:
