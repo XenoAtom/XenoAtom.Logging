@@ -6,8 +6,6 @@
     <File Path="../.gitignore" />
     <File Path="../license.txt" />
     <File Path="../readme.md" />
-    <File Path="../samples/readme.md" />
-    <File Path="XenoAtom.Logging.Benchmark/readme.md" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="dotnet-releaser.toml" />
