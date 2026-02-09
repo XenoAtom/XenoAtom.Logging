@@ -217,10 +217,12 @@ public class FileLogWriterTests
     {
         var filePath = Path.Combine(_tempDirectory, "app.log");
         var failures = new List<FileLogWriterFailureContext>();
-        var writer = new FileLogWriter(
+        var writer = new SyntheticFailureFileLogWriter(
             new FileLogWriterOptions(filePath)
             {
-                AutoFlush = true,
+                // Avoid relying on platform-specific file locking/rename semantics.
+                // We inject a deterministic IOException during rolling to validate FailureMode.Ignore behavior.
+                AutoFlush = false,
                 FileSizeLimitBytes = 1,
                 FailureMode = FileLogWriterFailureMode.Ignore,
                 FailureHandler = context => failures.Add(context)
@@ -230,11 +232,8 @@ public class FileLogWriterTests
         var logger = LogManager.GetLogger("Tests.File.Failure.Ignore");
 
         logger.Info("first");
-
-        using (var lockStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-        {
-            logger.Info("second");
-        }
+        writer.FailNextFlush();
+        logger.Info("second");
 
         logger.Info("third");
         LogManager.Shutdown();
@@ -406,6 +405,27 @@ public class FileLogWriterTests
         protected override void FlushStream(FileStream stream, bool flushToDisk)
         {
             FlushModes.Add(flushToDisk);
+            base.FlushStream(stream, flushToDisk);
+        }
+    }
+
+    private sealed class SyntheticFailureFileLogWriter : FileLogWriter
+    {
+        private int _failNextFlush;
+
+        public SyntheticFailureFileLogWriter(FileLogWriterOptions options) : base(options)
+        {
+        }
+
+        public void FailNextFlush() => Volatile.Write(ref _failNextFlush, 1);
+
+        protected override void FlushStream(FileStream stream, bool flushToDisk)
+        {
+            if (Interlocked.Exchange(ref _failNextFlush, 0) != 0)
+            {
+                throw new IOException("Synthetic test failure.");
+            }
+
             base.FlushStream(stream, flushToDisk);
         }
     }
