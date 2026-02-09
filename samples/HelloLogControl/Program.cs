@@ -81,18 +81,16 @@ var buttonStop = new Button("Stop")
     .Click(() => logControl.App?.Stop());
 
 var root = new VStack(
-        new Markup("[bold]HelloLogControl[/] [dim]- XenoAtom.Logging + XenoAtom.Terminal.UI LogControl sink[/]"),
-        new TextBlock("Use the buttons below to generate logs. Background logs run on a worker thread and are marshaled to the UI thread by TerminalLogControlWriter."),
-        new TextBlock("LogControl supports built-in search (Ctrl+F), copy, and tail-style viewing."),
+        new Markup("[bold]HelloLogControl[/] [dim]- XenoAtom.Logging + XenoAtom.Terminal.UI LogControl sink[/]").Wrap(true),
+        new TextBlock("Use the buttons below to generate logs. Background logs run on a worker thread and are marshaled to the UI thread by TerminalLogControlWriter.").Wrap(true),
+        new TextBlock("LogControl supports built-in search (Ctrl+F), copy, and tail-style viewing.").Wrap(true),
         new HStack(buttonInfo, buttonWarn, buttonError, buttonMarkup, buttonClear, buttonStop).Spacing(1),
         new Group()
             .TopLeftText("Logs")
             .TopRightText("Ctrl+F Search")
             .Padding(1)
-            .Content(logControl))
-    .Spacing(1)
-    .HorizontalAlignment(Align.Stretch)
-    .VerticalAlignment(Align.Stretch);
+            .Content(logControl).Stretch())
+    .Spacing(1).Stretch();
 
 logger.InfoMarkup("[bold green]HelloLogControl started[/]");
 logger.Info("Press Ctrl+Q or click Stop to exit.");
