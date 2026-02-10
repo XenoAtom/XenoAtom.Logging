@@ -7,6 +7,10 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// Processes log messages asynchronously on a background thread.
 /// </summary>
+/// <remarks>
+/// Writer/dispatch exceptions observed on the background thread do not propagate to producer callers.
+/// Use <see cref="LogManagerConfig.AsyncErrorHandler"/> and <see cref="LogManager.GetDiagnostics"/> to observe async errors.
+/// </remarks>
 public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageProcessorFactory
 {
     private static readonly TimeSpan ShutdownJoinTimeout = TimeSpan.FromSeconds(2);

@@ -8,6 +8,12 @@ This document summarizes thread-safety guarantees and configuration rules for `X
 - `Logger` instances are safe for concurrent log calls.
 - `LogWriter` implementations may receive concurrent calls depending on processor mode and configuration.
 
+## Error propagation by processor mode
+
+- `LogMessageSyncProcessor`: writer exceptions propagate to the caller thread.
+- `LogMessageAsyncProcessor`: writer/dispatch exceptions are handled on the background thread and do not propagate to caller threads.
+- Configure `LogManagerConfig.AsyncErrorHandler` to observe async failures, and use `LogManager.GetDiagnostics()` (`ErrorCount`, `DroppedMessages`) for runtime visibility.
+
 ## Configuration mutation
 
 - Treat `LogManagerConfig`, `LoggerConfig.Writers`, and writer filter collections as single-threaded configuration objects.
