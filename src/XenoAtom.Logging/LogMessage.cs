@@ -11,6 +11,15 @@ public readonly ref struct LogMessage
 {
     private readonly LogMessageInternal _internalMessage;
 
+    /// <summary>
+    /// This constructors cannot be used directly.
+    /// </summary>
+    [Obsolete("Cannot create an instance of LogMessage directly.", error: true)]
+    public LogMessage()
+    {
+        _internalMessage = null!;
+    }
+
     internal LogMessage(LogMessageInternal message)
     {
         _internalMessage = message;
@@ -35,14 +44,6 @@ public readonly ref struct LogMessage
     /// Gets the timestamp associated with this message.
     /// </summary>
     public DateTime Timestamp => _internalMessage.Timestamp.UtcDateTime;
-
-    /// <summary>
-    /// Gets the timestamp associated with this message.
-    /// </summary>
-    /// <remarks>
-    /// This property is an alias of <see cref="Timestamp"/>.
-    /// </remarks>
-    public DateTime DateTime => Timestamp;
 
     /// <summary>
     /// Gets the event id associated with this message.

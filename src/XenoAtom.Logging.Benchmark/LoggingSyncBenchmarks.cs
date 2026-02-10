@@ -342,7 +342,7 @@ public class LoggingSyncBenchmarks
             _counter = counter;
         }
 
-        protected override void Log(in XenoAtom.Logging.LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             _counter.Add(logMessage.Text.Length);
         }

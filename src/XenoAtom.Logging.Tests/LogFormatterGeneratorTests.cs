@@ -208,7 +208,7 @@ public class LogFormatterGeneratorTests
                 public LogFormatter Formatter { get; } =
                     DemoFormatter.Instance with { LevelFormat = LogLevelFormat.Short, TimestampFormat = "HH:mm:ss" };
 
-                protected override void Log(in LogMessage logMessage)
+                protected override void Log(LogMessage logMessage)
                 {
                     var segments = new LogMessageFormatSegments(false);
                     try

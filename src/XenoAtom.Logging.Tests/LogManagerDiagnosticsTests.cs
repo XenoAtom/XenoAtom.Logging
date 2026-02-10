@@ -176,7 +176,7 @@ public class LogManagerDiagnosticsTests
 
         public ConcurrentQueue<string> Messages { get; } = new();
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Messages.Enqueue(logMessage.Text.ToString());
             _gate.Wait(TimeSpan.FromSeconds(5));
@@ -187,7 +187,7 @@ public class LogManagerDiagnosticsTests
     {
         public long TotalChars { get; private set; }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             TotalChars += logMessage.Text.Length;
         }

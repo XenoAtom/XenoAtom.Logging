@@ -8,7 +8,7 @@ namespace XenoAtom.Logging;
 /// The base class for a log writer.
 /// </summary>
 /// <remarks>
-/// Writer instances can receive concurrent calls to <see cref="LogInternal"/> depending on processor mode.
+/// Writer instances can receive concurrent calls to <see cref="Log"/> depending on processor mode.
 /// Configure filters before initialization and avoid mutating filter collections while logging is active.
 /// </remarks>
 public abstract class LogWriter : IDisposable
@@ -94,13 +94,13 @@ public abstract class LogWriter : IDisposable
     /// Implementations must be thread-safe. In synchronous processor mode, this method may be called concurrently
     /// from multiple producer threads.
     /// </remarks>
-    protected abstract void Log(in LogMessage logMessage);
+    protected abstract void Log(LogMessage logMessage);
 
     /// <summary>
     /// Logs a message taking into account the level of this writer and the filters.
     /// </summary>
     /// <param name="logMessage">The message to log</param>
-    internal void LogInternal(in LogMessage logMessage)
+    internal void LogInternal(LogMessage logMessage)
     {
         if (logMessage.Level < MinimumLevel)
         {

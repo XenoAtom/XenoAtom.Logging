@@ -159,7 +159,7 @@ public sealed record class JsonLogFormatter : LogFormatter
     public bool IncludeScopes => _includeScopes;
 
     /// <inheritdoc />
-    public override bool TryFormat(in LogMessage logMessage, Span<char> destination, out int charsWritten, ref LogMessageFormatSegments segments)
+    public override bool TryFormat(LogMessage logMessage, Span<char> destination, out int charsWritten, ref LogMessageFormatSegments segments)
     {
         charsWritten = 0;
         var position = 0;
@@ -369,7 +369,7 @@ public sealed record class JsonLogFormatter : LogFormatter
         return TryAppend(']', destination, ref position);
     }
 
-    private bool TryWriteMessageField(in LogMessage logMessage, Span<char> destination, ref int position, ref bool hasField)
+    private bool TryWriteMessageField(LogMessage logMessage, Span<char> destination, ref int position, ref bool hasField)
     {
         var text = logMessage.Text;
         if (!logMessage.IsMarkup || text.IsEmpty)

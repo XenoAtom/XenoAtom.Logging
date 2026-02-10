@@ -58,7 +58,7 @@ public sealed partial class Logger
     internal LogWriter[] GetLogWriters(LogLevel level) => Volatile.Read(ref _state)?.WritersPerLevel[(int)level] ?? [];
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void Log(in InterpolatedLogMessageInternal message)
+    internal void Log(InterpolatedLogMessageInternal message)
     {
         if (Volatile.Read(ref _state) is null) ThrowLogManagerNotInitialized();
         message.Log();
@@ -70,7 +70,7 @@ public sealed partial class Logger
     }
 
     [DoesNotReturn, MethodImpl(MethodImplOptions.NoInlining)]
-    private void ThrowLogManagerNotInitialized()
+    private static void ThrowLogManagerNotInitialized()
     {
         throw new InvalidOperationException("The LogManager is not initialized. Call LogManager.Initialize(config) first");
     }

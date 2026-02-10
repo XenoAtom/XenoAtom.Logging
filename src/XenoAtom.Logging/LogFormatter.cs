@@ -58,5 +58,5 @@ public abstract record LogFormatter
     /// <param name="charsWritten">The number of characters written.</param>
     /// <param name="segments">The segments computed during the formatting. (optional)</param>
     /// <returns><c>true</c> if the format was successful; otherwise <c>false</c> if the characters span doesn't have enough space.</returns>
-    public abstract bool TryFormat(in LogMessage logMessage, Span<char> destination, out int charsWritten, ref LogMessageFormatSegments segments);
+    public abstract bool TryFormat(LogMessage logMessage, Span<char> destination, out int charsWritten, ref LogMessageFormatSegments segments);
 }

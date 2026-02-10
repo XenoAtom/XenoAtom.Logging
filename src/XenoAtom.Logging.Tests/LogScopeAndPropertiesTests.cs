@@ -150,7 +150,7 @@ public class LogScopeAndPropertiesTests
     {
         public List<CapturedMessage> Messages { get; } = [];
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             var properties = ReadProperties(logMessage.Properties);
             var scopes = ReadScopes(logMessage.Scope);
@@ -191,7 +191,7 @@ public class LogScopeAndPropertiesTests
 
         public int MatchCount { get; private set; }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             if (logMessage.Properties.Contains(_name, _value))
             {

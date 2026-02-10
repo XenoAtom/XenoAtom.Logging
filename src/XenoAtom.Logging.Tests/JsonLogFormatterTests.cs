@@ -232,7 +232,7 @@ public class JsonLogFormatterTests
 
         public List<string> Messages { get; } = [];
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             using var formatterBuffer = new LogFormatterBuffer();
             var segments = new LogMessageFormatSegments(false);

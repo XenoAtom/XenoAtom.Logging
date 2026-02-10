@@ -394,7 +394,7 @@ public class LogMessageAsyncProcessorTests
 
         public int Count => Volatile.Read(ref _count);
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Messages.Enqueue(logMessage.Text.ToString());
             Interlocked.Increment(ref _count);
@@ -413,7 +413,7 @@ public class LogMessageAsyncProcessorTests
 
         public ConcurrentQueue<string> Messages { get; } = new();
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Messages.Enqueue(logMessage.Text.ToString());
             Interlocked.Increment(ref _count);
@@ -427,7 +427,7 @@ public class LogMessageAsyncProcessorTests
 
         public int Count => Volatile.Read(ref _count);
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Interlocked.Increment(ref _count);
         }
@@ -439,7 +439,7 @@ public class LogMessageAsyncProcessorTests
 
         public int Count => Volatile.Read(ref _count);
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             _ = logMessage.Text.Length;
             Interlocked.Increment(ref _count);
@@ -448,7 +448,7 @@ public class LogMessageAsyncProcessorTests
 
     private sealed class ThrowingWriter : LogWriter
     {
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             throw new InvalidOperationException("Synthetic writer failure.");
         }

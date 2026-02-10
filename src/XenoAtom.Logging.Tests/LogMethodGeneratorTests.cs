@@ -334,7 +334,7 @@ public class LogMethodGeneratorTests
     {
         public List<string> Messages { get; } = [];
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Messages.Add(logMessage.Text.ToString());
         }

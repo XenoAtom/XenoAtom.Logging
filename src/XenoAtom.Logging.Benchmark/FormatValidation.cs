@@ -333,7 +333,7 @@ internal static class FormatValidation
 
         public string? LastMessage { get; private set; }
 
-        protected override void Log(in XenoAtom.Logging.LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             LastMessage = logMessage.Text.ToString();
         }

@@ -19,6 +19,9 @@ internal sealed class LogMessageInternal
 
     internal LogMessageInternal? PoolNext;
     internal int PoolState;
+    internal LogMessageProcessor? Processor;
+    internal LoggerOverflowMode OverflowMode;
+    internal int SyncSlot;
 
     public Logger Logger { get; private set; } = null!;
     public LogLevel Level { get; private set; }
@@ -80,6 +83,9 @@ internal sealed class LogMessageInternal
         Attachment = null;
         IsMarkup = false;
         FormatProvider = CultureInfo.InvariantCulture;
+        Processor = null;
+        OverflowMode = default;
+        SyncSlot = -1;
         _textLength = 0;
     }
 
@@ -147,7 +153,7 @@ internal sealed class LogMessageInternal
     public void AppendFormatted(string value, int alignment)
         => AppendAligned(value.AsSpan(), alignment);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [SkipLocalsInit]
     public void AppendFormatted(ReadOnlySpan<byte> utf8Value, int alignment)
     {
         if (utf8Value.IsEmpty)
@@ -192,6 +198,7 @@ internal sealed class LogMessageInternal
     public void AppendFormatted<T>(T value, int alignment) where T : unmanaged, ISpanFormattable
         => AppendFormatted(value, alignment, format: null);
 
+    [SkipLocalsInit]
     public void AppendFormatted<T>(T value, int alignment, string? format) where T : unmanaged, ISpanFormattable
     {
         Span<char> stackBuffer = stackalloc char[128];

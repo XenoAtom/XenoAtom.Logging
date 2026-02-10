@@ -262,7 +262,7 @@ public class LogManagerTests
     public void WriterRejectFilter_IsApplied()
     {
         var writer = new BufferLogWriter();
-        writer.RejectFilters.Add(static (in LogMessage message) => message.Text.IndexOf("skip".AsSpan(), StringComparison.Ordinal) >= 0);
+        writer.RejectFilters.Add(static (LogMessage message) => message.Text.IndexOf("skip".AsSpan(), StringComparison.Ordinal) >= 0);
         var config = CreateConfig(writer, LogLevel.Trace);
 
         LogManager.Initialize(config);
@@ -562,7 +562,7 @@ public class LogManagerTests
     {
         public List<LoggedMessage> Messages { get; } = [];
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             Messages.Add(
                 new LoggedMessage(
@@ -583,7 +583,7 @@ public class LogManagerTests
         public int CallCount { get; private set; }
         public int TextLength { get; private set; }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             CallCount++;
             TextLength = logMessage.Text.Length;
@@ -599,7 +599,7 @@ public class LogManagerTests
         public int PropertiesCount { get; private set; }
         public int ScopeCount { get; private set; }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             CallCount++;
             TextLength = logMessage.Text.Length;
@@ -614,7 +614,7 @@ public class LogManagerTests
     {
         public ConcurrentBag<long> SequenceIds { get; } = [];
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             SequenceIds.Add(logMessage.SequenceId);
         }

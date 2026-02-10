@@ -177,7 +177,7 @@ public class LoggingAsyncBenchmarks
             _consumer = consumer;
         }
 
-        protected override void Log(in XenoAtom.Logging.LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             _consumer.Enqueue(logMessage.Text.Length);
         }

@@ -9,4 +9,4 @@ namespace XenoAtom.Logging;
 /// </summary>
 /// <param name="message">The message that is being logged.</param>
 /// <returns><c>true</c> if the filter accepts this message; otherwise <c>false</c>.</returns>
-public delegate bool LogFilter(in LogMessage message);
+public delegate bool LogFilter(LogMessage message);

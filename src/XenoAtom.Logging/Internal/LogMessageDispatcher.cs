@@ -15,7 +15,7 @@ internal static class LogMessageDispatcher
         var writers = message.Logger.GetLogWriters(message.Level);
         foreach (var writer in writers)
         {
-            writer.LogInternal(in logMessage);
+            writer.LogInternal(logMessage);
         }
     }
 }

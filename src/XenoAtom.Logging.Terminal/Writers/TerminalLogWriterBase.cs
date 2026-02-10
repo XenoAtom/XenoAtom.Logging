@@ -61,7 +61,7 @@ public abstract class TerminalLogWriterBase : LogWriter
     public Func<LogMessageFormatSegmentKind, LogLevel, string?>? SegmentStyleResolver { get; set; }
 
     /// <inheritdoc />
-    protected sealed override void Log(in LogMessage logMessage)
+    protected sealed override void Log(LogMessage logMessage)
     {
         using var formatterBuffer = new LogFormatterBuffer();
         var shouldCollectSegments = EnableRichFormatting;

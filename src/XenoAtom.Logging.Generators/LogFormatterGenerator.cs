@@ -656,7 +656,7 @@ public sealed class LogFormatterGenerator : IIncrementalGenerator
         AppendIndent(source, indent);
         source.AppendLine("/// <inheritdoc />");
         AppendIndent(source, indent);
-        source.AppendLine("public override bool TryFormat(in global::XenoAtom.Logging.LogMessage logMessage, global::System.Span<char> destination, out int charsWritten, ref global::XenoAtom.Logging.LogMessageFormatSegments segments)");
+        source.AppendLine("public override bool TryFormat(global::XenoAtom.Logging.LogMessage logMessage, global::System.Span<char> destination, out int charsWritten, ref global::XenoAtom.Logging.LogMessageFormatSegments segments)");
         AppendIndent(source, indent);
         source.AppendLine("{");
         indent += 4;
@@ -982,7 +982,7 @@ public sealed class LogFormatterGenerator : IIncrementalGenerator
 
         source.AppendLine();
         AppendIndent(source, indent);
-        source.AppendLine("private static bool TryWriteEventId(in global::XenoAtom.Logging.LogEventId eventId, int mode, global::System.Span<char> destination, ref int position)");
+        source.AppendLine("private static bool TryWriteEventId(global::XenoAtom.Logging.LogEventId eventId, int mode, global::System.Span<char> destination, ref int position)");
         AppendIndent(source, indent);
         source.AppendLine("{");
         AppendIndent(source, indent + 4);

@@ -99,7 +99,7 @@ public sealed class StreamLogWriter : LogWriter
     public bool AutoFlush { get; init; }
     
     /// <inheritdoc />
-    protected sealed override void Log(in LogMessage logMessage)
+    protected sealed override void Log(LogMessage logMessage)
     {
         using var formatterBuffer = new LogFormatterBuffer();
         var segments = new LogMessageFormatSegments(UseSegments);

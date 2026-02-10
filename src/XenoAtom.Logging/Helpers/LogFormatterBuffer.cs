@@ -23,7 +23,7 @@ public ref struct LogFormatterBuffer
     /// <param name="formatter">The formatter used to render text.</param>
     /// <param name="segments">Associated formatting segments.</param>
     /// <returns>A span over the formatted characters.</returns>
-    public ReadOnlySpan<char> Format(in LogMessage logMessage, LogFormatter formatter, ref LogMessageFormatSegments segments)
+    public ReadOnlySpan<char> Format(LogMessage logMessage, LogFormatter formatter, ref LogMessageFormatSegments segments)
     {
         _charBuffer ??= ArrayPool<byte>.Shared.Rent(DefaultFormatterBufferSize);
         var buffer = _charBuffer;

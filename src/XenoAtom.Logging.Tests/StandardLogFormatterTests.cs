@@ -277,7 +277,7 @@ public class StandardLogFormatterTests
             return Messages[0];
         }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             var segments = new LogMessageFormatSegments(true);
             try
@@ -287,7 +287,7 @@ public class StandardLogFormatterTests
                 {
                     segments.Reset();
                     var buffer = new char[bufferLength];
-                    if (_formatter.TryFormat(in logMessage, buffer, out var charsWritten, ref segments))
+                    if (_formatter.TryFormat(logMessage, buffer, out var charsWritten, ref segments))
                     {
                         Messages.Add(new FormattedLogMessage(new string(buffer, 0, charsWritten), segments.AsSpan().ToArray()));
                         return;
@@ -318,14 +318,14 @@ public class StandardLogFormatterTests
 
         public int InvocationCount { get; private set; }
 
-        protected override void Log(in LogMessage logMessage)
+        protected override void Log(LogMessage logMessage)
         {
             InvocationCount++;
             var destination = new char[8];
             var segments = new LogMessageFormatSegments(true);
             try
             {
-                var result = _formatter.TryFormat(in logMessage, destination, out var charsWritten, ref segments);
+                var result = _formatter.TryFormat(logMessage, destination, out var charsWritten, ref segments);
                 Assert.IsFalse(result);
                 Assert.AreEqual(0, charsWritten);
             }
