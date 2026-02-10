@@ -111,7 +111,17 @@ config.AsyncLogMessageQueueCapacity = 4096;
 config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
 ```
 
-You can inspect runtime async pressure and drop counters:
+In async mode, writer failures are handled on the background consumer thread and do not propagate back to caller threads.
+Configure `AsyncErrorHandler` to observe these failures:
+
+```csharp
+config.AsyncErrorHandler = exception =>
+{
+    Console.Error.WriteLine($"[async logging failure] {exception.Message}");
+};
+```
+
+You can inspect runtime async pressure, drop counters, and async error count:
 
 ```csharp
 var diagnostics = LogManager.GetDiagnostics();
@@ -119,7 +129,8 @@ if (diagnostics.IsAsyncProcessor)
 {
     Console.WriteLine(
         $"Queue {diagnostics.AsyncQueueLength}/{diagnostics.AsyncQueueCapacity} " +
-        $"Dropped={diagnostics.DroppedMessages}");
+        $"Dropped={diagnostics.DroppedMessages} " +
+        $"Errors={diagnostics.ErrorCount}");
 }
 ```
 

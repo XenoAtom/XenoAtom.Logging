@@ -42,7 +42,8 @@ dotnet add package XenoAtom.Logging.Terminal
   - Rolling + retention (`FileLogWriter`, `JsonFileLogWriter`)
   - Failure policies and durability options
 - **Operational support**:
-  - Runtime diagnostics via `LogManager.GetDiagnostics()`
+  - Async error callback via `LogManagerConfig.AsyncErrorHandler`
+  - Runtime diagnostics via `LogManager.GetDiagnostics()` (`DroppedMessages`, `ErrorCount`)
   - NativeAOT and trimming oriented (`IsAotCompatible`, `IsTrimmable`)
 
 ![Screenshot](https://raw.githubusercontent.com/XenoAtom/XenoAtom.Logging/main/img/screenshot.png)
@@ -95,6 +96,11 @@ LogManager.Shutdown();
 Enable async processing:
 
 ```csharp
+config.AsyncErrorHandler = exception =>
+{
+    Console.Error.WriteLine($"[logging async error] {exception}");
+};
+
 LogManager.Initialize<LogMessageAsyncProcessor>(config);
 ```
 
@@ -129,6 +135,7 @@ logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
 - `LogManager` and `Logger` are safe for concurrent logging.
 - Configure `LogManagerConfig`, `LoggerConfig.Writers`, and writer filter collections from a single thread, then call `ApplyChanges()` when done.
 - `LogProperties` is a mutable value type; avoid copying populated instances and dispose only the owner instance.
+- In sync mode, writer exceptions propagate to callers; in async mode, use `AsyncErrorHandler` + diagnostics to observe failures.
 
 See [`doc/thread-safety.md`](doc/thread-safety.md) for detailed guidance.
 

@@ -137,4 +137,5 @@ Modes:
 - Set `AutoFlush = true` only when strict durability per message is required.
 - Prefer daily rolling plus size limit for long-running services.
 - Keep retention finite to cap disk usage.
-- Use `LogManager.GetDiagnostics()` to monitor async queue pressure and dropped messages.
+- In async mode, writer failures do not throw on the producer thread; configure `LogManagerConfig.AsyncErrorHandler` to observe them.
+- Use `LogManager.GetDiagnostics()` to monitor async queue pressure, dropped messages, and async error count.

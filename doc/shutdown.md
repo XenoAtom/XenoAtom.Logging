@@ -17,6 +17,7 @@
 - The background consumer drains queued messages before exiting.
 - Writers are flushed as part of normal drain behavior.
 - On shutdown, the processor waits for the background thread with a bounded timeout.
+- If the background thread does not stop before timeout, a timeout error is reported through `LogManagerConfig.AsyncErrorHandler` (when configured) and counted in `LogManager.GetDiagnostics().ErrorCount`.
 
 If a writer blocks indefinitely, shutdown returns after the timeout rather than hanging forever.
 
@@ -50,4 +51,3 @@ See also:
 - `doc/readme.md`
 - `doc/thread-safety.md`
 - `doc/filtering.md`
-
