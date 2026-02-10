@@ -14,12 +14,16 @@ public static class LoggerMarkupExtensions
     /// <summary>
     /// Logs a markup message with the specified level.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, string markupMessage)
         => LogMarkup(logger, level, attachment: null, markupMessage);
 
     /// <summary>
     /// Logs a markup message with the specified level and attachment.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, object? attachment, string markupMessage)
     {
         ArgumentNullException.ThrowIfNull(logger);
@@ -36,12 +40,16 @@ public static class LoggerMarkupExtensions
     /// <summary>
     /// Logs a markup message with the specified level and structured properties.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, string markupMessage)
         => LogMarkup(logger, level, properties, attachment: null, markupMessage);
 
     /// <summary>
     /// Logs a markup message with the specified level, structured properties, and attachment.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> or <paramref name="markupMessage"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, object? attachment, string markupMessage)
     {
         ArgumentNullException.ThrowIfNull(logger);
@@ -58,12 +66,16 @@ public static class LoggerMarkupExtensions
     /// <summary>
     /// Logs an interpolated markup message with the specified level.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, ref AnsiMarkupInterpolatedStringHandler markupMessage)
         => LogMarkup(logger, level, attachment: null, ref markupMessage);
 
     /// <summary>
     /// Logs an interpolated markup message with the specified level and attachment.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage)
     {
         try
@@ -86,12 +98,16 @@ public static class LoggerMarkupExtensions
     /// <summary>
     /// Logs an interpolated markup message with the specified level and structured properties.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, ref AnsiMarkupInterpolatedStringHandler markupMessage)
         => LogMarkup(logger, level, properties, attachment: null, ref markupMessage);
 
     /// <summary>
     /// Logs an interpolated markup message with the specified level, structured properties, and attachment.
     /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="logger"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="level"/> is outside Trace..Fatal.</exception>
     public static void LogMarkup(this Logger logger, LogLevel level, LogProperties properties, object? attachment, ref AnsiMarkupInterpolatedStringHandler markupMessage)
     {
         try
