@@ -258,7 +258,6 @@ See [`doc/source-generator.md`](source-generator.md) for full details and diagno
 
 ## 10. Additional docs
 
-- Changelog: [`CHANGELOG.md`](../CHANGELOG.md)
 - Log formatters: [`log-formatter.md`](log-formatter.md)
 - Filtering and routing: [`filtering.md`](filtering.md)
 - File and JSON writers: [`file-writer.md`](file-writer.md)
