@@ -15,7 +15,7 @@ namespace XenoAtom.Logging.Writers;
 /// <remarks>
 /// Concurrent writes are synchronized by this writer.
 /// </remarks>
-public class StreamLogWriter : LogWriter
+public sealed class StreamLogWriter : LogWriter
 {
     private readonly object _syncObject = new();
     private readonly bool _ownsStream;
@@ -86,7 +86,7 @@ public class StreamLogWriter : LogWriter
     /// <summary>
     /// Gets a value indicating whether segment metadata is requested while formatting.
     /// </summary>
-    protected virtual bool UseSegments => false;
+    private bool UseSegments => false;
 
     /// <summary>
     /// Gets the newline written after each log entry.
@@ -133,7 +133,7 @@ public class StreamLogWriter : LogWriter
     /// <param name="level">The log level of the message.</param>
     /// <param name="text">The formatted log text.</param>
     /// <param name="segments">Optional semantic segments for the formatted text.</param>
-    protected virtual void Write(LogLevel level, ReadOnlySpan<char> text, in LogMessageFormatSegments segments)
+    private void Write(LogLevel level, ReadOnlySpan<char> text, in LogMessageFormatSegments segments)
     {
         using var encoderBuffer = new LogEncoderBuffer();
         var byteSpan = encoderBuffer.Encode(text, Encoding);
