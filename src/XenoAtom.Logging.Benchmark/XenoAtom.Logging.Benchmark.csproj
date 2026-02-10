@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\XenoAtom.Logging\XenoAtom.Logging.csproj" />
+    <ProjectReference Include="..\XenoAtom.Logging.Generators\XenoAtom.Logging.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

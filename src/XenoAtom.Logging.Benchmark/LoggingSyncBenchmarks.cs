@@ -29,6 +29,7 @@ public class LoggingSyncBenchmarks
     private readonly double _elapsedMs = 12.345;
     private readonly bool _success = true;
     private readonly Exception _exception = new InvalidOperationException("Synthetic benchmark exception");
+    private readonly int _priorityItemId = 21;
 
     private readonly LengthCounter _counter = new();
 
@@ -107,38 +108,73 @@ public class LoggingSyncBenchmarks
     }
 
     [Benchmark(Baseline = true)]
-    [BenchmarkCategory("EnabledSimple")]
-    public void XenoAtom_Enabled_Simple()
+    [BenchmarkCategory("EnabledSimpleNonInterpolated")]
+    public void XenoAtom_Enabled_Simple_NonInterpolated()
     {
         _xenoEnabled.Info("Benchmark simple message");
     }
 
     [Benchmark]
-    [BenchmarkCategory("EnabledSimple")]
-    public void MicrosoftExtensions_Enabled_Simple()
+    [BenchmarkCategory("EnabledSimpleNonInterpolated")]
+    public void MicrosoftExtensions_Enabled_Simple_NonInterpolated()
     {
         _melEnabled.LogInformation("Benchmark simple message");
     }
 
     [Benchmark]
-    [BenchmarkCategory("EnabledSimple")]
-    public void ZLogger_Enabled_Simple()
+    [BenchmarkCategory("EnabledSimpleNonInterpolated")]
+    public void ZLogger_Enabled_Simple_NonInterpolated()
     {
-        _zloggerEnabled.ZLogInformation($"Benchmark simple message");
+        _zloggerEnabled.LogInformation("Benchmark simple message");
     }
 
     [Benchmark]
-    [BenchmarkCategory("EnabledSimple")]
-    public void ZeroLog_Enabled_Simple()
+    [BenchmarkCategory("EnabledSimpleNonInterpolated")]
+    public void ZeroLog_Enabled_Simple_NonInterpolated()
     {
         _zeroLogEnabled.Info("Benchmark simple message");
     }
 
     [Benchmark]
-    [BenchmarkCategory("EnabledSimple")]
-    public void Serilog_Enabled_Simple()
+    [BenchmarkCategory("EnabledSimpleNonInterpolated")]
+    public void Serilog_Enabled_Simple_NonInterpolated()
     {
         _serilogEnabled.Information("Benchmark simple message");
+    }
+
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("EnabledSimpleInterpolated")]
+    public void XenoAtom_Enabled_Simple_Interpolated()
+    {
+        _xenoEnabled.Info($"Benchmark simple item {_orderId}");
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledSimpleInterpolated")]
+    public void MicrosoftExtensions_Enabled_Simple_Interpolated()
+    {
+        _melEnabled.LogInformation($"Benchmark simple item {_orderId}");
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledSimpleInterpolated")]
+    public void ZLogger_Enabled_Simple_Interpolated()
+    {
+        _zloggerEnabled.ZLogInformation($"Benchmark simple item {_orderId}");
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledSimpleInterpolated")]
+    public void ZeroLog_Enabled_Simple_Interpolated()
+    {
+        _zeroLogEnabled.Info($"Benchmark simple item {_orderId}");
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledSimpleInterpolated")]
+    public void Serilog_Enabled_Simple_Interpolated()
+    {
+        _serilogEnabled.Information($"Benchmark simple item {_orderId}");
     }
 
     [Benchmark(Baseline = true)]
@@ -177,6 +213,20 @@ public class LoggingSyncBenchmarks
     }
 
     [Benchmark(Baseline = true)]
+    [BenchmarkCategory("EnabledGeneratedSimple")]
+    public void XenoAtom_Enabled_Generated_Simple()
+    {
+        XenoGeneratedSyncLog.PriorityItemProcessed(_xenoEnabled, _priorityItemId);
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledGeneratedSimple")]
+    public void MicrosoftExtensions_Enabled_Generated_Simple()
+    {
+        MelGeneratedSyncLog.PriorityItemProcessed(_melEnabled, _priorityItemId);
+    }
+
+    [Benchmark(Baseline = true)]
     [BenchmarkCategory("EnabledException")]
     public void XenoAtom_Enabled_Exception()
     {
@@ -209,6 +259,20 @@ public class LoggingSyncBenchmarks
     public void Serilog_Enabled_Exception()
     {
         _serilogEnabled.Error(_exception, "Order {OrderId} failed", _orderId);
+    }
+
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("EnabledGeneratedException")]
+    public void XenoAtom_Enabled_Generated_Exception()
+    {
+        XenoGeneratedSyncLog.PriorityItemFailed(_xenoEnabled, _exception, _priorityItemId);
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("EnabledGeneratedException")]
+    public void MicrosoftExtensions_Enabled_Generated_Exception()
+    {
+        MelGeneratedSyncLog.PriorityItemFailed(_melEnabled, _exception, _priorityItemId);
     }
 
     private void SetupXenoAtomLogging()
@@ -427,4 +491,22 @@ public class LoggingSyncBenchmarks
         {
         }
     }
+}
+
+internal static partial class XenoGeneratedSyncLog
+{
+    [global::XenoAtom.Logging.LogMethod(global::XenoAtom.Logging.LogLevel.Info, "Processing priority item: {itemId}", EventId = 1001, EventName = "PriorityItemProcessed")]
+    public static partial void PriorityItemProcessed(global::XenoAtom.Logging.Logger logger, int itemId);
+
+    [global::XenoAtom.Logging.LogMethod(global::XenoAtom.Logging.LogLevel.Error, "Processing priority item failed: {itemId}", EventId = 1002, EventName = "PriorityItemFailed")]
+    public static partial void PriorityItemFailed(global::XenoAtom.Logging.Logger logger, Exception exception, int itemId);
+}
+
+internal static partial class MelGeneratedSyncLog
+{
+    [LoggerMessage(EventId = 1001, Level = MelLogLevel.Information, Message = "Processing priority item: {ItemId}")]
+    public static partial void PriorityItemProcessed(Microsoft.Extensions.Logging.ILogger logger, int itemId);
+
+    [LoggerMessage(EventId = 1002, Level = MelLogLevel.Error, Message = "Processing priority item failed: {ItemId}")]
+    public static partial void PriorityItemFailed(Microsoft.Extensions.Logging.ILogger logger, Exception exception, int itemId);
 }

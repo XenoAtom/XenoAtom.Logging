@@ -14,7 +14,7 @@ public static class Program
 
     private static readonly IReadOnlyDictionary<string, string[]> NamedSuites = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
     {
-        ["comparison"] = ["Disabled", "EnabledSimple", "EnabledStructured", "EnabledException"],
+        ["comparison"] = ["Disabled", "EnabledSimpleNonInterpolated", "EnabledSimpleInterpolated", "EnabledStructured", "EnabledGeneratedSimple", "EnabledException", "EnabledGeneratedException"],
         ["async"] = ["AsyncEnabledStructured", "AsyncEnabledException"],
     };
 

@@ -15,7 +15,6 @@ The following tables summarize benchmark results as of `2026-02-10`.
 > 
 > These results should not be interpreted as an absolute ranking of libraries. The goal of these benchmarks was to make sure that `XenoAtom.Logging` is in the **right performance tier**, produces **zero allocations** and to track relative performance across versions as we optimize. Each library has different architectural trade-offs, so end-to-end call costs should be interpreted in the context of the specific benchmark scenarios and constraints.
 
-
 ### Sync suite (`LoggingSyncBenchmarks`)
 
 ```
@@ -29,43 +28,55 @@ AMD Ryzen 9 7950X 4.50GHz, 1 CPU, 32 logical and 16 physical cores
 
 ```
 
-| Method                                 | Categories        | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-|--------------------------------------- |------------------ |------------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
-| XenoAtom_Disabled                      | Disabled          |   2.4268 ns | 0.0341 ns | 0.0319 ns |  1.00 |    0.02 |      - |         - |          NA |
-| MicrosoftExtensions_Disabled           | Disabled          |  26.1401 ns | 0.4197 ns | 0.3926 ns | 10.77 |    0.21 | 0.0091 |     152 B |          NA |
-| ZLogger_Disabled                       | Disabled          |   3.1866 ns | 0.0362 ns | 0.0321 ns |  1.31 |    0.02 |      - |         - |          NA |
-| ZeroLog_Disabled                       | Disabled          |   0.3577 ns | 0.0041 ns | 0.0038 ns |  0.15 |    0.00 |      - |         - |          NA |
-| Serilog_Disabled                       | Disabled          |  10.9688 ns | 0.0830 ns | 0.0776 ns |  4.52 |    0.06 | 0.0091 |     152 B |          NA |
-|                                        |                   |             |           |           |       |         |        |           |             |
-| XenoAtom_Enabled_Exception             | EnabledException  |  47.5075 ns | 0.1849 ns | 0.1730 ns |  1.00 |    0.00 |      - |         - |          NA |
-| MicrosoftExtensions_Enabled_Exception  | EnabledException  |  53.4775 ns | 0.2848 ns | 0.2664 ns |  1.13 |    0.01 | 0.0067 |     112 B |          NA |
-| ZLogger_Enabled_Exception              | EnabledException  | 147.8964 ns | 1.6686 ns | 1.4791 ns |  3.11 |    0.03 | 0.0114 |     192 B |          NA |
-| ZeroLog_Enabled_Exception              | EnabledException  |  55.0767 ns | 0.2134 ns | 0.1892 ns |  1.16 |    0.01 |      - |         - |          NA |
-| Serilog_Enabled_Exception              | EnabledException  | 134.0713 ns | 1.0655 ns | 0.9967 ns |  2.82 |    0.02 | 0.0281 |     472 B |          NA |
-|                                        |                   |             |           |           |       |         |        |           |             |
-| XenoAtom_Enabled_Simple                | EnabledSimple     |  38.1638 ns | 0.1734 ns | 0.1538 ns |  1.00 |    0.01 |      - |         - |          NA |
-| MicrosoftExtensions_Enabled_Simple     | EnabledSimple     |  14.0463 ns | 0.1010 ns | 0.0944 ns |  0.37 |    0.00 |      - |         - |          NA |
-| ZLogger_Enabled_Simple                 | EnabledSimple     |  96.2682 ns | 0.5662 ns | 0.5296 ns |  2.52 |    0.02 | 0.0043 |      72 B |          NA |
-| ZeroLog_Enabled_Simple                 | EnabledSimple     |  42.8869 ns | 0.2245 ns | 0.1990 ns |  1.12 |    0.01 |      - |         - |          NA |
-| Serilog_Enabled_Simple                 | EnabledSimple     |  86.2467 ns | 0.6199 ns | 0.5798 ns |  2.26 |    0.02 | 0.0138 |     232 B |          NA |
-|                                        |                   |             |           |           |       |         |        |           |             |
-| XenoAtom_Enabled_Structured            | EnabledStructured | 100.8397 ns | 0.5848 ns | 0.5470 ns |  1.00 |    0.01 |      - |         - |          NA |
-| MicrosoftExtensions_Enabled_Structured | EnabledStructured | 165.9514 ns | 1.2676 ns | 1.1857 ns |  1.65 |    0.01 | 0.0162 |     272 B |          NA |
-| ZLogger_Enabled_Structured             | EnabledStructured | 204.2272 ns | 0.8694 ns | 0.7707 ns |  2.03 |    0.01 | 0.0072 |     120 B |          NA |
-| ZeroLog_Enabled_Structured             | EnabledStructured | 115.8277 ns | 0.5651 ns | 0.5009 ns |  1.15 |    0.01 |      - |         - |          NA |
-| Serilog_Enabled_Structured             | EnabledStructured | 290.9576 ns | 2.4012 ns | 2.2461 ns |  2.89 |    0.03 | 0.0558 |     936 B |          NA |
+| Method                                             | Categories                   | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
+|--------------------------------------------------- |----------------------------- |------------:|----------:|----------:|------:|--------:|-------:|-------:|----------:|------------:|
+| XenoAtom_Disabled                                  | Disabled                     |   1.6509 ns | 0.0351 ns | 0.0328 ns |  1.00 |    0.03 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Disabled                       | Disabled                     |  25.1582 ns | 0.1270 ns | 0.1188 ns | 15.24 |    0.30 | 0.0091 |      - |     152 B |          NA |
+| ZLogger_Disabled                                   | Disabled                     |   3.0154 ns | 0.0152 ns | 0.0142 ns |  1.83 |    0.04 |      - |      - |         - |          NA |
+| ZeroLog_Disabled                                   | Disabled                     |   0.3532 ns | 0.0051 ns | 0.0048 ns |  0.21 |    0.00 |      - |      - |         - |          NA |
+| Serilog_Disabled                                   | Disabled                     |  10.8909 ns | 0.0894 ns | 0.0836 ns |  6.60 |    0.13 | 0.0091 |      - |     152 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Exception                         | EnabledException             |  46.9235 ns | 0.2496 ns | 0.2335 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Exception              | EnabledException             |  52.0513 ns | 0.1408 ns | 0.1099 ns |  1.11 |    0.01 | 0.0067 |      - |     112 B |          NA |
+| ZLogger_Enabled_Exception                          | EnabledException             | 139.3819 ns | 0.9624 ns | 0.9002 ns |  2.97 |    0.02 | 0.0114 |      - |     192 B |          NA |
+| ZeroLog_Enabled_Exception                          | EnabledException             |  54.9794 ns | 0.1938 ns | 0.1812 ns |  1.17 |    0.01 |      - |      - |         - |          NA |
+| Serilog_Enabled_Exception                          | EnabledException             | 131.6097 ns | 0.7872 ns | 0.6574 ns |  2.80 |    0.02 | 0.0281 |      - |     472 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Generated_Exception               | EnabledGeneratedException    |  46.2118 ns | 0.2475 ns | 0.2315 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Generated_Exception    | EnabledGeneratedException    |  34.4092 ns | 0.6413 ns | 0.5999 ns |  0.74 |    0.01 | 0.0057 |      - |      96 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Generated_Simple                  | EnabledGeneratedSimple       |  48.3564 ns | 0.6064 ns | 0.5064 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Generated_Simple       | EnabledGeneratedSimple       |  35.0225 ns | 0.5339 ns | 0.4994 ns |  0.72 |    0.01 | 0.0048 |      - |      80 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Simple_Interpolated               | EnabledSimpleInterpolated    |  45.3146 ns | 0.2983 ns | 0.2491 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Simple_Interpolated    | EnabledSimpleInterpolated    |  30.0527 ns | 0.4310 ns | 0.3599 ns |  0.66 |    0.01 | 0.0048 |      - |      80 B |          NA |
+| ZLogger_Enabled_Simple_Interpolated                | EnabledSimpleInterpolated    | 110.0859 ns | 0.9901 ns | 0.8777 ns |  2.43 |    0.02 | 0.0048 |      - |      80 B |          NA |
+| ZeroLog_Enabled_Simple_Interpolated                | EnabledSimpleInterpolated    |  50.1072 ns | 0.9032 ns | 0.8006 ns |  1.11 |    0.02 |      - |      - |         - |          NA |
+| Serilog_Enabled_Simple_Interpolated                | EnabledSimpleInterpolated    | 178.3583 ns | 1.4699 ns | 1.3749 ns |  3.94 |    0.04 | 0.0329 | 0.0098 |     552 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Simple_NonInterpolated            | EnabledSimpleNonInterpolated |  37.8912 ns | 0.1701 ns | 0.1591 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Simple_NonInterpolated | EnabledSimpleNonInterpolated |  13.7325 ns | 0.0289 ns | 0.0242 ns |  0.36 |    0.00 |      - |      - |         - |          NA |
+| ZLogger_Enabled_Simple_NonInterpolated             | EnabledSimpleNonInterpolated |  82.1796 ns | 0.4524 ns | 0.4010 ns |  2.17 |    0.01 | 0.0072 |      - |     120 B |          NA |
+| ZeroLog_Enabled_Simple_NonInterpolated             | EnabledSimpleNonInterpolated |  43.0691 ns | 0.2382 ns | 0.2228 ns |  1.14 |    0.01 |      - |      - |         - |          NA |
+| Serilog_Enabled_Simple_NonInterpolated             | EnabledSimpleNonInterpolated |  84.0832 ns | 0.3738 ns | 0.3496 ns |  2.22 |    0.01 | 0.0138 |      - |     232 B |          NA |
+|                                                    |                              |             |           |           |       |         |        |        |           |             |
+| XenoAtom_Enabled_Structured                        | EnabledStructured            | 101.0461 ns | 0.9045 ns | 0.8018 ns |  1.00 |    0.01 |      - |      - |         - |          NA |
+| MicrosoftExtensions_Enabled_Structured             | EnabledStructured            | 163.9980 ns | 0.6515 ns | 0.5776 ns |  1.62 |    0.01 | 0.0162 |      - |     272 B |          NA |
+| ZLogger_Enabled_Structured                         | EnabledStructured            | 196.4248 ns | 1.0512 ns | 0.9833 ns |  1.94 |    0.02 | 0.0072 |      - |     120 B |          NA |
+| ZeroLog_Enabled_Structured                         | EnabledStructured            | 115.4769 ns | 0.4402 ns | 0.4118 ns |  1.14 |    0.01 |      - |      - |         - |          NA |
+| Serilog_Enabled_Structured                         | EnabledStructured            | 282.4018 ns | 1.5298 ns | 1.4309 ns |  2.79 |    0.03 | 0.0558 |      - |     936 B |          NA |
 
 ### Async suite (`LoggingAsyncBenchmarks`)
 
 | Method                            | Categories             | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
 |---------------------------------- |----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
-| XenoAtom_Async_Enabled_Exception  | AsyncEnabledException  | 123.3 ns | 1.66 ns | 1.70 ns |  1.00 |    0.02 |      - |         - |          NA |
-| ZLogger_Async_Enabled_Exception   | AsyncEnabledException  | 217.8 ns | 0.59 ns | 0.55 ns |  1.77 |    0.02 | 0.0114 |     192 B |          NA |
-| ZeroLog_Async_Enabled_Exception   | AsyncEnabledException  | 123.9 ns | 0.76 ns | 0.71 ns |  1.01 |    0.01 |      - |         - |          NA |
+| XenoAtom_Async_Enabled_Exception  | AsyncEnabledException  | 132.9 ns | 2.64 ns | 2.47 ns |  1.00 |    0.03 |      - |         - |          NA |
+| ZLogger_Async_Enabled_Exception   | AsyncEnabledException  | 210.7 ns | 1.04 ns | 0.92 ns |  1.59 |    0.03 | 0.0114 |     192 B |          NA |
+| ZeroLog_Async_Enabled_Exception   | AsyncEnabledException  | 123.5 ns | 1.53 ns | 1.43 ns |  0.93 |    0.02 |      - |         - |          NA |
 |                                   |                        |          |         |         |       |         |        |           |             |
-| XenoAtom_Async_Enabled_Structured | AsyncEnabledStructured | 167.8 ns | 1.28 ns | 1.20 ns |  1.00 |    0.01 |      - |         - |          NA |
-| ZLogger_Async_Enabled_Structured  | AsyncEnabledStructured | 251.7 ns | 1.07 ns | 1.00 ns |  1.50 |    0.01 | 0.0072 |     120 B |          NA |
-| ZeroLog_Async_Enabled_Structured  | AsyncEnabledStructured | 162.9 ns | 1.75 ns | 1.55 ns |  0.97 |    0.01 |      - |         - |          NA |
+| XenoAtom_Async_Enabled_Structured | AsyncEnabledStructured | 183.5 ns | 1.16 ns | 1.09 ns |  1.00 |    0.01 |      - |         - |          NA |
+| ZLogger_Async_Enabled_Structured  | AsyncEnabledStructured | 233.8 ns | 0.51 ns | 0.45 ns |  1.27 |    0.01 | 0.0072 |     120 B |          NA |
+| ZeroLog_Async_Enabled_Structured  | AsyncEnabledStructured | 160.2 ns | 1.02 ns | 0.96 ns |  0.87 |    0.01 |      - |         - |          NA |
 
 
 ## Project location
@@ -119,9 +130,12 @@ dotnet run --project src/XenoAtom.Logging.Benchmark/XenoAtom.Logging.Benchmark.c
 Benchmarks are grouped by category:
 
 - `Disabled`
-- `EnabledSimple`
+- `EnabledSimpleNonInterpolated`
+- `EnabledSimpleInterpolated`
 - `EnabledStructured`
+- `EnabledGeneratedSimple`
 - `EnabledException`
+- `EnabledGeneratedException`
 - `AsyncEnabledStructured`
 - `AsyncEnabledException`
 
