@@ -172,15 +172,21 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
         _newItemEvent.Set();
 
         var thread = _backgroundThread;
+        var shutdownTimedOut = false;
         if (thread is not null && thread.IsAlive)
         {
             if (!thread.Join(ShutdownJoinTimeout))
             {
-                return;
+                shutdownTimedOut = true;
             }
         }
 
         _newItemEvent.Dispose();
+        if (shutdownTimedOut)
+        {
+            ReportAsyncError(new TimeoutException(
+                $"Async processor did not stop within the shutdown timeout ({ShutdownJoinTimeout.TotalMilliseconds:0} ms)."));
+        }
     }
 
     /// <inheritdoc />
@@ -248,10 +254,18 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
                 }
 
                 // Wait for a producer to signal a new message
-                _newItemEvent.Reset();
-                if (IsQueueEmpty() && !_stopping)
+                try
                 {
-                    _newItemEvent.Wait();
+                    _newItemEvent.Reset();
+                    if (IsQueueEmpty() && !_stopping)
+                    {
+                        _newItemEvent.Wait();
+                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                    _stopping = true;
+                    break;
                 }
 
                 spinWait.Reset();
