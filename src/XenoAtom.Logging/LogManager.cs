@@ -389,9 +389,9 @@ public sealed class LogManager
     private static void ValidateLoggerConfig(LoggerConfig loggerConfig, string configPath)
     {
         var writerConfigs = loggerConfig.Writers;
-        for (var index = 0; index < writerConfigs.Count; index++)
+        var index = 0;
+        foreach (var writerConfig in writerConfigs)
         {
-            var writerConfig = writerConfigs[index];
             if (writerConfig is null)
             {
                 throw new ArgumentException(
@@ -405,6 +405,8 @@ public sealed class LogManager
                     $"{configPath}.Writers[{index}].Writer cannot be null.",
                     nameof(LogManagerConfig));
             }
+
+            index++;
         }
     }
 

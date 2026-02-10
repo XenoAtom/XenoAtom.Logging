@@ -46,8 +46,26 @@ public sealed class LoggerConfig
 /// <summary>
 /// Represents a collection of <see cref="LogWriterConfig"/> values.
 /// </summary>
-public sealed class LogWriterConfigCollection : List<LogWriterConfig>
+public sealed class LogWriterConfigCollection : IEnumerable<LogWriterConfig>
 {
+    private readonly List<LogWriterConfig> _items = new();
+
+    /// <summary>
+    /// Gets the number of configured writer entries.
+    /// </summary>
+    public int Count => _items.Count;
+
+    /// <summary>
+    /// Adds a writer configuration entry.
+    /// </summary>
+    /// <param name="writerConfig">The writer configuration to add.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="writerConfig"/> is <see langword="null"/>.</exception>
+    public void Add(LogWriterConfig writerConfig)
+    {
+        ArgumentNullException.ThrowIfNull(writerConfig);
+        _items.Add(writerConfig);
+    }
+
     /// <summary>
     /// Adds a writer with its own <see cref="LogWriter.MinimumLevel"/>.
     /// </summary>
@@ -68,6 +86,30 @@ public sealed class LogWriterConfigCollection : List<LogWriterConfig>
     public void Add(LogWriter writer, LogLevel minimumLevel)
     {
         ArgumentNullException.ThrowIfNull(writer);
-        Add(new LogWriterConfig(writer, minimumLevel));
+        _items.Add(new LogWriterConfig(writer, minimumLevel));
     }
+
+    /// <summary>
+    /// Removes a writer configuration entry.
+    /// </summary>
+    /// <param name="writerConfig">The writer configuration to remove.</param>
+    /// <returns><see langword="true"/> if the entry existed; otherwise <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="writerConfig"/> is <see langword="null"/>.</exception>
+    public bool Remove(LogWriterConfig writerConfig)
+    {
+        ArgumentNullException.ThrowIfNull(writerConfig);
+        return _items.Remove(writerConfig);
+    }
+
+    /// <summary>
+    /// Clears all writer configuration entries.
+    /// </summary>
+    public void Clear() => _items.Clear();
+
+    /// <inheritdoc />
+    public List<LogWriterConfig>.Enumerator GetEnumerator() => _items.GetEnumerator();
+
+    System.Collections.Generic.IEnumerator<LogWriterConfig> System.Collections.Generic.IEnumerable<LogWriterConfig>.GetEnumerator() => _items.GetEnumerator();
+
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _items.GetEnumerator();
 }
