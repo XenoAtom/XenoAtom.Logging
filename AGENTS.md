@@ -48,7 +48,7 @@ All tests must pass and docs must be updated before submitting.
 
 - Follow .NET guidelines; keep APIs small and hard to misuse.
 - Prefer overloads over optional parameters (binary compatibility); consider `Try*` methods alongside throwing versions.
-- Mark APIs `[Obsolete("message", error: false)]` before removal once stable (can be skipped while pre-release).
+- Mark APIs `[Obsolete("message", error: false)]` before removal.
 
 ## Git / Pre-Submit
 
