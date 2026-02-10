@@ -38,6 +38,14 @@ public sealed class LogManagerConfig
     /// (drop, block, allocate) are applied and must be greater than zero.
     /// </remarks>
     public int AsyncLogMessageQueueCapacity { get; set; } = 8192;
+
+    /// <summary>
+    /// Gets or sets an optional callback invoked when the asynchronous processor observes a writer/dispatch error.
+    /// </summary>
+    /// <remarks>
+    /// This callback is invoked on the async processor thread and should execute quickly.
+    /// </remarks>
+    public Action<Exception>? AsyncErrorHandler { get; set; }
     
     /// <summary>
     /// Gets the root logger configuration applied to all categories.

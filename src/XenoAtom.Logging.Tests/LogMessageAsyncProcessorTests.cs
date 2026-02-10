@@ -334,6 +334,25 @@ public class LogMessageAsyncProcessorTests
         Assert.AreEqual(0, diagnostics.DroppedMessages);
     }
 
+    [TestMethod]
+    public void AsyncProcessor_WriterFailure_InvokesErrorCallbackAndIncrementsDiagnosticsErrorCount()
+    {
+        var writer = new ThrowingWriter();
+        var observedErrors = new ConcurrentQueue<Exception>();
+        var config = CreateConfig(writer);
+        config.AsyncErrorHandler = observedErrors.Enqueue;
+        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        var logger = LogManager.GetLogger("Tests.Async.WriterFailure");
+
+        logger.Info("will-fail");
+
+        WaitUntil(() => !observedErrors.IsEmpty, TimeSpan.FromSeconds(2));
+        var diagnostics = LogManager.GetDiagnostics();
+        LogManager.Shutdown();
+
+        Assert.IsTrue(diagnostics.ErrorCount > 0);
+    }
+
     private static LogManagerConfig CreateConfig(LogWriter writer)
     {
         return new LogManagerConfig
@@ -424,6 +443,14 @@ public class LogMessageAsyncProcessorTests
         {
             _ = logMessage.Text.Length;
             Interlocked.Increment(ref _count);
+        }
+    }
+
+    private sealed class ThrowingWriter : LogWriter
+    {
+        protected override void Log(in LogMessage logMessage)
+        {
+            throw new InvalidOperationException("Synthetic writer failure.");
         }
     }
 

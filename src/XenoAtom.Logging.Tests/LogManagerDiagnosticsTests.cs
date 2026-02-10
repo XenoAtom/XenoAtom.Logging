@@ -35,6 +35,7 @@ public class LogManagerDiagnosticsTests
         Assert.AreEqual(0, diagnostics.AsyncQueueLength);
         Assert.AreEqual(0, diagnostics.AsyncQueueCapacity);
         Assert.AreEqual(0L, diagnostics.DroppedMessages);
+        Assert.AreEqual(0L, diagnostics.ErrorCount);
     }
 
     [TestMethod]
@@ -51,6 +52,7 @@ public class LogManagerDiagnosticsTests
         Assert.AreEqual(0, diagnostics.AsyncQueueLength);
         Assert.AreEqual(0, diagnostics.AsyncQueueCapacity);
         Assert.AreEqual(0L, diagnostics.DroppedMessages);
+        Assert.AreEqual(0L, diagnostics.ErrorCount);
     }
 
     [TestMethod]
@@ -83,6 +85,7 @@ public class LogManagerDiagnosticsTests
             Assert.IsTrue(diagnostics.IsAsyncProcessor);
             Assert.AreEqual(1, diagnostics.AsyncQueueCapacity);
             Assert.IsTrue(diagnostics.DroppedMessages > 0);
+            Assert.AreEqual(0L, diagnostics.ErrorCount);
         }
         finally
         {

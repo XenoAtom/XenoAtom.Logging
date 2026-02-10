@@ -158,13 +158,15 @@ public sealed class LogManager
                 true,
                 asyncProcessor.QueueLength,
                 asyncProcessor.QueueCapacity,
-                asyncProcessor.DroppedCount);
+                asyncProcessor.DroppedCount,
+                asyncProcessor.ErrorCount);
         }
 
         return new LogManagerDiagnostics(
             true,
             processor.GetType(),
             false,
+            0,
             0,
             0,
             0);

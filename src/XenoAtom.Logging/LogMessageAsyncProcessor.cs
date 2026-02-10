@@ -21,6 +21,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     private volatile bool _disposed;
     private volatile bool _stopping;
     private long _droppedCount;
+    private long _errorCount;
 
     private LogMessageAsyncProcessor(LogManagerConfig config) : base(config)
     {
@@ -45,6 +46,11 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     /// Gets the number of dropped messages due to overflow policies.
     /// </summary>
     public long DroppedCount => Interlocked.Read(ref _droppedCount);
+
+    /// <summary>
+    /// Gets the number of async processing errors observed while dispatching/flushing.
+    /// </summary>
+    public long ErrorCount => Interlocked.Read(ref _errorCount);
 
     /// <summary>
     /// Gets the current number of queued messages waiting to be processed.
@@ -214,9 +220,10 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
                 {
                     LogMessageDispatcher.Dispatch(this, message, ref _sequenceId);
                 }
-                catch
+                catch (Exception exception)
                 {
                     Interlocked.Increment(ref _droppedCount);
+                    ReportAsyncError(exception);
                 }
                 finally
                 {
@@ -300,9 +307,10 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
             {
                 writer.Flush();
             }
-            catch
+            catch (Exception exception)
             {
                 Interlocked.Increment(ref _droppedCount);
+                ReportAsyncError(exception);
             }
         }
     }
@@ -316,6 +324,19 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
         catch (ObjectDisposedException)
         {
             // Ignore dispose races; shutdown is already in progress.
+        }
+    }
+
+    private void ReportAsyncError(Exception exception)
+    {
+        Interlocked.Increment(ref _errorCount);
+        try
+        {
+            Config.AsyncErrorHandler?.Invoke(exception);
+        }
+        catch
+        {
+            // Ignore callback failures; logging should keep running.
         }
     }
 }
