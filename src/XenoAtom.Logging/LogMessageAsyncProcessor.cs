@@ -22,7 +22,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     private Thread? _backgroundThread;
     private long _sequenceId;
     private bool _initialized;
-    private volatile bool _disposed;
+    private int _disposeState;
     private volatile bool _stopping;
     private long _droppedCount;
     private long _errorCount;
@@ -74,7 +74,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
 
     internal override bool Log(LogMessageInternal message, LoggerOverflowMode overflowMode)
     {
-        if (_disposed)
+        if (Volatile.Read(ref _disposeState) != 0)
         {
             _pool.Return(message);
             return false;
@@ -90,7 +90,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
         if (overflowMode == LoggerOverflowMode.Block || overflowMode == LoggerOverflowMode.Allocate)
         {
             var spinWait = new SpinWait();
-            while (!_disposed)
+            while (Volatile.Read(ref _disposeState) == 0)
             {
                 if (_queue.TryEnqueue(handle))
                 {
@@ -110,7 +110,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     internal bool TryRentMessage(LoggerOverflowMode overflowMode, out LogMessageInternal? message)
     {
         message = null;
-        if (_disposed)
+        if (Volatile.Read(ref _disposeState) != 0)
         {
             return false;
         }
@@ -132,7 +132,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
                 var spinWait = new SpinWait();
                 while (true)
                 {
-                    if (_disposed)
+                    if (Volatile.Read(ref _disposeState) != 0)
                     {
                         return false;
                     }
@@ -163,12 +163,11 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     /// <inheritdoc />
     public override void Dispose()
     {
-        if (_disposed)
+        if (Interlocked.Exchange(ref _disposeState, 1) != 0)
         {
             return;
         }
 
-        _disposed = true;
         _stopping = true;
         _newItemEvent.Set();
 
