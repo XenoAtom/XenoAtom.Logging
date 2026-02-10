@@ -73,7 +73,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
         var handle = new LogMessageInternalHandle(message);
         if (_queue.TryEnqueue(handle))
         {
-            _newItemEvent.Set();
+            SignalNewItem();
             return true;
         }
 
@@ -84,7 +84,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
             {
                 if (_queue.TryEnqueue(handle))
                 {
-                    _newItemEvent.Set();
+                    SignalNewItem();
                     return true;
                 }
 
@@ -304,6 +304,18 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
             {
                 Interlocked.Increment(ref _droppedCount);
             }
+        }
+    }
+
+    private void SignalNewItem()
+    {
+        try
+        {
+            _newItemEvent.Set();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Ignore dispose races; shutdown is already in progress.
         }
     }
 }
