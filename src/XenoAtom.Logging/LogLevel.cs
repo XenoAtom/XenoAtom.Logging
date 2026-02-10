@@ -103,4 +103,21 @@ public static class LogLevelExtensions
         LogLevel.Fatal => "FTL",
         _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
     };
+
+    /// <summary>
+    /// Converts a level to its single-character representation.
+    /// </summary>
+    /// <param name="level">The level to convert.</param>
+    /// <returns>The single-character text representation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The level is not supported.</exception>
+    public static string ToCharString(this LogLevel level) => level switch
+    {
+        LogLevel.Trace => "T",
+        LogLevel.Debug => "D",
+        LogLevel.Info => "I",
+        LogLevel.Warn => "W",
+        LogLevel.Error => "E",
+        LogLevel.Fatal => "F",
+        _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+    };
 }
