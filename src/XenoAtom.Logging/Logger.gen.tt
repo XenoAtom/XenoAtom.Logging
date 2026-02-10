@@ -257,6 +257,8 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="msg">The log message.</param>
     public static void <#= logType #>(this Logger logger, string msg)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -267,6 +269,9 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="msg">The log message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
     public static void <#= logType #>(this Logger logger, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -276,6 +281,9 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="msg">The log message.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, string msg)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -285,6 +293,10 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="msg">The log message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -294,6 +306,9 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The log message.</param>
     public static void <#= logType #>(this Logger logger, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -304,6 +319,10 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The log message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
     public static void <#= logType #>(this Logger logger, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -314,6 +333,10 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The log message.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, object? attachment, string msg)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -324,6 +347,11 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The log message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, object? attachment, string msg, LogProperties properties)
     {
         if (!logger.IsEnabled(LogLevel.<#= logType #>)) return;
@@ -334,48 +362,76 @@ partial class LoggerExtensions
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, [InterpolatedStringHandlerArgument("logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, LogProperties properties, [InterpolatedStringHandlerArgument("logger", "properties")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, [InterpolatedStringHandlerArgument("eventId", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "logger", "properties")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, object? attachment, [InterpolatedStringHandlerArgument("attachment", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("attachment", "logger", "properties")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, object? attachment, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 
     /// <summary>
     /// Logs a message with <see cref="LogLevel.<#= logType #>"/> level.
     /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="eventId">The event identifier associated with the message.</param>
+    /// <param name="attachment">An optional attachment associated with the message.</param>
+    /// <param name="properties">Structured properties associated with the message.</param>
+    /// <param name="msg">The interpolated log message handler.</param>
     public static void <#= logType #>(this Logger logger, LogEventId eventId, object? attachment, LogProperties properties, [InterpolatedStringHandlerArgument("eventId", "attachment", "logger", "properties")] ref Logger.<#= logType #>InterpolatedLogMessage msg)
         => logger.Log(msg.Internal);
 <# } #>
