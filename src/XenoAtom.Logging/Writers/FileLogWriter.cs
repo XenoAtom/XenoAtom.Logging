@@ -40,7 +40,7 @@ public class FileLogWriter : LogWriter
     private readonly TimeSpan _retryDelay;
     private readonly byte[] _newLineBytes;
 
-    private FileStream _stream;
+    private FileStream? _stream;
     private long _currentFileLength;
     private long _currentIntervalKey;
     private bool _disposed;
@@ -192,7 +192,10 @@ public class FileLogWriter : LogWriter
                 return;
             }
 
-            FlushStream(_stream, _flushToDisk);
+            if (_stream is { } stream)
+            {
+                FlushStream(stream, _flushToDisk);
+            }
         }
     }
 
@@ -209,8 +212,12 @@ public class FileLogWriter : LogWriter
             }
 
             _disposed = true;
-            FlushStream(_stream, _flushToDisk);
-            _stream.Dispose();
+            if (_stream is { } stream)
+            {
+                FlushStream(stream, _flushToDisk);
+                stream.Dispose();
+                _stream = null;
+            }
         }
     }
 
@@ -259,17 +266,18 @@ public class FileLogWriter : LogWriter
                 lock (_syncObject)
                 {
                     ThrowIfDisposed();
+                    EnsureStream();
 
                     RollIfNeededByInterval(timestamp);
                     RollIfNeededBySize(totalBytes, timestamp);
 
-                    _stream.Write(entryBytes);
+                    _stream!.Write(entryBytes);
                     _stream.Write(_newLineBytes);
                     _currentFileLength += totalBytes;
 
                     if (_autoFlush)
                     {
-                        FlushStream(_stream, _flushToDisk);
+                        FlushStream(_stream!, _flushToDisk);
                     }
                 }
                 return;
@@ -345,8 +353,13 @@ public class FileLogWriter : LogWriter
     private void RollFile(DateTime timestamp)
     {
         var previousStream = _stream;
-        FlushStream(previousStream, _flushToDisk);
-        previousStream.Dispose();
+        if (previousStream is not null)
+        {
+            FlushStream(previousStream, _flushToDisk);
+            previousStream.Dispose();
+        }
+
+        _stream = null;
 
         try
         {
@@ -360,6 +373,7 @@ public class FileLogWriter : LogWriter
         }
         catch
         {
+            _stream = null;
             _stream = OpenFileStream(append: true);
             _currentFileLength = _stream.Length;
             throw;
@@ -462,6 +476,17 @@ public class FileLogWriter : LogWriter
         {
             throw new ObjectDisposedException(nameof(FileLogWriter));
         }
+    }
+
+    private void EnsureStream()
+    {
+        if (_stream is not null)
+        {
+            return;
+        }
+
+        _stream = OpenFileStream(append: true);
+        _currentFileLength = _stream.Length;
     }
 
     /// <summary>
