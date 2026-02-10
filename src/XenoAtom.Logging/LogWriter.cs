@@ -90,6 +90,10 @@ public abstract class LogWriter : IDisposable
     /// Logs a message to this writer.
     /// </summary>
     /// <param name="logMessage">The message to log.</param>
+    /// <remarks>
+    /// Implementations must be thread-safe. In synchronous processor mode, this method may be called concurrently
+    /// from multiple producer threads.
+    /// </remarks>
     protected abstract void Log(in LogMessage logMessage);
 
     /// <summary>
