@@ -24,7 +24,7 @@ public class LogScopeAndPropertiesTests
     {
         var writer = new ScopeAndPropertiesWriter();
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Properties");
 
         var properties = new LogProperties
@@ -49,7 +49,7 @@ public class LogScopeAndPropertiesTests
     {
         var writer = new ScopeAndPropertiesWriter();
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Scope");
 
         var scopeA = new LogProperties { ("RequestId", 123) };
@@ -75,7 +75,7 @@ public class LogScopeAndPropertiesTests
     {
         var writer = new ContainsWriter("UserId", "42");
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Properties.Contains");
 
         var properties = new LogProperties { ("UserId", 42), ("Name", "Ada") };
@@ -89,7 +89,7 @@ public class LogScopeAndPropertiesTests
     {
         var writer = new ScopeAndPropertiesWriter();
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Properties.AllLevels");
 
         logger.Trace("trace", new LogProperties { ("Level", "Trace") });
@@ -109,7 +109,7 @@ public class LogScopeAndPropertiesTests
     public void OutOfOrderScopeDispose_DoesNotDropActiveScopeStack()
     {
         var writer = new ScopeAndPropertiesWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Scope.OutOfOrder");
 
         var requestScope = logger.BeginScope(new LogProperties { ("RequestId", 123) });

@@ -7,12 +7,12 @@
 3. Flush and dispose all configured writers once.
 4. Reset logger state so existing logger references can be safely reused after a later `Initialize(...)`.
 
-## Sync processor (`LogMessageSyncProcessor`)
+## Synchronous mode
 
 - Calls are already processed inline.
 - `Shutdown()` mainly flushes/disposes writers.
 
-## Async processor (`LogMessageAsyncProcessor`)
+## Asynchronous mode
 
 - The background consumer drains queued messages before exiting.
 - Writers are flushed as part of normal drain behavior.

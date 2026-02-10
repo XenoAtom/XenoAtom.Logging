@@ -46,7 +46,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.Terminal");
             logger.Info("terminal message");
         }
@@ -75,7 +75,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkup");
             logger.InfoMarkup("[red]danger[/] plain");
         }
@@ -106,7 +106,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkupEscape");
             var userInput = "[red]INJECT[/]";
             logger.InfoMarkup($"User: {userInput}");
@@ -134,7 +134,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkup.AllLevels");
             logger.TraceMarkup("[cyan]trace[/]");
             logger.DebugMarkup("[blue]debug[/]");
@@ -177,7 +177,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkup.InterpolatedAllLevels");
             var userInput = "[red]INJECT[/]";
 
@@ -216,7 +216,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalVisual");
             var table = new Table();
             table.Headers("Task", "State").AddRow("Build", "OK");
@@ -248,7 +248,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalVisual.Markup");
             var table = new Table();
             table.Headers("Task", "State").AddRow("Deploy", "Done");
@@ -285,7 +285,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkupDisabled");
             logger.InfoMarkup("[red]danger[/]");
         }
@@ -315,7 +315,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalStyleClear");
             logger.Info("unstyled output");
         }
@@ -347,7 +347,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalStyleLevel");
             logger.Info("styled output");
         }
@@ -380,7 +380,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalStyleFallback");
             logger.Info("fallback output");
         }
@@ -408,7 +408,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.TerminalMarkupProperties");
             var properties = new LogProperties { ("RequestId", 42) };
 
@@ -444,7 +444,7 @@ public class TerminalLogWriterTests
             }
         };
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Terminal.LogControl");
         logger.InfoMarkup("[green]danger[/] plain");
         logger.Info("second line");
@@ -477,7 +477,7 @@ public class TerminalLogWriterTests
                 }
             };
 
-            LogManager.Initialize<LogMessageSyncProcessor>(config);
+            LogManager.Initialize(config);
             var logger = LogManager.GetLogger("Tests.Terminal.LogControl.Background");
             using var started = new ManualResetEventSlim(false);
             var worker = Task.Run(() =>

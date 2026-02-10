@@ -245,7 +245,7 @@ public class LogFormatterGeneratorTests
                         }
                     };
 
-                    LogManager.Initialize<LogMessageSyncProcessor>(config);
+                    LogManager.Initialize(config);
                     var logger = LogManager.GetLogger("Demo.Runtime");
                     logger.Info("hello");
                     LogManager.Shutdown();

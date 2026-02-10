@@ -10,8 +10,8 @@ This document summarizes thread-safety guarantees and configuration rules for `X
 
 ## Error propagation by processor mode
 
-- `LogMessageSyncProcessor`: writer exceptions propagate to the caller thread.
-- `LogMessageAsyncProcessor`: writer/dispatch exceptions are handled on the background thread and do not propagate to caller threads.
+- Synchronous mode: writer exceptions propagate to the caller thread.
+- Asynchronous mode: writer/dispatch exceptions are handled on the background thread and do not propagate to caller threads.
 - Configure `LogManagerConfig.AsyncErrorHandler` to observe async failures, and use `LogManager.GetDiagnostics()` (`ErrorCount`, `DroppedMessages`) for runtime visibility.
 
 ## Configuration mutation

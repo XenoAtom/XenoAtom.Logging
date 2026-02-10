@@ -25,8 +25,8 @@ dotnet add package XenoAtom.Logging.Terminal
   - Allocation-aware interpolated-string handlers (`Trace`/`Debug`/`Info`/`Warn`/`Error`/`Fatal`)
   - Formatting into `Span<char>` with pooled buffers and optional segment metadata
 - **Sync by default, async when you need it**:
-  - Default processor is synchronous (`LogMessageSyncProcessor`)
-  - Optional async processor (`LogMessageAsyncProcessor`) with bounded queue and overflow policy (`Drop`, `DropAndNotify`, `Block`, `Allocate`)
+  - Default mode is synchronous
+  - Optional asynchronous mode with bounded queue and overflow policy (`Drop`, `DropAndNotify`, `Block`, `Allocate`)
 - **Structured logging**:
   - Per-message properties (`LogProperties`)
   - Scopes (`BeginScope`) captured as snapshots
@@ -101,7 +101,7 @@ config.AsyncErrorHandler = exception =>
     Console.Error.WriteLine($"[logging async error] {exception}");
 };
 
-LogManager.Initialize<LogMessageAsyncProcessor>(config);
+LogManager.InitializeForAsync(config);
 ```
 
 ## 🖥️ Terminal markup and visuals

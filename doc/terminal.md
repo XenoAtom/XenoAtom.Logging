@@ -40,7 +40,7 @@ using (Terminal.Open(backend, force: true))
         }
     };
 
-    LogManager.Initialize<LogMessageSyncProcessor>(config);
+    LogManager.Initialize(config);
     var logger = LogManager.GetLogger("Sample.Terminal");
     logger.Info("Hello terminal");
     LogManager.Shutdown();

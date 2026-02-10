@@ -27,7 +27,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Sync");
 
         logger.Info("hello world");
@@ -60,7 +60,7 @@ public class LogManagerTests
         var config = CreateConfig(writer, LogLevel.Trace);
         config.Loggers.Add("Tests.Filtered", LogLevel.Error);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Filtered");
 
         logger.Info("ignored");
@@ -77,7 +77,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Interpolated");
 
         logger.Info($"Value:{42} Flag:{true,6} Name:{"abc"}");
@@ -92,7 +92,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.InterpolatedFormat");
 
         logger.Info($"Price:{12.345m,0:0.00}");
@@ -107,7 +107,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Interpolated.AllLevels");
 
         logger.Trace($"trace:{1}");
@@ -138,7 +138,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.InterpolatedSpan");
         var text = "span payload".AsSpan();
         var properties = new LogProperties { ("RequestId", 1) };
@@ -155,7 +155,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Event");
 
         logger.Info(new LogEventId(42, "TestEvent"), "message");
@@ -171,7 +171,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Exception");
         var exception = new InvalidOperationException("boom");
 
@@ -188,7 +188,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Attachment");
         var attachment = new object();
 
@@ -206,7 +206,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.MarkupFlag");
         logger.InfoMarkup("[green]ready[/]");
 
@@ -220,7 +220,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Fatal);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Exception.DisabledAlloc");
         var exception = new InvalidOperationException("boom");
 
@@ -245,7 +245,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Metadata");
         var before = DateTime.UtcNow.AddSeconds(-1);
         var threadId = Environment.CurrentManagedThreadId;
@@ -265,7 +265,7 @@ public class LogManagerTests
         writer.RejectFilters.Add(static (in LogMessage message) => message.Text.IndexOf("skip".AsSpan(), StringComparison.Ordinal) >= 0);
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Reject");
 
         logger.Info("skip this");
@@ -281,7 +281,7 @@ public class LogManagerTests
         var writer = new NoTextLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.NoText");
 
         logger.Info("hello");
@@ -296,7 +296,7 @@ public class LogManagerTests
         var writer = new MinimalMetadataLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.MinimalMetadata");
         var exception = new InvalidOperationException("boom");
         var properties = new LogProperties { ("RequestId", 42) };
@@ -323,7 +323,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         LogManager.Shutdown();
         LogManager.Shutdown();
     }
@@ -334,7 +334,7 @@ public class LogManagerTests
         var writer = new BufferLogWriter();
         var config = CreateConfig(writer, LogLevel.Trace);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.AfterShutdown");
         logger.Info("before");
         LogManager.Shutdown();
@@ -358,7 +358,7 @@ public class LogManagerTests
         var config = CreateConfig(writer, LogLevel.Trace);
         config.AsyncLogMessageQueueCapacity = 0;
 
-        Assert.Throws<ArgumentOutOfRangeException>(() => LogManager.Initialize<LogMessageAsyncProcessor>(config));
+        Assert.Throws<ArgumentOutOfRangeException>(() => LogManager.InitializeForAsync(config));
     }
 
     [TestMethod]
@@ -385,7 +385,7 @@ public class LogManagerTests
                 start.SignalAndWait();
                 try
                 {
-                    LogManager.Initialize<LogMessageSyncProcessor>(config);
+                    LogManager.Initialize(config);
                     Interlocked.Increment(ref successCount);
                 }
                 catch (InvalidOperationException)
@@ -416,13 +416,13 @@ public class LogManagerTests
     public void Reinitialize_WithSameLoggerName_UsesNewWriters()
     {
         var firstWriter = new BufferLogWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(firstWriter, LogLevel.Trace));
+        LogManager.Initialize(CreateConfig(firstWriter, LogLevel.Trace));
         var firstLogger = LogManager.GetLogger("Tests.Reinitialize.SameName");
         firstLogger.Info("first");
         LogManager.Shutdown();
 
         var secondWriter = new BufferLogWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(secondWriter, LogLevel.Trace));
+        LogManager.Initialize(CreateConfig(secondWriter, LogLevel.Trace));
         var secondLogger = LogManager.GetLogger("Tests.Reinitialize.SameName");
         secondLogger.Info("second");
         LogManager.Shutdown();
@@ -437,13 +437,13 @@ public class LogManagerTests
     public void Reinitialize_WithExistingLoggerReference_UsesNewConfiguration()
     {
         var firstWriter = new BufferLogWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(firstWriter, LogLevel.Trace));
+        LogManager.Initialize(CreateConfig(firstWriter, LogLevel.Trace));
         var logger = LogManager.GetLogger("Tests.Reinitialize.ExistingReference");
         logger.Info("first");
         LogManager.Shutdown();
 
         var secondWriter = new BufferLogWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(secondWriter, LogLevel.Trace));
+        LogManager.Initialize(CreateConfig(secondWriter, LogLevel.Trace));
         logger.Info("second");
         LogManager.Shutdown();
 
@@ -471,7 +471,7 @@ public class LogManagerTests
             }
         };
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.FanOut");
         logger.Info("fan-out");
         LogManager.Shutdown();
@@ -490,7 +490,7 @@ public class LogManagerTests
         config.Loggers.Add("App", LogLevel.Error);
         config.Loggers.Add("App.Service", LogLevel.Debug);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var loggerForService = LogManager.GetLogger("App.Service.Api");
         var loggerForOther = LogManager.GetLogger("App.Other.Api");
 
@@ -509,7 +509,7 @@ public class LogManagerTests
     public void SequenceId_IsUniqueUnderConcurrentSyncLogging()
     {
         var writer = new SequenceCaptureWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer, LogLevel.Trace));
+        LogManager.Initialize(CreateConfig(writer, LogLevel.Trace));
         var logger = LogManager.GetLogger("Tests.Sequence.Concurrent");
 
         const int messageCount = 20_000;

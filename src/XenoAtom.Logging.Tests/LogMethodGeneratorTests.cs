@@ -228,7 +228,7 @@ public class LogMethodGeneratorTests
         };
 
         LogManager.Shutdown();
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Generated.Runtime");
 
         invokeMethod!.Invoke(null, [logger, 42]);

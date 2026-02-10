@@ -119,7 +119,7 @@ public class LoggingAsyncBenchmarks
         };
         config.Loggers.Add(EnabledLoggerName, XenoLogLevel.Info);
 
-        XenoLogManager.Initialize<XenoAtom.Logging.LogMessageAsyncProcessor>(config);
+        XenoLogManager.InitializeForAsync(config);
         _xenoEnabled = XenoLogManager.GetLogger(EnabledLoggerName);
     }
 

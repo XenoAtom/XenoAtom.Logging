@@ -27,7 +27,7 @@ public class LogMessageAsyncProcessorTests
     {
         var writer = new ConcurrentCaptureWriter();
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async");
 
         for (var i = 0; i < 20; i++)
@@ -47,7 +47,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Drop");
 
         try
@@ -77,7 +77,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Allocate;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Shutdown");
 
         for (var i = 0; i < 50; i++)
@@ -97,7 +97,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Drop.Memory");
         var exception = new InvalidOperationException("Drop memory test");
 
@@ -138,7 +138,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Drop.BufferLimit");
 
         for (var i = 0; i < 50_000; i++)
@@ -162,7 +162,7 @@ public class LogMessageAsyncProcessorTests
     {
         var firstWriter = new ConcurrentCaptureWriter();
         var firstConfig = CreateConfig(firstWriter);
-        LogManager.Initialize<LogMessageAsyncProcessor>(firstConfig);
+        LogManager.InitializeForAsync(firstConfig);
         var firstLogger = LogManager.GetLogger("Tests.Async.Reinitialize.First");
         firstLogger.Info("first-run");
         WaitUntil(() => firstWriter.Count >= 1, TimeSpan.FromSeconds(2));
@@ -170,7 +170,7 @@ public class LogMessageAsyncProcessorTests
 
         var secondWriter = new ConcurrentCaptureWriter();
         var secondConfig = CreateConfig(secondWriter);
-        LogManager.Initialize<LogMessageAsyncProcessor>(secondConfig);
+        LogManager.InitializeForAsync(secondConfig);
         var secondLogger = LogManager.GetLogger("Tests.Async.Reinitialize.Second");
 
         for (var i = 0; i < 10; i++)
@@ -190,7 +190,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 16_384;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Block;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.NoRequirements");
 
         const int messageCount = 50_000;
@@ -214,7 +214,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 256;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Block;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Block.BufferLimit");
         var exception = new InvalidOperationException("boom");
 
@@ -236,7 +236,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Block;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.BlockingBehavior");
 
         logger.Info("first");
@@ -259,7 +259,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.OverflowMode = LoggerOverflowMode.Block;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.GlobalOverflow");
 
         logger.Info("first");
@@ -281,7 +281,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 256;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Allocate;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.Allocate");
 
         const int messageCount = 50_000;
@@ -305,7 +305,7 @@ public class LogMessageAsyncProcessorTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 8_192;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Block;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.MultiProducer");
 
         const int producerCount = 8;
@@ -341,7 +341,7 @@ public class LogMessageAsyncProcessorTests
         var observedErrors = new ConcurrentQueue<Exception>();
         var config = CreateConfig(writer);
         config.AsyncErrorHandler = observedErrors.Enqueue;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         var logger = LogManager.GetLogger("Tests.Async.WriterFailure");
 
         logger.Info("will-fail");

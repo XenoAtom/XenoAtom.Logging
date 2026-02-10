@@ -26,7 +26,7 @@ public class StandardLogFormatterTests
     public void StandardFormatter_DefaultLevelFormat_IsTriAndAligned()
     {
         var writer = new FormatterCaptureLogWriter(StandardLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Tri");
 
         logger.Info("hello");
@@ -50,7 +50,7 @@ public class StandardLogFormatterTests
     {
         var formatter = StandardLogFormatter.Instance with { LevelFormat = LogLevelFormat.Short };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Short");
 
         logger.Info("hello");
@@ -64,7 +64,7 @@ public class StandardLogFormatterTests
     {
         var formatter = StandardLogFormatter.Instance with { LevelFormat = LogLevelFormat.Long };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Long");
 
         logger.Info("hello");
@@ -78,7 +78,7 @@ public class StandardLogFormatterTests
     {
         var formatter = StandardLogFormatter.Instance with { LevelFormat = LogLevelFormat.Char };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Char");
 
         logger.Warn("hello");
@@ -92,7 +92,7 @@ public class StandardLogFormatterTests
     {
         var formatter = StandardLogFormatter.Instance with { TimestampFormat = "HH:mm:ss" };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Time");
 
         logger.Info("hello");
@@ -108,7 +108,7 @@ public class StandardLogFormatterTests
     public void StandardFormatter_FormatsEventIdAndExceptionSegments()
     {
         var writer = new FormatterCaptureLogWriter(StandardLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.EventException");
         var exception = new InvalidOperationException("boom");
 
@@ -126,7 +126,7 @@ public class StandardLogFormatterTests
     public void StandardFormatter_DoesNotEmitConditionalPartsWhenEventIdAndExceptionMissing()
     {
         var writer = new FormatterCaptureLogWriter(StandardLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.NoOptional");
 
         logger.Info("hello");
@@ -140,7 +140,7 @@ public class StandardLogFormatterTests
     public void StandardFormatter_ReturnsFalse_WhenDestinationIsTooSmall()
     {
         var writer = new TooSmallBufferAssertionWriter(StandardLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.SmallBuffer");
 
         logger.Info("this message does not fit");
@@ -152,7 +152,7 @@ public class StandardLogFormatterTests
     public void StandardFormatter_FormatsVeryLongMessage()
     {
         var writer = new FormatterCaptureLogWriter(StandardLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Long");
         var payload = new string('x', 20_000);
 
@@ -167,7 +167,7 @@ public class StandardLogFormatterTests
     public void CompactFormatter_UsesTriLevelByDefault()
     {
         var writer = new FormatterCaptureLogWriter(CompactLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Compact");
 
         logger.Info("compact");
@@ -188,7 +188,7 @@ public class StandardLogFormatterTests
     public void DetailedFormatter_EmitsThreadAndSequenceSegments()
     {
         var writer = new FormatterCaptureLogWriter(DetailedLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.Detailed");
 
         logger.Info("detailed");
@@ -205,7 +205,7 @@ public class StandardLogFormatterTests
     public void DetailedFormatter_FormatsEventIdAndException()
     {
         var writer = new FormatterCaptureLogWriter(DetailedLogFormatter.Instance);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.DetailedOptional");
 
         logger.Error(new LogEventId(42, "RequestFailed"), new InvalidOperationException("boom"), "detailed");
@@ -220,7 +220,7 @@ public class StandardLogFormatterTests
     {
         var formatter = DetailedLogFormatter.Instance with { LevelFormat = LogLevelFormat.Short };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.DetailedShort");
 
         logger.Info("detailed");
@@ -234,7 +234,7 @@ public class StandardLogFormatterTests
     {
         var formatter = DetailedLogFormatter.Instance with { TimestampFormat = "HH:mm:ss" };
         var writer = new FormatterCaptureLogWriter(formatter);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Formatter.DetailedTime");
 
         logger.Info("detailed");

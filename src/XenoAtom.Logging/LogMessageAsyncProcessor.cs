@@ -11,7 +11,7 @@ namespace XenoAtom.Logging;
 /// Writer/dispatch exceptions observed on the background thread do not propagate to producer callers.
 /// Use <see cref="LogManagerConfig.AsyncErrorHandler"/> and <see cref="LogManager.GetDiagnostics"/> to observe async errors.
 /// </remarks>
-public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageProcessorFactory
+internal sealed class LogMessageAsyncProcessor : LogMessageProcessor
 {
     private static readonly TimeSpan ShutdownJoinTimeout = TimeSpan.FromSeconds(2);
     private readonly MpscBoundedQueue<LogMessageInternalHandle> _queue;
@@ -27,7 +27,7 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
     private long _droppedCount;
     private long _errorCount;
 
-    private LogMessageAsyncProcessor(LogManagerConfig config) : base(config)
+    internal LogMessageAsyncProcessor(LogManagerConfig config) : base(config)
     {
         if (config.AsyncLogMessageQueueCapacity <= 0)
         {
@@ -43,8 +43,6 @@ public sealed class LogMessageAsyncProcessor : LogMessageProcessor, ILogMessageP
         _newItemEvent = new ManualResetEventSlim(false);
         _flushWriters = BuildFlushWriters(config);
     }
-
-    static LogMessageProcessor ILogMessageProcessorFactory.Create(LogManagerConfig config) => new LogMessageAsyncProcessor(config);
 
     /// <summary>
     /// Gets the number of dropped messages due to overflow policies.

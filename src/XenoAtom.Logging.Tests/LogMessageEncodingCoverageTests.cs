@@ -23,7 +23,7 @@ public class LogMessageEncodingCoverageTests
     public void InterpolatedMessage_CoversScalarEncodingPaths()
     {
         var writer = new CaptureWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Encoding");
 
         var guid = Guid.Parse("01234567-89AB-CDEF-0123-456789ABCDEF");
@@ -69,7 +69,7 @@ public class LogMessageEncodingCoverageTests
     public void InterpolatedUtf8Span_WithPositiveAlignment_IsNotCorrupted()
     {
         var writer = new CaptureWriter();
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.Encoding.Utf8Aligned");
         ReadOnlySpan<byte> utf8 = "é"u8;
 

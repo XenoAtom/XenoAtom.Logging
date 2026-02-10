@@ -10,7 +10,7 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// Base type for components that process log messages.
 /// </summary>
-public abstract class LogMessageProcessor : IDisposable
+internal abstract class LogMessageProcessor : IDisposable
 {
     private protected LogMessageProcessor(LogManagerConfig config)
     {

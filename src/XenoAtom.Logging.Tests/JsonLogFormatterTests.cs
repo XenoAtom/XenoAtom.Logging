@@ -29,7 +29,7 @@ public class JsonLogFormatterTests
         var writer = new JsonCaptureWriter(new JsonLogFormatter(includeProperties: true, includeScopes: true));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Formatter");
 
         var scopeProperties = new LogProperties { ("RequestId", 123) };
@@ -70,7 +70,7 @@ public class JsonLogFormatterTests
     {
         var writer = new JsonCaptureWriter(new JsonLogFormatter(includeProperties: false, includeScopes: false));
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Minimal");
         var properties = new LogProperties { ("UserId", 42) };
 
@@ -96,7 +96,7 @@ public class JsonLogFormatterTests
         }));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.SnakeCase");
         logger.Info(new LogEventId(99, "SnakeEvent"), "snake-case");
 
@@ -123,7 +123,7 @@ public class JsonLogFormatterTests
         }));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Ecs");
         logger.Error(new LogEventId(7, "UserEvent"), new InvalidOperationException("boom"), "ecs-message", new LogProperties { ("User", "Ada") });
 
@@ -151,7 +151,7 @@ public class JsonLogFormatterTests
         }));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Ecs.Naming");
         logger.Info("ecs-naming");
 
@@ -176,7 +176,7 @@ public class JsonLogFormatterTests
         }));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Toggle");
         logger.Error(new LogEventId(11, "Ignored"), new InvalidOperationException("boom"), "toggle");
 
@@ -195,7 +195,7 @@ public class JsonLogFormatterTests
         var writer = new JsonCaptureWriter(new JsonLogFormatter(includeProperties: true, includeScopes: false));
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Json.Markup");
         logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
 

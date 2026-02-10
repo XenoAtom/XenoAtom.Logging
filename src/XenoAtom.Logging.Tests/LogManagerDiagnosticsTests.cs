@@ -42,7 +42,7 @@ public class LogManagerDiagnosticsTests
     public void GetDiagnostics_WithSyncProcessor_ReturnsProcessorType()
     {
         var config = CreateConfig(new CountingWriter());
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         Assert.IsTrue(LogManager.IsInitialized);
 
         var diagnostics = LogManager.GetDiagnostics();
@@ -63,7 +63,7 @@ public class LogManagerDiagnosticsTests
         var config = CreateConfig(writer);
         config.AsyncLogMessageQueueCapacity = 1;
         config.RootLogger.OverflowMode = LoggerOverflowMode.Drop;
-        LogManager.Initialize<LogMessageAsyncProcessor>(config);
+        LogManager.InitializeForAsync(config);
         Assert.IsTrue(LogManager.IsInitialized);
         var logger = LogManager.GetLogger("Tests.Diagnostics.Async.Drop");
 
@@ -98,7 +98,7 @@ public class LogManagerDiagnosticsTests
     {
         var writer = new CountingWriter();
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
 
         var logger = LogManager.GetLogger("Tests.Diagnostics.Sync.MemoryBound");
         var exception = new InvalidOperationException("boom");
@@ -126,7 +126,7 @@ public class LogManagerDiagnosticsTests
     public void IsInitialized_TracksLifecycle()
     {
         Assert.IsFalse(LogManager.IsInitialized);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(new CountingWriter()));
+        LogManager.Initialize(CreateConfig(new CountingWriter()));
         Assert.IsTrue(LogManager.IsInitialized);
         LogManager.Shutdown();
         Assert.IsFalse(LogManager.IsInitialized);

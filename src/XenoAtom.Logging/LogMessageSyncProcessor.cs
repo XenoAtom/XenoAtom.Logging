@@ -7,15 +7,13 @@ namespace XenoAtom.Logging;
 /// <summary>
 /// Processes log messages synchronously on the calling thread.
 /// </summary>
-public sealed class LogMessageSyncProcessor : LogMessageProcessor, ILogMessageProcessorFactory
+internal sealed class LogMessageSyncProcessor : LogMessageProcessor
 {
     private long _sequenceId;
 
-    private LogMessageSyncProcessor(LogManagerConfig config) : base(config)
+    internal LogMessageSyncProcessor(LogManagerConfig config) : base(config)
     {
     }
-
-    static LogMessageProcessor ILogMessageProcessorFactory.Create(LogManagerConfig config) => new LogMessageSyncProcessor(config);
 
     internal override bool Log(LogMessageInternal message, LoggerOverflowMode overflowMode)
     {

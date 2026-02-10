@@ -103,7 +103,7 @@ internal static class FormatValidation
         };
 
         XenoLogManager.Shutdown();
-        XenoLogManager.Initialize<XenoAtom.Logging.LogMessageSyncProcessor>(config);
+        XenoLogManager.Initialize(config);
         var logger = XenoLogManager.GetLogger("Format.XenoAtom");
         logger.Error(exception, $"Order {orderId} failed");
         XenoLogManager.Shutdown();
@@ -128,7 +128,7 @@ internal static class FormatValidation
         };
 
         XenoLogManager.Shutdown();
-        XenoLogManager.Initialize<XenoAtom.Logging.LogMessageSyncProcessor>(config);
+        XenoLogManager.Initialize(config);
         var logger = XenoLogManager.GetLogger("Format.XenoAtom");
         logger.Info($"Order {orderId} User {userId} Success {success} Elapsed {elapsedMs}");
         XenoLogManager.Shutdown();

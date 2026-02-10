@@ -46,7 +46,7 @@ LogManager.Shutdown();
 If you need asynchronous processing, initialize with:
 
 ```csharp
-LogManager.Initialize<LogMessageAsyncProcessor>(config);
+LogManager.InitializeForAsync(config);
 ```
 
 You can quickly check lifecycle state with `LogManager.IsInitialized`.
@@ -99,7 +99,7 @@ using (logger.BeginScope(new LogProperties { ("RequestId", 1234) }))
 
 ## 5. Async queue and overflow behavior
 
-`LogMessageAsyncProcessor` uses `LogManagerConfig.AsyncLogMessageQueueCapacity` and `LoggerOverflowMode`.
+The asynchronous processor uses `LogManagerConfig.AsyncLogMessageQueueCapacity` and `LoggerOverflowMode`.
 
 - `Drop`: drop new logs when saturated.
 - `DropAndNotify`: drop and optionally notify.

@@ -13,7 +13,7 @@ namespace XenoAtom.Logging;
 /// </summary>
 /// <remarks>
 /// Static operations are thread-safe. Configure <see cref="LogManagerConfig"/> on a single thread before calling
-/// <see cref="Initialize(LogManagerConfig)"/> or <see cref="Initialize{TMessageProcessorFactory}(LogManagerConfig)"/>.
+/// <see cref="Initialize(LogManagerConfig)"/> or <see cref="InitializeForAsync(LogManagerConfig)"/>.
 /// </remarks>
 public sealed class LogManager
 {
@@ -48,26 +48,27 @@ public sealed class LogManager
     /// <exception cref="ArgumentOutOfRangeException">The configured async queue capacity is not greater than zero.</exception>
     /// <exception cref="ArgumentException">A writer configuration is invalid.</exception>
     /// <exception cref="InvalidOperationException">The manager has already been initialized.</exception>
-    public static void Initialize(LogManagerConfig config) => Initialize<LogMessageSyncProcessor>(config);
+    public static void Initialize(LogManagerConfig config) => InitializeCore(config, new LogMessageSyncProcessor(config));
 
     /// <summary>
-    /// Initializes the logging system using a custom processor type.
+    /// Initializes the logging system using the asynchronous processor.
     /// </summary>
-    /// <typeparam name="TMessageProcessorFactory">The processor type implementing <see cref="ILogMessageProcessorFactory"/>.</typeparam>
     /// <param name="config">The logging configuration.</param>
     /// <exception cref="ArgumentNullException"><paramref name="config"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The configured async queue capacity is not greater than zero.</exception>
     /// <exception cref="ArgumentException">A writer configuration is invalid.</exception>
     /// <exception cref="InvalidOperationException">The manager has already been initialized.</exception>
-    public static void Initialize<TMessageProcessorFactory>(LogManagerConfig config) where TMessageProcessorFactory: LogMessageProcessor, ILogMessageProcessorFactory
+    public static void InitializeForAsync(LogManagerConfig config) => InitializeCore(config, new LogMessageAsyncProcessor(config));
+
+    private static void InitializeCore(LogManagerConfig config, LogMessageProcessor processor)
     {
         ArgumentNullException.ThrowIfNull(config);
         ValidateConfiguration(config);
 
-        var instance = new LogManager(config, TMessageProcessorFactory.Create(config));
+        var instance = new LogManager(config, processor);
         if (Interlocked.CompareExchange(ref _instance, instance, null) is not null)
         {
-            instance._processor.Dispose();
+            processor.Dispose();
             throw new InvalidOperationException("The LogManager is already initialized");
         }
 

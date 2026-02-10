@@ -133,7 +133,7 @@ Modes:
 
 ## Operational guidance
 
-- Use asynchronous processing (`LogManager.Initialize<LogMessageAsyncProcessor>(config)`) for best throughput.
+- Use asynchronous processing (`LogManager.InitializeForAsync(config)`) for best throughput.
 - Set `AutoFlush = true` only when strict durability per message is required.
 - Prefer daily rolling plus size limit for long-running services.
 - Keep retention finite to cap disk usage.

@@ -228,7 +228,7 @@ public class LoggingSyncBenchmarks
         };
         config.Loggers.Add(EnabledLoggerName, XenoLogLevel.Info);
 
-        XenoLogManager.Initialize<XenoAtom.Logging.LogMessageSyncProcessor>(config);
+        XenoLogManager.Initialize(config);
         _xenoEnabled = XenoLogManager.GetLogger(EnabledLoggerName);
         _xenoDisabled = XenoLogManager.GetLogger(DisabledLoggerName);
     }

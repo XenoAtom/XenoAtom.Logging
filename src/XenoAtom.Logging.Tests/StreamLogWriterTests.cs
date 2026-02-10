@@ -29,7 +29,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, Encoding.UTF8);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.Basic");
         logger.Info("hello stream");
         LogManager.Shutdown();
@@ -46,7 +46,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, Encoding.UTF8);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.NewLine");
         logger.Info("first");
         logger.Info("second");
@@ -66,7 +66,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, Encoding.UTF8);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.Markup");
         logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
         LogManager.Shutdown();
@@ -84,7 +84,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, ownsStream: false);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.OwnsFalse");
         logger.Info("hello");
         LogManager.Shutdown();
@@ -100,7 +100,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, ownsStream: true);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.OwnsTrue");
         logger.Info("hello");
         LogManager.Shutdown();
@@ -116,7 +116,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, Encoding.UTF8);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.Concurrent");
 
         Parallel.For(0, 10_000, index =>
@@ -135,7 +135,7 @@ public class StreamLogWriterTests
         var writer = new StreamLogWriter(stream, Encoding.UTF8);
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.BufferGrowth");
         var payload = new string('x', 50_000);
 
@@ -160,7 +160,7 @@ public class StreamLogWriterTests
         };
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.Stream.AutoFlush");
         logger.Info("first");
         logger.Info("second");

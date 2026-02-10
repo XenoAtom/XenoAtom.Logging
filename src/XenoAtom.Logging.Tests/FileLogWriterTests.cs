@@ -39,7 +39,7 @@ public class FileLogWriterTests
         var writer = new FileLogWriter(new FileLogWriterOptions(filePath) { AutoFlush = true });
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.File.Basic");
         logger.Info("hello file");
         LogManager.Shutdown();
@@ -57,7 +57,7 @@ public class FileLogWriterTests
         var writer = new FileLogWriter(new FileLogWriterOptions(filePath) { AutoFlush = true });
         var config = CreateConfig(writer);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.File.Markup");
         logger.InfoMarkup("[green]ready[/] [bold]ok[/]");
         LogManager.Shutdown();
@@ -81,7 +81,7 @@ public class FileLogWriterTests
                 RetainedFileCountLimit = 2
             });
 
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.File.Roll.Size");
 
         for (var index = 0; index < 30; index++)
@@ -114,7 +114,7 @@ public class FileLogWriterTests
         var config = CreateConfig(writer);
         config.TimeProvider = timeProvider;
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.File.Roll.Interval");
 
         logger.Info("day-one");
@@ -143,7 +143,7 @@ public class FileLogWriterTests
                 AutoFlush = true
             });
         var config = CreateConfig(writer);
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
 
         var logger = LogManager.GetLogger("Tests.File.Json");
         var properties = new LogProperties { ("UserId", 42), ("Name", "Ada") };
@@ -178,7 +178,7 @@ public class FileLogWriterTests
                 IncludeScopes = false
             });
 
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.File.Json.Options");
         logger.Info(new LogEventId(12, "SnakeEvent"), "snake-message", new LogProperties { ("UserId", 42) });
         LogManager.Shutdown();
@@ -200,7 +200,7 @@ public class FileLogWriterTests
     {
         var filePath = Path.Combine(_tempDirectory, "app.jsonl");
         var writer = new JsonFileLogWriter(filePath);
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
 
         var logger = LogManager.GetLogger("Tests.File.Json.NewLine");
         logger.Info("line-one");
@@ -228,7 +228,7 @@ public class FileLogWriterTests
                 FailureHandler = context => failures.Add(context)
             });
 
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.File.Failure.Ignore");
 
         logger.Info("first");
@@ -267,7 +267,7 @@ public class FileLogWriterTests
 
         var utcConfig = CreateConfig(utcWriter);
         utcConfig.TimeProvider = new MutableTimeProvider(fixedUtcTime);
-        LogManager.Initialize<LogMessageSyncProcessor>(utcConfig);
+        LogManager.Initialize(utcConfig);
         var utcLogger = LogManager.GetLogger("Tests.File.Archive.Utc");
         utcLogger.Info("first");
         utcLogger.Info("second");
@@ -289,7 +289,7 @@ public class FileLogWriterTests
 
         var localConfig = CreateConfig(localWriter);
         localConfig.TimeProvider = new MutableTimeProvider(fixedUtcTime);
-        LogManager.Initialize<LogMessageSyncProcessor>(localConfig);
+        LogManager.Initialize(localConfig);
         var localLogger = LogManager.GetLogger("Tests.File.Archive.Local");
         localLogger.Info("first");
         localLogger.Info("second");
@@ -310,7 +310,7 @@ public class FileLogWriterTests
                 FlushToDisk = true
             });
 
-        LogManager.Initialize<LogMessageSyncProcessor>(CreateConfig(writer));
+        LogManager.Initialize(CreateConfig(writer));
         var logger = LogManager.GetLogger("Tests.File.FlushToDisk");
         logger.Info("flush");
         LogManager.Shutdown();
@@ -349,7 +349,7 @@ public class FileLogWriterTests
         var config = CreateConfig(writer);
         config.TimeProvider = new MutableTimeProvider(fixedUtcTime);
 
-        LogManager.Initialize<LogMessageSyncProcessor>(config);
+        LogManager.Initialize(config);
         var logger = LogManager.GetLogger("Tests.File.Roll.Collision");
 
         logger.Info("first");
