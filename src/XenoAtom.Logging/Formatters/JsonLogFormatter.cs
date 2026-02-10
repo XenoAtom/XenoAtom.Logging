@@ -3,6 +3,7 @@
 // See license.txt file in the project root for full license information.
 
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Globalization;
 using XenoAtom.Logging.Helpers;
 
@@ -17,6 +18,7 @@ public sealed record class JsonLogFormatter : LogFormatter
     /// Gets a shared formatter instance that includes properties and scopes.
     /// </summary>
     public static JsonLogFormatter Instance { get; } = new();
+    private static readonly ConcurrentDictionary<string, string> SnakeCaseNameCache = new(StringComparer.Ordinal);
 
     private readonly JsonLogSchemaProfile _schemaProfile;
     private readonly JsonLogFieldNamingPolicy _fieldNamingPolicy;
@@ -579,6 +581,11 @@ public sealed record class JsonLogFormatter : LogFormatter
             return value;
         }
 
+        if (SnakeCaseNameCache.TryGetValue(value, out var cachedValue))
+        {
+            return cachedValue;
+        }
+
         var buffer = value.Length <= 64
             ? stackalloc char[value.Length * 2]
             : new char[value.Length * 2];
@@ -602,6 +609,7 @@ public sealed record class JsonLogFormatter : LogFormatter
             }
         }
 
-        return new string(buffer[..writeIndex]);
+        var snakeCaseValue = new string(buffer[..writeIndex]);
+        return SnakeCaseNameCache.GetOrAdd(value, snakeCaseValue);
     }
 }
