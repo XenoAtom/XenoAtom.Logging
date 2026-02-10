@@ -21,6 +21,7 @@ public sealed class LogManager
     private static LogManager? _instance;
     private readonly LogManagerConfig _config;
     private readonly LogMessageProcessor _processor;
+    private readonly object _configureLock = new();
     private long _configVersion;
 
     internal static TimeProvider TimeProvider => _instance?._config.TimeProvider ?? TimeProvider.System;
@@ -171,27 +172,33 @@ public sealed class LogManager
 
     private void Configure()
     {
-        _configVersion++;
-        var context = GetConfigurationContext();
-
-        var loggers = Loggers.Values.ToArray();
-        Array.Sort(loggers, (a, b) => string.CompareOrdinal(a.Name, b.Name));
-
-        // For each logger, we will compute the final level and writers
-        foreach (var logger in loggers)
+        lock (_configureLock)
         {
-            context.ResetPerLogger();
-            Configure(logger, context);
-        }
+            _configVersion++;
+            var context = GetConfigurationContext();
 
-        context.ResetAll();
+            var loggers = Loggers.Values.ToArray();
+            Array.Sort(loggers, (a, b) => string.CompareOrdinal(a.Name, b.Name));
+
+            // For each logger, we will compute the final level and writers
+            foreach (var logger in loggers)
+            {
+                context.ResetPerLogger();
+                Configure(logger, context);
+            }
+
+            context.ResetAll();
+        }
     }
 
     private void Configure(Logger logger)
     {
-        var context = GetConfigurationContext();
-        Configure(logger, context);
-        context.ResetAll();
+        lock (_configureLock)
+        {
+            var context = GetConfigurationContext();
+            Configure(logger, context);
+            context.ResetAll();
+        }
     }
 
     private LoggerConfigurationContext GetConfigurationContext()
