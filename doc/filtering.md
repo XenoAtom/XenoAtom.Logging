@@ -52,10 +52,10 @@ Each `LogWriter` has:
 - `AcceptFilters`: if non-empty, at least one filter must match.
 
 ```csharp
-fileWriter.RejectFilters.Add(static (in LogMessage m) =>
+fileWriter.RejectFilters.Add(static m =>
     m.Logger.Name.StartsWith("App.Noisy", StringComparison.Ordinal));
 
-fileWriter.AcceptFilters.Add(static (in LogMessage m) =>
+fileWriter.AcceptFilters.Add(static m =>
     m.Level >= LogLevel.Warn);
 ```
 
