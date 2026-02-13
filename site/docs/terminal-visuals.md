@@ -55,7 +55,7 @@ Rendered output:
 ## Style customization sample
 
 ```csharp
-var writer = new TerminalLogWriter(Terminal.Instance)
+var writer = new TerminalLogWriter()
 {
     EnableRichFormatting = true,
     EnableMarkupMessages = true,

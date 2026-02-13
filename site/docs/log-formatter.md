@@ -67,7 +67,7 @@ var writer = new FileLogWriter(
 For terminal output, `TerminalLogWriter` also accepts any `LogFormatter`:
 
 ```csharp
-var terminalWriter = new TerminalLogWriter(Terminal.Instance)
+var terminalWriter = new TerminalLogWriter()
 {
     Formatter = StandardLogFormatter.Instance
 };
