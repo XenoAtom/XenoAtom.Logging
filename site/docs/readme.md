@@ -4,13 +4,13 @@ title: "User Guide"
 
 # User Guide
 
-This guide gives you the practical map for using `XenoAtom.Logging` in production:
+This guide helps you adopt `XenoAtom.Logging` in production without getting overwhelmed:
 
-- start simple
-- choose sync or async behavior intentionally
-- add structure, sinks, and formatting progressively
+- Start with a minimal setup.
+- Choose sync or async behavior intentionally.
+- Add structure, sinks, and formatting incrementally.
 
-If you are new to the library, start with [Getting Started](getting-started.md).
+If you are new to the library, begin with [Getting Started](getting-started.md).
 
 ## Installation
 
@@ -81,9 +81,9 @@ logger.Info(
 
 ## Choosing sync vs async
 
-Use sync mode when latency is low and writes are predictable.
+Use sync mode when sink I/O is low latency and predictable.
 
-Use async mode when throughput is high or sink I/O can block:
+Use async mode when throughput is high or when sink I/O can block:
 
 ```csharp
 config.AsyncLogMessageQueueCapacity = 4096;
@@ -96,7 +96,7 @@ LogManager.InitializeForAsync(config);
 Overflow guidance:
 
 - `Block`: safest for correctness (recommended default for critical logs).
-- `Drop` / `DropAndNotify`: lower producer latency, allows loss.
+- `Drop` / `DropAndNotify`: lower producer latency, but allow loss.
 - `Allocate`: temporary queue growth under pressure.
 
 See [Shutdown Semantics](shutdown.md) and [Thread Safety](thread-safety.md) for operational behavior.

@@ -9,7 +9,7 @@ This guide helps teams move from `Microsoft.Extensions.Logging` (MEL) patterns t
 ## Scope of compatibility
 
 `XenoAtom.Logging` is not a MEL provider/bridge today.  
-Migration is API-level: update application logging code and startup configuration.
+Migration is API-level: update startup configuration and logging call sites.
 
 ## Quick mapping
 
@@ -110,8 +110,8 @@ logger.Info(
 
 ## Async behavior differences
 
-MEL provider behavior depends on provider implementation.  
-XenoAtom.Logging has explicit async queue settings:
+MEL provider behavior depends on each provider implementation.  
+`XenoAtom.Logging` exposes explicit async queue settings:
 
 - `InitializeForAsync(config)`
 - `AsyncLogMessageQueueCapacity`
@@ -123,7 +123,7 @@ Use `Block` when correctness is more important than producer latency.
 ## Recommended migration strategy
 
 1. Introduce `LogManager` startup/shutdown lifecycle.
-2. Replace logger injection with `Logger` access (`LogManager.GetLogger(...)`) in app entry points/services.
+2. Replace logger injection with `Logger` access (`LogManager.GetLogger(...)`) at app entry points/services.
 3. Migrate high-traffic logs first to `[LogMethod]` or interpolated APIs.
 4. Move sinks to `FileLogWriter`/`JsonFileLogWriter`/`TerminalLogWriter` as needed.
 5. Validate throughput and behavior with [Benchmarks](benchmarks.md) and app-specific load tests.

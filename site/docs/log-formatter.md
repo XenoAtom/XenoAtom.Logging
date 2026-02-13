@@ -6,24 +6,24 @@ title: "Log Formatters"
 
 `XenoAtom.Logging` formats a `LogMessage` into text using `LogFormatter` implementations.
 
-Key goals:
+Goals:
 
 - Zero allocations on the hot path.
 - Formatting into `Span<char>` (and optionally emitting segment metadata for styling).
 - User-defined text formats via source generation (`[LogFormatter]`).
 - Common formatter settings (`LevelFormat`, `TimestampFormat`) centralized on `LogFormatter`.
 
-This page covers the user-facing API and common customization patterns. For implementation-level details, see the internal formatter spec (`site/docs/specs/formatter_specs.md`).
+This page covers user-facing APIs and customization patterns. For implementation-level details, see the internal formatter spec (`site/docs/specs/formatter_specs.md`) in the repository.
 
 ## Built-in formatters
 
-The core package includes a few ready-to-use text formatters:
+The core package includes ready-to-use text formatters:
 
 - `StandardLogFormatter` (single line: timestamp, level, logger name, optional event id, message, optional exception)
 - `CompactLogFormatter` (time, level, message)
-- `DetailedLogFormatter` (like standard + thread id and a sequence id)
+- `DetailedLogFormatter` (like standard plus thread id and sequence id)
 
-There is also `JsonLogFormatter` which is not template-based and has different semantics (JSON lines for ingestion).
+`JsonLogFormatter` is also available. It is not template-based and targets JSON-line ingestion scenarios.
 
 ## Selecting a formatter
 
@@ -75,7 +75,7 @@ var terminalWriter = new TerminalLogWriter(Terminal.Instance)
 
 ## Runtime customization
 
-`LevelFormat` and `TimestampFormat` are inherited from `LogFormatter`. Template-generated formatters initialize these values in generated constructors, and you can still override them with `with { ... }`:
+`LevelFormat` and `TimestampFormat` are inherited from `LogFormatter`. Template-generated formatters initialize these values in generated constructors, and you can override them with `with { ... }`:
 
 ```csharp
 using XenoAtom.Logging;
@@ -88,7 +88,7 @@ var formatter = StandardLogFormatter.Instance with
 };
 ```
 
-Default `LevelFormat` is `Tri` (aligned 3-character levels like `INF`, `WRN`, `ERR`).
+The default `LevelFormat` is `Tri` (aligned 3-character levels such as `INF`, `WRN`, `ERR`).
 
 `TimestampFormat` defaults to `"yyyy-MM-dd HH:mm:ss.fffffff"` unless changed by the formatter template (for example `{Timestamp:HH:mm:ss}`).
 
@@ -113,7 +113,7 @@ var formatter = MyLogFormatter.Instance;
 
 ## Template syntax (user-facing)
 
-Formatter templates look like a .NET composite format string, but the generator validates the template at compile time and produces a specialized `TryFormat(...)` implementation.
+Formatter templates look like .NET composite format strings. The generator validates templates at compile time and emits a specialized `TryFormat(...)` implementation.
 
 ### Literals and escaping braces
 
@@ -162,7 +162,7 @@ Rules and behavior:
 - A conditional section starts with `{?` and ends with `?}`.
 - Conditional sections **cannot be nested**.
 - A conditional section must contain at least one field placeholder.
-- A conditional section is emitted only if **all emptyable fields referenced within the section are non-empty**.
+- A conditional section is emitted only if **all emptyable fields referenced in that section are non-empty**.
 - If a conditional contains no emptyable fields, the generator warns with `XLF0006` (it is always emitted).
 
 Emptyable fields are:
@@ -177,7 +177,7 @@ All other fields are always considered present.
 
 ### Supported fields and format specifiers
 
-Fields are case-insensitive and map to `LogMessage` data. This is a closed set.
+Fields are case-insensitive and map to `LogMessage` data. The set is closed.
 
 | Field | Meaning | Format (`:...`) |
 |---|---|---|
@@ -246,7 +246,7 @@ logger.InfoMarkup("[green]ready[/]");
 
 ## Segments and terminal styling
 
-Text formatters can optionally emit segment metadata (`LogMessageFormatSegments`) while formatting. This enables writers to style output by segment kind (timestamp/level/logger name, etc.).
+Text formatters can optionally emit segment metadata (`LogMessageFormatSegments`) while formatting. This lets writers style output by segment kind (timestamp/level/logger name, etc.).
 
 `TerminalLogWriter` uses these segment kinds to apply styles:
 
@@ -268,4 +268,4 @@ Common generator diagnostics:
 - `XLF0003`: invalid format specifier (e.g., `{Level:oops}` or `{Properties:sep=, }`).
 - `XLF0006`: conditional section is always emitted (no emptyable fields inside).
 
-If you are consuming NuGet packages and the generator does not run, ensure you are using the .NET 10 SDK and that analyzers are enabled in your build. If you are using project references and analyzers are not flowing, add an explicit analyzer reference to `XenoAtom.Logging.Generators.csproj`.
+If you consume NuGet packages and the generator does not run, verify that you use the .NET 10 SDK and analyzers are enabled. If you use project references and analyzers are not flowing, add an explicit analyzer reference to `XenoAtom.Logging.Generators.csproj`.

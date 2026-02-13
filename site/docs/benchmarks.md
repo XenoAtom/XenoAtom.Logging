@@ -17,7 +17,7 @@ The following tables summarize benchmark results as of `2026-02-10`.
 
 > [!WARNING]
 > 
-> These results should not be interpreted as an absolute ranking of libraries. The goal of these benchmarks was to make sure that `XenoAtom.Logging` is in the **right performance tier**, produces **zero allocations** and to track relative performance across versions as we optimize. Each library has different architectural trade-offs, so end-to-end call costs should be interpreted in the context of the specific benchmark scenarios and constraints.
+> Do not treat these results as an absolute ranking. The goal is to verify that `XenoAtom.Logging` stays in the right performance tier, remains zero-allocation on targeted paths, and tracks progress over time. Libraries make different architectural trade-offs, so interpret end-to-end costs within these benchmark constraints.
 
 ### Sync suite (`LoggingSyncBenchmarks`)
 
@@ -152,7 +152,7 @@ Preset suite names:
 
 Each category measures the same logical logging operation for each participating library.
 
-Benchmark classes use explicit `SimpleJob` settings to keep runs stable and avoid unbounded auto-scaling of operations per iteration.
+Benchmark classes use explicit `SimpleJob` settings to keep runs stable and avoid unbounded auto-scaling per iteration.
 
 ## Fairness strategy
 
@@ -162,10 +162,10 @@ To keep comparisons fair:
 - Each library is configured with an in-memory/no-op sink.
 - Enabled benchmarks still force each sink to consume the rendered message payload, so we measure logging + message materialization, not just level checks.
 - Disabled benchmarks use the same category names and thresholds across all libraries (`Bench.Enabled` and `Bench.Disabled`).
-- Async categories include only libraries with native asynchronous infrastructure and route payload lengths through an asynchronous consumer queue to compare call-site overhead under asynchronous sink pressure.
+- Async categories include only libraries with native asynchronous infrastructure and route payload lengths through an asynchronous consumer queue to compare call-site overhead under sink pressure.
 - Async consumer queues are bounded and drop on overflow to prevent unbounded memory growth from benchmark harness backpressure.
 
 ## Notes
 
-- Different libraries have different internal architectures (sync vs async pipelines, template handling, interpolation handlers, etc.); results should be interpreted as *end-to-end call cost under equivalent benchmark constraints*, not as an absolute universal ranking.
+- Different libraries use different architectures (sync vs async pipelines, template handling, interpolation handlers, etc.); interpret results as *end-to-end call cost under equivalent constraints*, not as a universal ranking.
 - Run benchmarks on an idle machine and repeat multiple times before drawing conclusions.

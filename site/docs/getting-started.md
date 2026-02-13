@@ -4,7 +4,7 @@ title: "Getting Started"
 
 # Getting Started
 
-This guide walks through a minimal setup, then shows the async and terminal variants.
+This guide starts with a minimal setup, then covers async mode and terminal output.
 
 ## 1. Install packages
 
@@ -49,13 +49,13 @@ LogManager.Shutdown();
 
 Key points:
 
-- `Initialize` defaults to sync processing.
-- `GetLogger("App")` creates/gets a logger category.
+- `Initialize` defaults to synchronous processing.
+- `GetLogger("App")` resolves a logger category.
 - `Shutdown()` flushes and disposes writers.
 
 ## 3. Switch to asynchronous processing
 
-When logging throughput is high, initialize for async:
+When throughput is high, initialize for async processing:
 
 ```csharp
 var config = new LogManagerConfig
@@ -81,8 +81,8 @@ LogManager.InitializeForAsync(config);
 
 `OverflowMode` behavior:
 
-- `Block` (default recommendation): preserve correctness, backpressure producers.
-- `Drop` / `DropAndNotify`: prioritize producer latency, allow loss.
+- `Block` (recommended default): preserve correctness and backpressure producers.
+- `Drop` / `DropAndNotify`: prioritize producer latency, but allow loss.
 - `Allocate`: temporarily exceed configured queue capacity.
 
 ## 4. Structured values and scopes
