@@ -1,3 +1,7 @@
+---
+title: "Log Formatters"
+---
+
 # Log Formatters
 
 `XenoAtom.Logging` formats a `LogMessage` into text using `LogFormatter` implementations.
@@ -9,7 +13,7 @@ Key goals:
 - User-defined text formats via source generation (`[LogFormatter]`).
 - Common formatter settings (`LevelFormat`, `TimestampFormat`) centralized on `LogFormatter`.
 
-This page covers the user-facing API and common customization patterns. For the full template spec, see `doc/specs/formatter_specs.md`.
+This page covers the user-facing API and common customization patterns. For implementation-level details, see the internal formatter spec (`site/docs/specs/formatter_specs.md`).
 
 ## Built-in formatters
 
@@ -115,8 +119,8 @@ Formatter templates look like a .NET composite format string, but the generator 
 
 Everything outside `{...}` is copied verbatim. To output literal braces, escape them:
 
-- `{{` produces `{`
-- `}}` produces `}`
+- two opening braces (`{` then `{`) produce `{`
+- two closing braces (`}` then `}`) produce `}`
 
 ### Field placeholders
 
@@ -252,7 +256,7 @@ terminalWriter.Styles.SetStyle(LogMessageFormatSegmentKind.Timestamp, "dim");
 terminalWriter.Styles.SetLevelStyle(LogLevel.Error, "bold white on red");
 ```
 
-See `doc/terminal.md` for terminal-specific styling and markup logging.
+See [Terminal Integration](terminal.md) for terminal-specific styling and markup logging.
 
 ## Troubleshooting
 

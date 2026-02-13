@@ -1,3 +1,7 @@
+---
+title: "Package Consumption Guide"
+---
+
 # Package Consumption Guide
 
 `XenoAtom.Logging` is split into focused packages.
@@ -50,7 +54,7 @@ If your project disables transitive analyzers, re-enable analyzers for `XenoAtom
 
 See also:
 
-- `doc/source-generator.md`
-- `doc/log-formatter.md`
-- `doc/terminal.md`
-- `doc/aot.md`
+- [Source-generated Logging](source-generator.md)
+- [Log Formatters](log-formatter.md)
+- [Terminal Integration](terminal.md)
+- [Native AOT and Trimming](aot.md)

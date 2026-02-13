@@ -1,3 +1,7 @@
+---
+title: "Terminal Visual Examples"
+---
+
 # Terminal Visual Examples
 
 This page shows example output produced by `XenoAtom.Logging.Terminal`.
@@ -67,6 +71,6 @@ writer.Styles.SetLevelStyle(LogLevel.Error, "bold white on red");
 
 See also:
 
-- [`terminal.md`](terminal.md)
-- [`log-formatter.md`](log-formatter.md)
-- [`../samples/HelloLogging/Program.cs`](../samples/HelloLogging/Program.cs)
+- [Terminal Integration](terminal.md)
+- [Log Formatters](log-formatter.md)
+- [HelloLogging sample](https://github.com/XenoAtom/XenoAtom.Logging/blob/main/samples/HelloLogging/Program.cs)

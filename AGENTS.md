@@ -10,7 +10,7 @@ Paths/commands below are relative to this directory.
 
 - Library: `src/XenoAtom.Logging/`
 - Tests: `src/XenoAtom.Logging.Tests/` (MSTest)
-- Docs to keep in sync with behavior: `readme.md` and the docs under `doc/` (e.g., `doc/**/*.md`)
+- Docs to keep in sync with behavior: `readme.md` and the docs under `site/docs/` (e.g., `site/docs/**/*.md`)
 
 ## Build & Test
 
@@ -19,6 +19,8 @@ Paths/commands below are relative to this directory.
 cd src
 dotnet build -c Release
 dotnet test -c Release
+cd ../site
+lunet build
 ```
 
 All tests must pass and docs must be updated before submitting.

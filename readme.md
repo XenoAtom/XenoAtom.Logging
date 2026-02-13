@@ -137,20 +137,20 @@ logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
 - `LogProperties` is a mutable value type; avoid copying populated instances and dispose only the owner instance.
 - In sync mode, writer exceptions propagate to callers; in async mode, use `AsyncErrorHandler` + diagnostics to observe failures.
 
-See [`doc/thread-safety.md`](doc/thread-safety.md) for detailed guidance.
+See [`site/docs/thread-safety.md`](site/docs/thread-safety.md) for detailed guidance.
 
 ## 📖 Documentation
 
-- User guide: [`doc/readme.md`](doc/readme.md)
-- Template-based log formatters: [`doc/log-formatter.md`](doc/log-formatter.md)
-- Terminal sink and visuals: [`doc/terminal.md`](doc/terminal.md), [`doc/terminal-visuals.md`](doc/terminal-visuals.md)
-- File and JSON writers: [`doc/file-writer.md`](doc/file-writer.md)
-- Filtering and routing: [`doc/filtering.md`](doc/filtering.md)
-- Shutdown and flushing: [`doc/shutdown.md`](doc/shutdown.md)
-- Native AOT and trimming: [`doc/aot.md`](doc/aot.md)
-- Package metadata and consumption notes: [`doc/packages.md`](doc/packages.md)
-- Benchmarks: [`doc/benchmarks.md`](doc/benchmarks.md)
-- Source-generated logging (`[LogMethod]`): [`doc/source-generator.md`](doc/source-generator.md)
+- User guide: [`site/docs/readme.md`](site/docs/readme.md)
+- Template-based log formatters: [`site/docs/log-formatter.md`](site/docs/log-formatter.md)
+- Terminal sink and visuals: [`site/docs/terminal.md`](site/docs/terminal.md), [`site/docs/terminal-visuals.md`](site/docs/terminal-visuals.md)
+- File and JSON writers: [`site/docs/file-writer.md`](site/docs/file-writer.md)
+- Filtering and routing: [`site/docs/filtering.md`](site/docs/filtering.md)
+- Shutdown and flushing: [`site/docs/shutdown.md`](site/docs/shutdown.md)
+- Native AOT and trimming: [`site/docs/aot.md`](site/docs/aot.md)
+- Package metadata and consumption notes: [`site/docs/packages.md`](site/docs/packages.md)
+- Benchmarks: [`site/docs/benchmarks.md`](site/docs/benchmarks.md)
+- Source-generated logging (`[LogMethod]`): [`site/docs/source-generator.md`](site/docs/source-generator.md)
 - Samples: [`samples/readme.md`](samples/readme.md)
   - Includes `HelloLogControl` (fullscreen `LogControl` + background logging demo)
 

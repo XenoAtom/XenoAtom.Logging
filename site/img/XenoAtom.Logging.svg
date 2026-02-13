@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 512 512" overflow="visible" role="img" aria-label="XenoAtom.Logging logo">
+  <defs>
+    <!-- Brand outer gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12D6DF"/>
+      <stop offset="0.45" stop-color="#6B5BFF"/>
+      <stop offset="1" stop-color="#FF4FD8"/>
+    </linearGradient>
+
+    <!-- Inner panel gradient -->
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070A12" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#0E1330" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <!-- Accent gradient for underline/orbit -->
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7CFFB2"/>
+      <stop offset="0.5" stop-color="#FFD166"/>
+      <stop offset="1" stop-color="#7AA7FF"/>
+    </linearGradient>
+
+    <!-- Soft shadow -->
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.33"/>
+    </filter>
+
+    <!-- Very light glow (kept subtle to survive small sizes) -->
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer badge -->
+  <rect x="0" y="0" width="512" height="512" rx="92" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Inner terminal tile -->
+  <g transform="translate(46 56)">
+    <g transform="scale(1.22)">
+      <rect x="0" y="0" width="344" height="328" rx="52" fill="url(#panel)"/>
+      <rect x="0" y="0" width="344" height="328" rx="52" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="2"/>
+
+      <!-- Header bar (minimal) -->
+      <rect x="0" y="0" width="344" height="78" rx="52" fill="#0B1220" fill-opacity="0.55"/>
+      <rect x="0" y="62" width="344" height="16" fill="#000000" fill-opacity="0.10"/>
+
+      <!-- Window dots -->
+      <g transform="translate(30 39)" opacity="0.95">
+        <circle r="7" cx="0" cy="0" fill="#FF5F56"/>
+        <circle r="7" cx="22" cy="0" fill="#FFBD2E"/>
+        <circle r="7" cx="44" cy="0" fill="#27C93F"/>
+      </g>
+
+      <!-- Log lines (logging-focused), kept bold and readable at small sizes -->
+      <g transform="translate(30 270)" filter="url(#glow)" opacity="0.96">
+        <!-- Row 1 -->
+        <circle cx="10" cy="-38" r="7" fill="#7CFFB2"/>
+        <text x="26" y="-34"
+              font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+              font-size="16"
+              font-weight="900"
+              fill="#F2F7FF"
+              fill-opacity="0.72">INF</text>
+        <rect x="62" y="-44" width="184" height="12" rx="6" fill="#F2F7FF" fill-opacity="0.20"/>
+        <rect x="62" y="-44" width="116" height="12" rx="6" fill="url(#accent)" opacity="0.40"/>
+
+        <!-- Row 2 -->
+        <circle cx="10" cy="-18" r="7" fill="#FFD166"/>
+        <text x="26" y="-14"
+              font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+              font-size="16"
+              font-weight="900"
+              fill="#F2F7FF"
+              fill-opacity="0.66">WRN</text>
+        <rect x="62" y="-24" width="184" height="12" rx="6" fill="#F2F7FF" fill-opacity="0.18"/>
+        <rect x="62" y="-24" width="148" height="12" rx="6" fill="url(#accent)" opacity="0.32"/>
+
+        <!-- Row 3 -->
+        <circle cx="10" cy="2" r="7" fill="#FF5F56"/>
+        <text x="26" y="6"
+              font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+              font-size="16"
+              font-weight="900"
+              fill="#F2F7FF"
+              fill-opacity="0.62">ERR</text>
+        <rect x="62" y="-4" width="184" height="12" rx="6" fill="#F2F7FF" fill-opacity="0.16"/>
+        <rect x="62" y="-4" width="84" height="12" rx="6" fill="url(#accent)" opacity="0.26"/>
+
+        <!-- Cursor dot -->
+        <circle cx="258" cy="-38" r="5" fill="#0E1330" fill-opacity="0.95" stroke="url(#accent)" stroke-width="4"/>
+      </g>
+
+      <!-- LOG word (large, clean) -->
+      <g transform="translate(30 170)" filter="url(#glow)">
+        <text x="0" y="0"
+              font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+              font-size="100"
+              font-weight="900"
+
+              fill="#F2F7FF"
+              fill-opacity="0.98">&gt;LOG</text>
+
+        <!-- Neon underline -->
+        <rect x="4" y="18" width="280" height="12" rx="6" fill="url(#accent)" opacity="0.92"/>
+      </g>
+
+      <!-- Structured logging badge ({}), bold and recognizable -->
+      <g transform="translate(250 260)" filter="url(#glow)" opacity="0.95">
+        <rect x="-46" y="-46" width="92" height="92" rx="24" fill="#0B1220" fill-opacity="0.35" stroke="url(#accent)" stroke-width="6"/>
+        <text x="-26" y="18"
+              font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+              font-size="56"
+              font-weight="900"
+              fill="#F2F7FF"
+              fill-opacity="0.92">{}</text>
+      </g>
+    </g>
+  </g>
+</svg>

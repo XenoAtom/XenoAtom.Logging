@@ -1,3 +1,7 @@
+---
+title: "Source-generated Logging"
+---
+
 # Source-generated logging
 
 `XenoAtom.Logging` includes source generators and analyzers embedded in the core package.
@@ -34,7 +38,7 @@ The generator emits method implementations that:
 ## Message template rules
 
 - Placeholder syntax: `{name}`, `{name,alignment}`, `{name:format}`, `{name,alignment:format}`
-- Escaped braces: `{{` and `}}`
+- Escaped braces: write two opening braces (`{` then `{`) or two closing braces (`}` then `}`).
 - Placeholder names must match method parameter names (case-insensitive)
 
 ## Analyzer diagnostics
@@ -60,4 +64,4 @@ using XenoAtom.Logging;
 public sealed partial record MyFormatter : LogFormatter;
 ```
 
-See `doc/log-formatter.md` for usage, template quick reference, and generator setup guidance.
+See [Log Formatters](log-formatter.md) for usage, template quick reference, and generator setup guidance.

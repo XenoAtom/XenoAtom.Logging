@@ -1,0 +1,13 @@
+doc:
+  - {path: readme.md, title: "<i class='bi bi-book' aria-hidden='true'></i> User Guide"}
+  - {path: packages.md, title: "<i class='bi bi-box-seam' aria-hidden='true'></i> Packages"}
+  - {path: log-formatter.md, title: "<i class='bi bi-braces' aria-hidden='true'></i> Log Formatter"}
+  - {path: source-generator.md, title: "<i class='bi bi-magic' aria-hidden='true'></i> Source Generator"}
+  - {path: filtering.md, title: "<i class='bi bi-funnel' aria-hidden='true'></i> Filtering"}
+  - {path: file-writer.md, title: "<i class='bi bi-file-earmark-text' aria-hidden='true'></i> File Writers"}
+  - {path: terminal.md, title: "<i class='bi bi-terminal' aria-hidden='true'></i> Terminal"}
+  - {path: terminal-visuals.md, title: "<i class='bi bi-display' aria-hidden='true'></i> Terminal Visuals"}
+  - {path: thread-safety.md, title: "<i class='bi bi-shield-check' aria-hidden='true'></i> Thread Safety"}
+  - {path: shutdown.md, title: "<i class='bi bi-power' aria-hidden='true'></i> Shutdown"}
+  - {path: aot.md, title: "<i class='bi bi-lightning-charge' aria-hidden='true'></i> Native AOT"}
+  - {path: benchmarks.md, title: "<i class='bi bi-speedometer2' aria-hidden='true'></i> Benchmarks"}

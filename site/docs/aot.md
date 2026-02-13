@@ -1,3 +1,7 @@
+---
+title: "Native AOT and Trimming"
+---
+
 # Native AOT and Trimming
 
 `XenoAtom.Logging` is designed to work in Native AOT and trimming scenarios.

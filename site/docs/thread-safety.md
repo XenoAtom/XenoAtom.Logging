@@ -1,3 +1,7 @@
+---
+title: "Thread Safety"
+---
+
 # Thread Safety
 
 This document summarizes thread-safety guarantees and configuration rules for `XenoAtom.Logging`.

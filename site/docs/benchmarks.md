@@ -1,3 +1,7 @@
+---
+title: "Benchmarks"
+---
+
 # Benchmarks
 
 `XenoAtom.Logging.Benchmark` uses BenchmarkDotNet to compare `XenoAtom.Logging` with:
@@ -28,6 +32,7 @@ AMD Ryzen 9 7950X 4.50GHz, 1 CPU, 32 logical and 16 physical cores
 
 ```
 
+{.table}
 | Method                                             | Categories                   | Mean        | Error     | StdDev    | Ratio | RatioSD | Gen0   | Gen1   | Allocated | Alloc Ratio |
 |--------------------------------------------------- |----------------------------- |------------:|----------:|----------:|------:|--------:|-------:|-------:|----------:|------------:|
 | XenoAtom_Disabled                                  | Disabled                     |   1.6509 ns | 0.0351 ns | 0.0328 ns |  1.00 |    0.03 |      - |      - |         - |          NA |
@@ -68,6 +73,7 @@ AMD Ryzen 9 7950X 4.50GHz, 1 CPU, 32 logical and 16 physical cores
 
 ### Async suite (`LoggingAsyncBenchmarks`)
 
+{.table}
 | Method                            | Categories             | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
 |---------------------------------- |----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
 | XenoAtom_Async_Enabled_Exception  | AsyncEnabledException  | 132.9 ns | 2.64 ns | 2.47 ns |  1.00 |    0.03 |      - |         - |          NA |

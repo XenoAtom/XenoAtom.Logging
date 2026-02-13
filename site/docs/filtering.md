@@ -1,3 +1,7 @@
+---
+title: "Filtering and Routing"
+---
+
 # Filtering and Routing
 
 `XenoAtom.Logging` supports two complementary routing mechanisms:
@@ -78,7 +82,6 @@ Do not mutate writer filter collections concurrently with high logging traffic.
 
 See also:
 
-- `doc/thread-safety.md`
-- `doc/file-writer.md`
-- `doc/readme.md`
-
+- [Thread Safety](thread-safety.md)
+- [File and JSON Writers](file-writer.md)
+- [User Guide](readme.md)

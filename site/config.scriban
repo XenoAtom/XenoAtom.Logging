@@ -1,0 +1,17 @@
+# Use the Lunet template as the base for this documentation site
+extend "XenoAtom/lunet_template@1.0.0"
+
+# -----------------------------------------------------------------------------
+# SITE SECTION (project-specific values only)
+# -----------------------------------------------------------------------------
+
+site_project_name = "XenoAtom.Logging"
+site_project_description = "A high-performance structured logging runtime for .NET, designed for zero allocations on the hot path."
+site_project_logo_path = "/img/XenoAtom.Logging.svg"
+site_project_social_banner_path = "/img/screenshot.png"
+site_project_banner_background_path = "/img/screenshot.png"
+site_project_package_id = "XenoAtom.Logging"
+site_project_github_repo = "XenoAtom.Logging"
+site_project_basepath = "/logging"
+
+site_project_init

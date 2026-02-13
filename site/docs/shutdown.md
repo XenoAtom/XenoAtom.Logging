@@ -1,3 +1,7 @@
+---
+title: "Shutdown Semantics"
+---
+
 # Shutdown Semantics
 
 `LogManager.Shutdown()` is synchronous and performs a coordinated stop:
@@ -48,6 +52,6 @@ For tests:
 
 See also:
 
-- `doc/readme.md`
-- `doc/thread-safety.md`
-- `doc/filtering.md`
+- [User Guide](readme.md)
+- [Thread Safety](thread-safety.md)
+- [Filtering and Routing](filtering.md)

@@ -34,4 +34,4 @@ List available suites and aliases:
 dotnet run --project src/XenoAtom.Logging.Benchmark/XenoAtom.Logging.Benchmark.csproj -c Release -- --list-suites
 ```
 
-See `doc/benchmarks.md` for scenario details and fairness notes.
+See `site/docs/benchmarks.md` for scenario details and fairness notes.

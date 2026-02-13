@@ -1,21 +1,25 @@
+---
+title: "User Guide"
+---
+
 # XenoAtom.Logging User Guide
 
 This guide covers configuration, logging APIs, properties/scopes, processors, formatter behavior, and terminal integration.
 
-If you are looking specifically for the template-based text formatting system, see [`log-formatter.md`](log-formatter.md).
+If you are looking specifically for the template-based text formatting system, see [Log Formatters](log-formatter.md).
 
 ## Documentation map
 
-- [`log-formatter.md`](log-formatter.md): text formatter templates, generated formatters, `LevelFormat`/`TimestampFormat`
-- [`terminal.md`](terminal.md): terminal writer, markup methods, visual attachments
-- [`terminal-visuals.md`](terminal-visuals.md): rendered examples and styling walkthrough
-- [`file-writer.md`](file-writer.md): file rolling, retention, and failure modes
-- [`filtering.md`](filtering.md): writer filters and routing patterns
-- [`thread-safety.md`](thread-safety.md): concurrency guarantees and mutation guidance
-- [`shutdown.md`](shutdown.md): shutdown and flush guarantees
-- [`source-generator.md`](source-generator.md): `LogMethod` usage and diagnostics
-- [`benchmarks.md`](benchmarks.md): benchmark suites and interpretation notes
-- [`../samples/readme.md`](../samples/readme.md): runnable samples
+- [Log Formatters](log-formatter.md): text formatter templates, generated formatters, `LevelFormat`/`TimestampFormat`
+- [Terminal Integration](terminal.md): terminal writer, markup methods, visual attachments
+- [Terminal Visual Examples](terminal-visuals.md): rendered examples and styling walkthrough
+- [File and JSON Writers](file-writer.md): file rolling, retention, and failure modes
+- [Filtering and Routing](filtering.md): writer filters and routing patterns
+- [Thread Safety](thread-safety.md): concurrency guarantees and mutation guidance
+- [Shutdown Semantics](shutdown.md): shutdown and flush guarantees
+- [Source-generated Logging](source-generator.md): `LogMethod` usage and diagnostics
+- [Benchmarks](benchmarks.md): benchmark suites and interpretation notes
+- [Samples](https://github.com/XenoAtom/XenoAtom.Logging/tree/main/samples): runnable samples
 
 ## 1. Initialize and shutdown
 
@@ -265,19 +269,19 @@ public static partial class AppLogs
 }
 ```
 
-See [`doc/source-generator.md`](source-generator.md) for full details and diagnostics.
+See [Source-generated Logging](source-generator.md) for full details and diagnostics.
 
 ## 10. Additional docs
 
-- Log formatters: [`log-formatter.md`](log-formatter.md)
-- Filtering and routing: [`filtering.md`](filtering.md)
-- File and JSON writers: [`file-writer.md`](file-writer.md)
-- Shutdown semantics: [`shutdown.md`](shutdown.md)
-- Terminal sink: [`terminal.md`](terminal.md)
-- Terminal visual examples: [`terminal-visuals.md`](terminal-visuals.md)
-- Native AOT and trimming: [`aot.md`](aot.md)
-- Package consumption: [`packages.md`](packages.md)
-- Source generators: [`source-generator.md`](source-generator.md)
-- Benchmarks: [`benchmarks.md`](benchmarks.md)
-- Thread safety: [`thread-safety.md`](thread-safety.md)
-- Samples: [`samples/readme.md`](../samples/readme.md)
+- Log formatters: [Log Formatters](log-formatter.md)
+- Filtering and routing: [Filtering and Routing](filtering.md)
+- File and JSON writers: [File and JSON Writers](file-writer.md)
+- Shutdown semantics: [Shutdown Semantics](shutdown.md)
+- Terminal sink: [Terminal Integration](terminal.md)
+- Terminal visual examples: [Terminal Visual Examples](terminal-visuals.md)
+- Native AOT and trimming: [Native AOT and Trimming](aot.md)
+- Package consumption: [Package Consumption Guide](packages.md)
+- Source generators: [Source-generated Logging](source-generator.md)
+- Benchmarks: [Benchmarks](benchmarks.md)
+- Thread safety: [Thread Safety](thread-safety.md)
+- Samples: [Samples](https://github.com/XenoAtom/XenoAtom.Logging/tree/main/samples)

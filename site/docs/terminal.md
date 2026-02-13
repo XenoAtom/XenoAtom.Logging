@@ -1,3 +1,7 @@
+---
+title: "Terminal Integration"
+---
+
 # XenoAtom.Logging.Terminal
 
 `XenoAtom.Logging.Terminal` provides terminal output for XenoAtom.Logging using `XenoAtom.Terminal` and `XenoAtom.Terminal.UI`.
@@ -10,7 +14,7 @@ It supports:
 - `LogControl` sink integration for fullscreen UI apps
 - escaped interpolated markup values via `AnsiMarkupInterpolatedStringHandler`
 
-For details on template-based text formatting and segment kinds, see `doc/log-formatter.md`.
+For details on template-based text formatting and segment kinds, see [Log Formatters](log-formatter.md).
 
 ## Why a separate package
 
@@ -166,4 +170,4 @@ See `samples/HelloLogControl/Program.cs` for a fullscreen `LogControl` demo with
 - buttons that emit plain and markup logs
 - background thread logging at regular intervals
 
-For a quick rendered-output walkthrough, see [`terminal-visuals.md`](terminal-visuals.md).
+For a quick rendered-output walkthrough, see [Terminal Visual Examples](terminal-visuals.md).

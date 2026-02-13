@@ -1,3 +1,7 @@
+---
+title: "File and JSON Writers"
+---
+
 # File and JSON Writers
 
 `XenoAtom.Logging` includes production-oriented file sinks in the core package:
@@ -103,7 +107,7 @@ var options = new FileLogWriterOptions("logs/app.log")
 var writer = new FileLogWriter(options);
 ```
 
-For template-based text formatters (`StandardLogFormatter`, `CompactLogFormatter`, `DetailedLogFormatter`, and custom `[LogFormatter]` records), see `doc/log-formatter.md`.
+For template-based text formatters (`StandardLogFormatter`, `CompactLogFormatter`, `DetailedLogFormatter`, and custom `[LogFormatter]` records), see [Log Formatters](log-formatter.md).
 
 ## Failure handling policy
 
