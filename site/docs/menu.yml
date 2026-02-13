@@ -1,5 +1,7 @@
 doc:
   - {path: readme.md, title: "<i class='bi bi-book' aria-hidden='true'></i> User Guide"}
+  - {path: getting-started.md, title: "<i class='bi bi-rocket-takeoff' aria-hidden='true'></i> Getting Started"}
+  - {path: microsoft-extensions-logging.md, title: "<i class='bi bi-arrow-left-right' aria-hidden='true'></i> Migration from MEL"}
   - {path: packages.md, title: "<i class='bi bi-box-seam' aria-hidden='true'></i> Packages"}
   - {path: log-formatter.md, title: "<i class='bi bi-braces' aria-hidden='true'></i> Log Formatter"}
   - {path: source-generator.md, title: "<i class='bi bi-magic' aria-hidden='true'></i> Source Generator"}
