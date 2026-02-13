@@ -2,8 +2,6 @@
 
 XenoAtom.Logging is a high-performance logging library for .NET, designed to be simple, efficient, and flexible. It supports structured logging, multiple sinks (e.g., console, file, network), and is highly optimized for minimal overhead in production environments.
 
-Pre-release project. Remove this line at stable release.
-
 Paths/commands below are relative to this directory.
 
 ## Orientation
