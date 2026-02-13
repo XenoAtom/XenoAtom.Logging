@@ -16,6 +16,8 @@ It supports:
 
 For details on template-based text formatting and segment kinds, see [Log Formatters](log-formatter.md).
 
+For terminal primitives, capabilities, and runtime behavior, see the `XenoAtom.Terminal` docs: https://xenoatom.github.io/terminal/docs/terminal/
+
 ## Why a separate package
 
 - `XenoAtom.Logging` stays dependency-minimal and does not use `System.Console`.
@@ -26,29 +28,23 @@ For details on template-based text formatting and segment kinds, see [Log Format
 ```csharp
 using XenoAtom.Logging;
 using XenoAtom.Logging.Writers;
-using XenoAtom.Terminal;
-using XenoAtom.Terminal.Backends;
 
-var backend = new InMemoryTerminalBackend();
-using (Terminal.Open(backend, force: true))
+var config = new LogManagerConfig
 {
-    var config = new LogManagerConfig
+    RootLogger =
     {
-        RootLogger =
+        MinimumLevel = LogLevel.Info,
+        Writers =
         {
-            MinimumLevel = LogLevel.Info,
-            Writers =
-            {
-                new TerminalLogWriter(Terminal.Instance)
-            }
+            new TerminalLogWriter()
         }
-    };
+    }
+};
 
-    LogManager.Initialize(config);
-    var logger = LogManager.GetLogger("Sample.Terminal");
-    logger.Info("Hello terminal");
-    LogManager.Shutdown();
-}
+LogManager.Initialize(config);
+var logger = LogManager.GetLogger("Sample.Terminal");
+logger.Info("Hello terminal");
+LogManager.Shutdown();
 ```
 
 ## Writers
@@ -83,7 +79,7 @@ var writer = new TerminalLogControlWriter(logControl)
 `TerminalLogWriter` enables rich formatting by default:
 
 ```csharp
-var writer = new TerminalLogWriter(Terminal.Instance)
+var writer = new TerminalLogWriter()
 {
     EnableRichFormatting = true,
     EnableMarkupMessages = true,

@@ -111,20 +111,23 @@ using (logger.BeginScope(new LogProperties { ("traceId", "abc-123") }))
 ## 5. Terminal output (optional)
 
 ```csharp
+using XenoAtom.Logging;
 using XenoAtom.Logging.Writers;
-using XenoAtom.Terminal;
-using XenoAtom.Terminal.Backends;
 
-using (Terminal.Open(new InMemoryTerminalBackend(), force: true))
+var config = new LogManagerConfig
 {
-    var writer = new TerminalLogWriter(Terminal.Instance);
-    var config = new LogManagerConfig();
-    config.RootLogger.Writers.Add(writer);
+    RootLogger =
+    {
+        Writers =
+        {
+            new TerminalLogWriter()
+        }
+    }
+};
 
-    LogManager.Initialize(config);
-    LogManager.GetLogger("App").InfoMarkup("[green]ready[/]");
-    LogManager.Shutdown();
-}
+LogManager.Initialize(config);
+LogManager.GetLogger("App").InfoMarkup("[green]ready[/]");
+LogManager.Shutdown();
 ```
 
 See [Terminal Integration](terminal.md) for styling, markup, and `LogControl`.
