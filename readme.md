@@ -5,20 +5,6 @@
 XenoAtom.Logging is a high-performance structured logging runtime for .NET, designed for **zero allocations on the hot path** and predictable throughput in both sync and async modes.
 It includes a high-efficiency interpolated logging API, structured properties/scopes, source-generated formatters, and production-grade file/JSON sinks.
 
-> [!NOTE]
-> This library is pre-1.0. The API is largely stable but may still see breaking changes.
-
-## Requirements (.NET 10 / C# 14)
-
-XenoAtom.Logging targets `net10.0` and requires the .NET 10 SDK (C# 14).
-
-## Installation
-
-```sh
-dotnet add package XenoAtom.Logging
-dotnet add package XenoAtom.Logging.Terminal
-```
-
 ## ✨ Features
 
 - **Performance-first (zero allocations on the hot path)**:
@@ -55,7 +41,16 @@ And the integration with LogControl:
 > [!NOTE]
 > XenoAtom.Logging does not aim to be compatible with `Microsoft.Extensions.Logging` today. A bridge may be added later, but the runtime is designed to stand on its own.
 
-## Package layout
+## 📐 Requirements (.NET 10 / C# 14)
+
+XenoAtom.Logging targets `net10.0` and requires the .NET 10 SDK (C# 14).
+
+## 📦 Package layout
+
+```sh
+dotnet add package XenoAtom.Logging
+dotnet add package XenoAtom.Logging.Terminal
+```
 
 - `XenoAtom.Logging`: core runtime, formatters, stream/file/JSON writers
 - `XenoAtom.Logging` also ships the generators/analyzers in-package (`analyzers/dotnet/cs`)
@@ -130,7 +125,7 @@ logger.InfoMarkup(table, "[bold]Run summary (styled)[/]");
 
 `TerminalLogWriter` and `TerminalLogControlWriter` both expose `Styles` and `SegmentStyleResolver` for per-segment and per-level styling.
 
-## Thread safety
+## 🧵 Thread safety
 
 - `LogManager` and `Logger` are safe for concurrent logging.
 - Configure `LogManagerConfig`, `LoggerConfig.Writers`, and writer filter collections from a single thread, then call `ApplyChanges()` when done.
