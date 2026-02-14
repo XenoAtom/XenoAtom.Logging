@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="XenoAtom.Terminal.UI" Version="1.0.0" />
+    <PackageReference Include="XenoAtom.Terminal.UI" Version="1.1.0" />
     <ProjectReference Include="..\..\src\XenoAtom.Logging\XenoAtom.Logging.csproj" />
     <ProjectReference Include="..\..\src\XenoAtom.Logging.Terminal\XenoAtom.Logging.Terminal.csproj" />
   </ItemGroup>
