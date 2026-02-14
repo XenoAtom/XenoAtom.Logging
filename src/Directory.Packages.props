@@ -11,7 +11,7 @@
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="MSTest" Version="4.1.0" />
     <PackageVersion Include="Serilog" Version="4.3.1" />
-    <PackageVersion Include="XenoAtom.Terminal.UI" Version="1.1.0" />
+    <PackageVersion Include="XenoAtom.Terminal.UI" Version="1.1.1" />
     <PackageVersion Include="ZeroLog" Version="2.6.1" />
     <PackageVersion Include="ZLogger" Version="2.5.10" />
   </ItemGroup>
