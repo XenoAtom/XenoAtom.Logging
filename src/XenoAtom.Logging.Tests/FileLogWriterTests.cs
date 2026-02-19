@@ -300,6 +300,92 @@ public class FileLogWriterTests
     }
 
     [TestMethod]
+    public void FileLogWriter_ArchiveFileNameFormatter_CanUseReadableDateTimeFormat()
+    {
+        var fixedUtcTime = new DateTimeOffset(2026, 02, 09, 19, 16, 3, TimeSpan.Zero);
+        var expectedArchiveFileName = "output.2026-02-09-19_16_03.txt";
+        var filePath = Path.Combine(_tempDirectory, "output.txt");
+
+        var writer = new FileLogWriter(
+            new FileLogWriterOptions(filePath)
+            {
+                AutoFlush = true,
+                FileSizeLimitBytes = 1,
+                ArchiveFileNameFormatter = FileArchiveFileNameFormatters.DateTime
+            });
+
+        var config = CreateConfig(writer);
+        config.TimeProvider = new MutableTimeProvider(fixedUtcTime);
+
+        LogManager.Initialize(config);
+        var logger = LogManager.GetLogger("Tests.File.Archive.Format");
+        logger.Info("first");
+        logger.Info("second");
+        LogManager.Shutdown();
+
+        var archives = Directory.GetFiles(_tempDirectory, "output.*.txt", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .ToArray();
+        CollectionAssert.Contains(archives, expectedArchiveFileName);
+    }
+
+    [TestMethod]
+    public void FileLogWriter_ArchiveFileNameFormatter_IgnoresSequence_StillProducesUniqueArchiveName()
+    {
+        var fixedUtcTime = new DateTimeOffset(2026, 02, 09, 19, 16, 3, TimeSpan.Zero);
+        var filePath = Path.Combine(_tempDirectory, "output.txt");
+        var collidingArchivePath = Path.Combine(_tempDirectory, "output.2026-02-09-19_16_03.txt");
+
+        File.WriteAllText(collidingArchivePath, "collision");
+
+        var writer = new FileLogWriter(
+            new FileLogWriterOptions(filePath)
+            {
+                AutoFlush = true,
+                FileSizeLimitBytes = 1,
+                ArchiveFileNameFormatter = static context => $"{context.BaseFileName}.{context.Timestamp.ToString("yyyy-MM-dd-HH_mm_ss", CultureInfo.InvariantCulture)}{context.Extension}"
+            });
+
+        var config = CreateConfig(writer);
+        config.TimeProvider = new MutableTimeProvider(fixedUtcTime);
+
+        LogManager.Initialize(config);
+        var logger = LogManager.GetLogger("Tests.File.Archive.Format.SequenceFallback");
+        logger.Info("first");
+        logger.Info("second");
+        LogManager.Shutdown();
+
+        Assert.IsTrue(File.Exists(collidingArchivePath), "The pre-existing archive should remain untouched.");
+
+        var generatedArchives = Directory.GetFiles(_tempDirectory, "output.*.txt", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .ToArray();
+        Assert.IsTrue(generatedArchives.Any(name => string.Equals(name, "output.2026-02-09-19_16_03.1.txt", StringComparison.Ordinal)));
+    }
+
+    [TestMethod]
+    public void FileLogWriter_ArchiveFileNameFormatter_InvalidPath_Throws()
+    {
+        var filePath = Path.Combine(_tempDirectory, "output.txt");
+        var writer = new FileLogWriter(
+            new FileLogWriterOptions(filePath)
+            {
+                AutoFlush = true,
+                FileSizeLimitBytes = 1,
+                ArchiveFileNameFormatter = static _ => "nested/output.txt"
+            });
+
+        LogManager.Initialize(CreateConfig(writer));
+        var logger = LogManager.GetLogger("Tests.File.Archive.InvalidFormatter");
+        logger.Info("first");
+
+        var exception = Assert.Throws<InvalidOperationException>(() => logger.Info("second"));
+        Assert.IsNotNull(exception);
+        StringAssert.Contains(exception.Message, "must return a file name, not a path");
+        LogManager.Shutdown();
+    }
+
+    [TestMethod]
     public void FileLogWriter_FlushToDisk_UsesDurableFlushMode()
     {
         var filePath = Path.Combine(_tempDirectory, "app.log");

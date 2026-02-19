@@ -55,6 +55,40 @@ Behavior:
 - Retention deletes oldest archives beyond `RetainedFileCountLimit`.
 - `FlushToDisk = true` forces durable `FileStream.Flush(true)` for crash-critical workloads.
 
+## Custom archive file names
+
+You can customize rolling archive names with `FileLogWriterOptions.ArchiveFileNameFormatter`.
+
+```csharp
+var writer = new FileLogWriter(
+    new FileLogWriterOptions("logs/output.txt")
+    {
+        RollingInterval = FileRollingInterval.Daily,
+        ArchiveFileNameFormatter = FileArchiveFileNameFormatters.DateTime
+    });
+```
+
+This produces names like `output.2026-02-19-19_16_03.txt`.
+
+Built-in helpers:
+
+- `FileArchiveFileNameFormatters.Compact` (default behavior)
+- `FileArchiveFileNameFormatters.DateTime`
+- `FileArchiveFileNameFormatters.DateTimeWithMilliseconds`
+
+You can also provide your own callback:
+
+```csharp
+ArchiveFileNameFormatter = context =>
+    $"{context.BaseFileName}.{context.Timestamp:yyyy-MM-dd-HH_mm_ss}{context.Extension}";
+```
+
+Guidelines:
+
+- Return a file **name**, not a path.
+- Keep names in the same directory as the active file.
+- Include `context.Sequence` (or allow suffixing) to avoid collisions in multi-process scenarios.
+
 ## JSON-lines logging
 
 ```csharp

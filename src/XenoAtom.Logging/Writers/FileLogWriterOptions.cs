@@ -57,6 +57,7 @@ public sealed class FileLogWriterOptions
         FileOptions = options.FileOptions;
         FlushToDisk = options.FlushToDisk;
         ArchiveTimestampMode = options.ArchiveTimestampMode;
+        ArchiveFileNameFormatter = options.ArchiveFileNameFormatter;
         FailureMode = options.FailureMode;
         FailureHandler = options.FailureHandler;
         RetryCount = options.RetryCount;
@@ -137,6 +138,15 @@ public sealed class FileLogWriterOptions
     /// Gets or sets which clock is used when generating archive file timestamps.
     /// </summary>
     public FileArchiveTimestampMode ArchiveTimestampMode { get; set; } = FileArchiveTimestampMode.Utc;
+
+    /// <summary>
+    /// Gets or sets an optional callback used to build archive file names when rolling.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="null"/>, the default archive naming format is used:
+    /// <c>&lt;base&gt;.&lt;yyyyMMddHHmmssfff&gt;[.&lt;sequence&gt;]&lt;extension&gt;</c>.
+    /// </remarks>
+    public Func<FileArchiveFileNameContext, string>? ArchiveFileNameFormatter { get; set; }
 
     /// <summary>
     /// Gets or sets how write/roll I/O failures are handled.

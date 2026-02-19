@@ -34,6 +34,7 @@ public class FileLogWriter : LogWriter
     private readonly FileOptions _fileOptions;
     private readonly bool _flushToDisk;
     private readonly FileArchiveTimestampMode _archiveTimestampMode;
+    private readonly Func<FileArchiveFileNameContext, string>? _archiveFileNameFormatter;
     private readonly FileLogWriterFailureMode _failureMode;
     private readonly Action<FileLogWriterFailureContext>? _failureHandler;
     private readonly int _retryCount;
@@ -112,6 +113,7 @@ public class FileLogWriter : LogWriter
         _fileOptions = options.FileOptions;
         _flushToDisk = options.FlushToDisk;
         _archiveTimestampMode = options.ArchiveTimestampMode;
+        _archiveFileNameFormatter = options.ArchiveFileNameFormatter;
         _failureMode = options.FailureMode;
         _failureHandler = options.FailureHandler;
         _retryCount = options.RetryCount;
@@ -389,11 +391,22 @@ public class FileLogWriter : LogWriter
             _ => throw new ArgumentOutOfRangeException(nameof(_archiveTimestampMode), _archiveTimestampMode, null)
         };
 
-        var stamp = archiveTimestamp.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
         var sequence = 0L;
+        var attemptedFileNames = new HashSet<string>(StringComparer.Ordinal);
         while (true)
         {
-            var archivePath = GetArchivePath(stamp, sequence);
+            var archiveFileName = GetArchiveFileName(archiveTimestamp, sequence);
+            if (!attemptedFileNames.Add(archiveFileName))
+            {
+                archiveFileName = AppendSequenceSuffix(archiveFileName, sequence);
+                if (!attemptedFileNames.Add(archiveFileName))
+                {
+                    sequence++;
+                    continue;
+                }
+            }
+
+            var archivePath = Path.Combine(_directoryPath, archiveFileName);
             try
             {
                 File.Move(_filePath, archivePath, overwrite: false);
@@ -412,12 +425,35 @@ public class FileLogWriter : LogWriter
         }
     }
 
-    private string GetArchivePath(string stamp, long sequence)
+    private string GetArchiveFileName(DateTime archiveTimestamp, long sequence)
     {
-        var suffix = sequence == 0
-            ? stamp
-            : $"{stamp}.{sequence.ToString(CultureInfo.InvariantCulture)}";
-        return Path.Combine(_directoryPath, $"{_archiveFileNamePrefix}.{suffix}{_archiveFileExtension}");
+        var context = new FileArchiveFileNameContext(_archiveFileNamePrefix, _archiveFileExtension, archiveTimestamp, sequence);
+        var formatter = _archiveFileNameFormatter;
+        var archiveFileName = formatter is null
+            ? FileArchiveFileNameFormatters.Compact(context)
+            : formatter(context);
+
+        if (string.IsNullOrWhiteSpace(archiveFileName))
+        {
+            throw new InvalidOperationException("ArchiveFileNameFormatter returned null, empty, or whitespace.");
+        }
+
+        if (!string.Equals(Path.GetFileName(archiveFileName), archiveFileName, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException("ArchiveFileNameFormatter must return a file name, not a path.");
+        }
+
+        return archiveFileName;
+    }
+
+    private static string AppendSequenceSuffix(string archiveFileName, long sequence)
+    {
+        var extension = Path.GetExtension(archiveFileName);
+        var extensionLength = extension.Length;
+        var baseFileName = extensionLength == 0
+            ? archiveFileName
+            : archiveFileName.Substring(0, archiveFileName.Length - extensionLength);
+        return $"{baseFileName}.{sequence.ToString(CultureInfo.InvariantCulture)}{extension}";
     }
 
     private void ApplyRetentionPolicy()
