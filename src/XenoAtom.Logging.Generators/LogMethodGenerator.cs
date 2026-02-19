@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace XenoAtom.Logging.Generators;
 
 /// <summary>
-/// Generates implementations for methods annotated with <c>[LogMethod]</c>.
+/// Generates implementations for methods annotated with <c>[LogMethod]</c> and <c>[LogMethodMarkup]</c>.
 /// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class LogMethodGenerator : IIncrementalGenerator
@@ -20,21 +20,33 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var generatedMethods = context.SyntaxProvider
+        var logMethods = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 LogMethodUtilities.LogMethodAttributeMetadataName,
                 static (node, _) => node is MethodDeclarationSyntax { AttributeLists.Count: > 0 },
-                static (ctx, ct) => TryCreateGenerationResult(ctx, ct))
+                static (ctx, ct) => TryCreateGenerationResult(ctx, isMarkupMethod: false, ct));
+
+        var logMarkupMethods = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                LogMethodUtilities.LogMethodMarkupAttributeMetadataName,
+                static (node, _) => node is MethodDeclarationSyntax { AttributeLists.Count: > 0 },
+                static (ctx, ct) => TryCreateGenerationResult(ctx, isMarkupMethod: true, ct));
+
+        var generatedLogMethods = logMethods
             .Where(static result => result is not null)
             .Select(static (result, _) => result!.Value)
             .WithComparer(LogMethodGenerationResultComparer.Instance);
 
-        context.RegisterSourceOutput(
-            generatedMethods,
-            static (spc, result) => Emit(spc, result));
+        var generatedLogMarkupMethods = logMarkupMethods
+            .Where(static result => result is not null)
+            .Select(static (result, _) => result!.Value)
+            .WithComparer(LogMethodGenerationResultComparer.Instance);
+
+        context.RegisterSourceOutput(generatedLogMethods, Emit);
+        context.RegisterSourceOutput(generatedLogMarkupMethods, Emit);
     }
 
-    private static LogMethodGenerationResult? TryCreateGenerationResult(GeneratorAttributeSyntaxContext context, CancellationToken cancellationToken)
+    private static LogMethodGenerationResult? TryCreateGenerationResult(GeneratorAttributeSyntaxContext context, bool isMarkupMethod, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (context.TargetSymbol is not IMethodSymbol methodSymbol)
@@ -47,12 +59,12 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
             return null;
         }
 
-        if (!LogMethodUtilities.TryGetLogMethodAttribute(methodSymbol, out var attribute) || attribute is null)
+        if (context.Attributes is not { Length: > 0 })
         {
             return null;
         }
 
-        return GenerateMethod(context.SemanticModel.Compilation, methodSymbol, attribute);
+        return GenerateMethod(context.SemanticModel.Compilation, methodSymbol, context.Attributes[0], isMarkupMethod);
     }
 
     private static void Emit(SourceProductionContext context, LogMethodGenerationResult result)
@@ -68,9 +80,20 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
         }
     }
 
-    private static LogMethodGenerationResult GenerateMethod(Compilation compilation, IMethodSymbol methodSymbol, AttributeData attribute)
+    private static LogMethodGenerationResult GenerateMethod(Compilation compilation, IMethodSymbol methodSymbol, AttributeData attribute, bool isMarkupMethod)
     {
         var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
+
+        if (HasBothLogMethodAttributes(methodSymbol))
+        {
+            Report(
+                diagnostics,
+                LogMethodDiagnostics.InvalidMethodSignature,
+                methodSymbol,
+                methodSymbol.Name,
+                "Only one of [LogMethod] or [LogMethodMarkup] can be applied.");
+            return new LogMethodGenerationResult(null, null, diagnostics.ToImmutable());
+        }
 
         if (!TryValidateMethod(methodSymbol, diagnostics, out var loggerParameter, out var exceptionParameter, out var propertiesParameter))
         {
@@ -79,6 +102,17 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
 
         if (!TryGetLogLevel(methodSymbol, attribute, diagnostics, out var logLevelValue, out var logMethodName))
         {
+            return new LogMethodGenerationResult(null, null, diagnostics.ToImmutable());
+        }
+
+        if (isMarkupMethod &&
+            compilation.GetTypeByMetadataName(LogMethodUtilities.LoggerMarkupExtensionsMetadataName) is null)
+        {
+            Report(
+                diagnostics,
+                LogMethodDiagnostics.MissingMarkupSupport,
+                methodSymbol,
+                methodSymbol.Name);
             return new LogMethodGenerationResult(null, null, diagnostics.ToImmutable());
         }
 
@@ -122,6 +156,7 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
             propertiesParameter,
             logLevelValue,
             logMethodName!,
+            isMarkupMethod,
             GetEventIdData(attribute, methodSymbol.Name));
 
         var hintName = CreateHintName(methodSymbol);
@@ -351,6 +386,7 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
         IParameterSymbol? propertiesParameter,
         int logLevelValue,
         string logMethodName,
+        bool isMarkupMethod,
         (bool HasEventId, int EventId, string EventName) eventIdData)
     {
         var source = new StringBuilder();
@@ -439,15 +475,27 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
         arguments.Add(BuildInterpolatedMessage(compilation, tokens, templateParameters));
 
         AppendIndent(source, indent);
-        source.Append("global::XenoAtom.Logging.LoggerExtensions.");
-        source.Append(logMethodName);
-        source.Append('(');
-        source.Append(loggerIdentifier);
+        if (isMarkupMethod)
+        {
+            source.Append("global::XenoAtom.Logging.LoggerMarkupExtensions.LogMarkup(");
+            source.Append(loggerIdentifier);
+            source.Append(", global::XenoAtom.Logging.LogLevel.");
+            source.Append(LogMethodUtilities.GetLogLevelName(logLevelValue));
+        }
+        else
+        {
+            source.Append("global::XenoAtom.Logging.LoggerExtensions.");
+            source.Append(logMethodName);
+            source.Append('(');
+            source.Append(loggerIdentifier);
+        }
+
         if (arguments.Count > 0)
         {
             source.Append(", ");
             source.Append(string.Join(", ", arguments));
         }
+
         source.AppendLine(");");
 
         indent -= 4;
@@ -596,6 +644,26 @@ public sealed class LogMethodGenerator : IIncrementalGenerator
         }
 
         return false;
+    }
+
+    private static bool HasBothLogMethodAttributes(IMethodSymbol methodSymbol)
+    {
+        var hasLogMethod = false;
+        var hasLogMethodMarkup = false;
+        foreach (var candidate in methodSymbol.GetAttributes())
+        {
+            var attributeName = candidate.AttributeClass?.ToDisplayString();
+            if (attributeName == LogMethodUtilities.LogMethodAttributeMetadataName)
+            {
+                hasLogMethod = true;
+            }
+            else if (attributeName == LogMethodUtilities.LogMethodMarkupAttributeMetadataName)
+            {
+                hasLogMethodMarkup = true;
+            }
+        }
+
+        return hasLogMethod && hasLogMethodMarkup;
     }
 
     private static string CreateHintName(IMethodSymbol methodSymbol)

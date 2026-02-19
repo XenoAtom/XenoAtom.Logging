@@ -22,7 +22,7 @@ Replace `win-x64` with your runtime identifier.
 
 ## Guidance
 
-- Prefer source-generated APIs (`[LogMethod]`, `[LogFormatter]`) for predictable codegen.
+- Prefer source-generated APIs (`[LogMethod]`, `[LogMethodMarkup]`, `[LogFormatter]`) for predictable codegen.
 - Avoid reflection-based custom sinks on the hot path.
 - Keep custom formatters span-based (`TryFormat`) to avoid trimming surprises around serializer/runtime helpers.
 - If your sink depends on external libraries, validate their trimming/AOT compatibility separately.
@@ -33,4 +33,3 @@ Replace `win-x64` with your runtime identifier.
 - Run startup/shutdown log paths.
 - Run representative `Info`, `Warn`, `Error` logging with properties/scopes.
 - Validate file/JSON/terminal sink output in published binaries.
-

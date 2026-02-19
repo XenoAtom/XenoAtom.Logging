@@ -120,6 +120,8 @@ logger.InfoMarkup("[green]ready[/] [gray]service started[/]");
 logger.ErrorMarkup($"[red]failed[/] request={requestId}");
 ```
 
+You can also generate markup-aware methods with `[LogMethodMarkup]`; see [Source-generated Logging](source-generator.md).
+
 When using interpolated markup messages, formatted values are escaped:
 
 ```csharp

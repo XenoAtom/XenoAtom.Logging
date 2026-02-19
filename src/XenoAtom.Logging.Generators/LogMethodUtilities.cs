@@ -13,7 +13,9 @@ namespace XenoAtom.Logging.Generators;
 internal static class LogMethodUtilities
 {
     public const string LogMethodAttributeMetadataName = "XenoAtom.Logging.LogMethodAttribute";
+    public const string LogMethodMarkupAttributeMetadataName = "XenoAtom.Logging.LogMethodMarkupAttribute";
     public const string LoggerMetadataName = "XenoAtom.Logging.Logger";
+    public const string LoggerMarkupExtensionsMetadataName = "XenoAtom.Logging.LoggerMarkupExtensions";
     public const string LogPropertiesMetadataName = "XenoAtom.Logging.LogProperties";
 
     private static readonly SymbolDisplayFormat TypeDisplayFormat =
@@ -22,17 +24,30 @@ internal static class LogMethodUtilities
             SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers);
 
     public static bool TryGetLogMethodAttribute(IMethodSymbol methodSymbol, out AttributeData? attribute)
+        => TryGetLogMethodAttribute(methodSymbol, out attribute, out _);
+
+    public static bool TryGetLogMethodAttribute(IMethodSymbol methodSymbol, out AttributeData? attribute, out bool isMarkup)
     {
         foreach (var candidate in methodSymbol.GetAttributes())
         {
-            if (candidate.AttributeClass?.ToDisplayString() == LogMethodAttributeMetadataName)
+            var attributeName = candidate.AttributeClass?.ToDisplayString();
+            if (attributeName == LogMethodAttributeMetadataName)
             {
                 attribute = candidate;
+                isMarkup = false;
+                return true;
+            }
+
+            if (attributeName == LogMethodMarkupAttributeMetadataName)
+            {
+                attribute = candidate;
+                isMarkup = true;
                 return true;
             }
         }
 
         attribute = null;
+        isMarkup = false;
         return false;
     }
 

@@ -21,7 +21,7 @@ Migration is API-level: update startup configuration and logging call sites.
 | `LogLevel` | `LogLevel` |
 | `EventId` | `LogEventId` |
 | `BeginScope(...)` | `BeginScope(LogProperties)` |
-| `LoggerMessageAttribute` | `[LogMethod]` |
+| `LoggerMessageAttribute` | `[LogMethod]` / `[LogMethodMarkup]` |
 | `appsettings` provider config | `LogManagerConfig` + code configuration |
 
 ## Minimal migration example
@@ -124,7 +124,7 @@ Use `Block` when correctness is more important than producer latency.
 
 1. Introduce `LogManager` startup/shutdown lifecycle.
 2. Replace logger injection with `Logger` access (`LogManager.GetLogger(...)`) at app entry points/services.
-3. Migrate high-traffic logs first to `[LogMethod]` or interpolated APIs.
+3. Migrate high-traffic logs first to `[LogMethod]` / `[LogMethodMarkup]` or interpolated APIs.
 4. Move sinks to `FileLogWriter`/`JsonFileLogWriter`/`TerminalLogWriter` as needed.
 5. Validate throughput and behavior with [Benchmarks](benchmarks.md) and app-specific load tests.
 

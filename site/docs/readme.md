@@ -26,7 +26,7 @@ This section is organized as a practical map: start quickly, then go deeper by t
 ## Formatting and generated APIs
 
 - [Log Formatters](log-formatter.md): built-in formatters, template syntax, and custom formatter generation.
-- [Source-generated Logging](source-generator.md): `[LogMethod]` and diagnostics.
+- [Source-generated Logging](source-generator.md): `[LogMethod]`, `[LogMethodMarkup]`, and diagnostics.
 
 ## Terminal and UI output
 

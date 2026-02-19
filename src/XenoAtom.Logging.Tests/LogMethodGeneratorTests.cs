@@ -52,6 +52,31 @@ public class LogMethodGeneratorTests
     }
 
     [TestMethod]
+    public void Generator_EmitsImplementation_ForMarkupAttributedMethod()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Info, "[green]User {userId}[/] connected")]
+                public static partial void UserConnected(Logger logger, int userId);
+            }
+            """);
+
+        var driver = RunGenerator(compilation, out var outputCompilation, out var diagnostics);
+        AssertNoErrors(diagnostics, "Generator diagnostics");
+        AssertCompilationSuccess(outputCompilation);
+
+        var generated = GetGeneratedSource(driver);
+        Assert.IsTrue(generated.Contains("global::XenoAtom.Logging.LoggerMarkupExtensions.LogMarkup(logger, global::XenoAtom.Logging.LogLevel.Info", StringComparison.Ordinal));
+        Assert.IsTrue(generated.Contains("$\"[green]User {userId}[/] connected\"", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
     public void Generator_EmitsEventIdExceptionAndPropertiesPath()
     {
         var compilation = CreateCompilation(
@@ -79,6 +104,33 @@ public class LogMethodGeneratorTests
     }
 
     [TestMethod]
+    public void Generator_EmitsMarkupEventIdExceptionAndPropertiesPath()
+    {
+        var compilation = CreateCompilation(
+            """
+            using System;
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Error, "[red]Failure for {id}[/]", EventId = 42, EventName = "FailureEvent")]
+                public static partial void Failure(Logger logger, Exception exception, LogProperties properties, int id);
+            }
+            """);
+
+        var driver = RunGenerator(compilation, out var outputCompilation, out var diagnostics);
+        AssertNoErrors(diagnostics, "Generator diagnostics");
+        AssertCompilationSuccess(outputCompilation);
+
+        var generated = GetGeneratedSource(driver);
+        Assert.IsTrue(generated.Contains("new global::XenoAtom.Logging.LogEventId(42, \"FailureEvent\")", StringComparison.Ordinal));
+        Assert.IsTrue(generated.Contains("global::XenoAtom.Logging.LoggerMarkupExtensions.LogMarkup(logger, global::XenoAtom.Logging.LogLevel.Error", StringComparison.Ordinal));
+        Assert.IsTrue(generated.Contains("exception, properties", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
     public void Analyzer_ReportsAllocationRisk_ForObjectPlaceholder()
     {
         var compilation = CreateCompilation(
@@ -90,6 +142,27 @@ public class LogMethodGeneratorTests
             public static partial class GeneratedLogs
             {
                 [LogMethod(LogLevel.Info, "Payload {payload}")]
+                private static partial void Payload(Logger logger, object payload);
+            }
+            """);
+
+        var analyzer = new LogMethodAllocationAnalyzer();
+        var diagnostics = compilation.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(analyzer)).GetAnalyzerDiagnosticsAsync().GetAwaiter().GetResult();
+        Assert.IsTrue(diagnostics.Any(static d => d.Id == "XLG0100"));
+    }
+
+    [TestMethod]
+    public void Analyzer_ReportsAllocationRisk_ForObjectPlaceholder_WithMarkupAttribute()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Info, "Payload {payload}")]
                 private static partial void Payload(Logger logger, object payload);
             }
             """);
@@ -180,6 +253,48 @@ public class LogMethodGeneratorTests
     }
 
     [TestMethod]
+    public void Generator_ReportsDiagnostic_WhenBothLogMethodAttributesAreApplied()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethod(LogLevel.Info, "User {userId}")]
+                [LogMethodMarkup(LogLevel.Info, "[green]User {userId}[/]")]
+                private static partial void User(Logger logger, int userId);
+            }
+            """);
+
+        _ = RunGenerator(compilation, out _, out var diagnostics);
+        AssertHasDiagnostic(diagnostics, "XLG0001");
+    }
+
+    [TestMethod]
+    public void Generator_ReportsDiagnostic_WhenMarkupSupportPackageIsMissing()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Info, "[green]User {userId}[/]")]
+                private static partial void User(Logger logger, int userId);
+            }
+            """,
+            includeTerminalReference: false);
+
+        _ = RunGenerator(compilation, out _, out var diagnostics);
+        AssertHasDiagnostic(diagnostics, "XLG0005");
+    }
+
+    [TestMethod]
     public void GeneratedMethod_ExecutesAtRuntime()
     {
         var compilation = CreateCompilation(
@@ -235,7 +350,128 @@ public class LogMethodGeneratorTests
 
         LogManager.Shutdown();
         Assert.AreEqual(1, writer.Messages.Count);
-        Assert.AreEqual("User 42 connected", writer.Messages[0]);
+        Assert.AreEqual("User 42 connected", writer.Messages[0].Text);
+        Assert.IsFalse(writer.Messages[0].IsMarkup);
+    }
+
+    [TestMethod]
+    public void GeneratedMarkupMethod_ExecutesAtRuntime_WithMarkupFlag()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Info, "[green]User {userId} connected[/]")]
+                public static partial void UserConnected(Logger logger, int userId);
+            }
+
+            public static class RuntimeInvoker
+            {
+                public static void Invoke(Logger logger, int userId)
+                {
+                    GeneratedLogs.UserConnected(logger, userId);
+                }
+            }
+            """);
+
+        var driver = RunGenerator(compilation, out var outputCompilation, out var diagnostics);
+        AssertNoErrors(diagnostics, "Generator diagnostics");
+        AssertCompilationSuccess(outputCompilation);
+        Assert.IsNotNull(GetGeneratedSource(driver));
+
+        var runtimeAssembly = EmitAssembly(outputCompilation);
+        var invokerType = runtimeAssembly.GetType("Demo.RuntimeInvoker");
+        Assert.IsNotNull(invokerType);
+        var invokeMethod = invokerType!.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
+        Assert.IsNotNull(invokeMethod);
+
+        var writer = new RuntimeCaptureWriter();
+        var config = new LogManagerConfig
+        {
+            RootLogger =
+            {
+                MinimumLevel = LogLevel.Trace,
+                Writers =
+                {
+                    writer
+                }
+            }
+        };
+
+        LogManager.Shutdown();
+        LogManager.Initialize(config);
+        var logger = LogManager.GetLogger("Tests.Generated.Runtime.Markup");
+
+        invokeMethod!.Invoke(null, [logger, 42]);
+
+        LogManager.Shutdown();
+        Assert.AreEqual(1, writer.Messages.Count);
+        Assert.AreEqual("[green]User 42 connected[/]", writer.Messages[0].Text);
+        Assert.IsTrue(writer.Messages[0].IsMarkup);
+    }
+
+    [TestMethod]
+    public void GeneratedMarkupMethod_EscapesInterpolatedArgumentsAtRuntime()
+    {
+        var compilation = CreateCompilation(
+            """
+            using XenoAtom.Logging;
+
+            namespace Demo;
+
+            public static partial class GeneratedLogs
+            {
+                [LogMethodMarkup(LogLevel.Info, "[green]User {userInput} connected[/]")]
+                public static partial void UserConnected(Logger logger, string userInput);
+            }
+
+            public static class RuntimeInvoker
+            {
+                public static void Invoke(Logger logger, string userInput)
+                {
+                    GeneratedLogs.UserConnected(logger, userInput);
+                }
+            }
+            """);
+
+        var driver = RunGenerator(compilation, out var outputCompilation, out var diagnostics);
+        AssertNoErrors(diagnostics, "Generator diagnostics");
+        AssertCompilationSuccess(outputCompilation);
+        Assert.IsNotNull(GetGeneratedSource(driver));
+
+        var runtimeAssembly = EmitAssembly(outputCompilation);
+        var invokerType = runtimeAssembly.GetType("Demo.RuntimeInvoker");
+        Assert.IsNotNull(invokerType);
+        var invokeMethod = invokerType!.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Static);
+        Assert.IsNotNull(invokeMethod);
+
+        var writer = new RuntimeCaptureWriter();
+        var config = new LogManagerConfig
+        {
+            RootLogger =
+            {
+                MinimumLevel = LogLevel.Trace,
+                Writers =
+                {
+                    writer
+                }
+            }
+        };
+
+        LogManager.Shutdown();
+        LogManager.Initialize(config);
+        var logger = LogManager.GetLogger("Tests.Generated.Runtime.Markup.Escape");
+
+        invokeMethod!.Invoke(null, [logger, "[red]INJECT[/]"]);
+
+        LogManager.Shutdown();
+        Assert.AreEqual(1, writer.Messages.Count);
+        Assert.AreEqual("[green]User [[red]]INJECT[[/]] connected[/]", writer.Messages[0].Text);
+        Assert.IsTrue(writer.Messages[0].IsMarkup);
     }
 
     private static GeneratorDriver RunGenerator(
@@ -260,7 +496,7 @@ public class LogMethodGeneratorTests
         return runResult.Results[0].GeneratedSources[0].SourceText.ToString();
     }
 
-    private static CSharpCompilation CreateCompilation(string source)
+    private static CSharpCompilation CreateCompilation(string source, bool includeTerminalReference = true)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(
             source,
@@ -269,13 +505,13 @@ public class LogMethodGeneratorTests
         return CSharpCompilation.Create(
             assemblyName: "XenoAtom.Logging.GeneratorTests.Compilation",
             syntaxTrees: [syntaxTree],
-            references: GetMetadataReferences(),
+            references: GetMetadataReferences(includeTerminalReference),
             options: new CSharpCompilationOptions(
                 outputKind: OutputKind.DynamicallyLinkedLibrary,
                 nullableContextOptions: NullableContextOptions.Enable));
     }
 
-    private static IReadOnlyList<MetadataReference> GetMetadataReferences()
+    private static IReadOnlyList<MetadataReference> GetMetadataReferences(bool includeTerminalReference)
     {
         var references = new List<MetadataReference>();
         var trustedAssemblies = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES");
@@ -283,11 +519,22 @@ public class LogMethodGeneratorTests
         {
             foreach (var assemblyPath in trustedAssemblies.Split(Path.PathSeparator))
             {
+                if (!includeTerminalReference &&
+                    string.Equals(Path.GetFileName(assemblyPath), "XenoAtom.Logging.Terminal.dll", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 references.Add(MetadataReference.CreateFromFile(assemblyPath));
             }
         }
 
         references.Add(MetadataReference.CreateFromFile(typeof(Logger).Assembly.Location));
+        if (includeTerminalReference)
+        {
+            references.Add(MetadataReference.CreateFromFile(typeof(LoggerMarkupExtensions).Assembly.Location));
+        }
+
         return references;
     }
 
@@ -332,11 +579,13 @@ public class LogMethodGeneratorTests
 
     private sealed class RuntimeCaptureWriter : LogWriter
     {
-        public List<string> Messages { get; } = [];
+        public List<RuntimeCaptureMessage> Messages { get; } = [];
 
         protected override void Log(LogMessage logMessage)
         {
-            Messages.Add(logMessage.Text.ToString());
+            Messages.Add(new RuntimeCaptureMessage(logMessage.Text.ToString(), logMessage.IsMarkup));
         }
     }
+
+    private readonly record struct RuntimeCaptureMessage(string Text, bool IsMarkup);
 }

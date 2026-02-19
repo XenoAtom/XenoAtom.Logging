@@ -10,7 +10,7 @@ internal static class LogMethodDiagnostics
 {
     public static readonly DiagnosticDescriptor InvalidMethodSignature = new(
         id: "XLG0001",
-        title: "Invalid [LogMethod] signature",
+        title: "Invalid [LogMethod] or [LogMethodMarkup] signature",
         messageFormat: "Method '{0}' cannot be source-generated: {1}",
         category: "XenoAtom.Logging.Generators",
         defaultSeverity: DiagnosticSeverity.Error,
@@ -36,6 +36,14 @@ internal static class LogMethodDiagnostics
         id: "XLG0004",
         title: "Template parameter not found",
         messageFormat: "Method '{0}' references template parameter '{1}' that does not match any method parameter.",
+        category: "XenoAtom.Logging.Generators",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor MissingMarkupSupport = new(
+        id: "XLG0005",
+        title: "Missing markup logging support",
+        messageFormat: "Method '{0}' uses [LogMethodMarkup], but the XenoAtom.Logging.Terminal package is not referenced.",
         category: "XenoAtom.Logging.Generators",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);

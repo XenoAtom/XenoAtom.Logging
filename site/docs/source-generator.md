@@ -9,6 +9,7 @@ title: "Source-generated Logging"
 This generator covers two features:
 
 - `[LogMethod]`: generates strongly-typed logging methods from message templates.
+- `[LogMethodMarkup]`: same as `[LogMethod]`, but generated methods mark the message as markup.
 - `[LogFormatter]`: generates high-performance text formatters from declarative templates.
 
 ## Attribute-based API
@@ -28,12 +29,28 @@ public static partial class AppLogs
 }
 ```
 
+Markup-aware generated methods use `[LogMethodMarkup]`:
+
+```csharp
+using XenoAtom.Logging;
+
+public static partial class AppLogs
+{
+    [LogMethodMarkup(LogLevel.Info, "[green]User {userId} connected[/]")]
+    public static partial void UserConnectedMarkup(Logger logger, int userId);
+}
+```
+
+`[LogMethodMarkup]` requires the `XenoAtom.Logging.Terminal` package, because generated code routes through the terminal markup APIs.
+
 The generator emits method implementations that:
 
 - perform a level check (`logger.IsEnabled(level)`)
 - construct optional `LogEventId`
-- call the matching generated `LoggerExtensions` level method
+- call the matching generated `LoggerExtensions` method (`[LogMethod]`) or `LoggerMarkupExtensions.LogMarkup` (`[LogMethodMarkup]`)
 - emit interpolation code derived from the compile-time template
+
+`[LogMethodMarkup]` sets the message markup flag (`LogMessage.IsMarkup = true`), so terminal sinks can render markup while file/stream/json sinks keep stripping tags as documented.
 
 ## Message template rules
 
@@ -48,10 +65,11 @@ The generator emits method implementations that:
 
 ## Generator diagnostics
 
-- `XLG0001`: invalid `[LogMethod]` signature
+- `XLG0001`: invalid `[LogMethod]` or `[LogMethodMarkup]` signature
 - `XLG0002`: unsupported log level
 - `XLG0003`: invalid message template
 - `XLG0004`: unknown template parameter
+- `XLG0005`: missing `XenoAtom.Logging.Terminal` reference for `[LogMethodMarkup]`
 
 ## Log formatters
 

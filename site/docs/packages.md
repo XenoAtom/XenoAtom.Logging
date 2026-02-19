@@ -20,7 +20,7 @@ Includes:
 - Sync/async processors
 - Built-in formatters
 - Stream/file/json writers
-- Embedded source generators/analyzers (`[LogMethod]`, `[LogFormatter]`)
+- Embedded source generators/analyzers (`[LogMethod]`, `[LogMethodMarkup]`, `[LogFormatter]`)
 
 ## Terminal sink
 
@@ -47,6 +47,7 @@ Includes:
 After restore/build, generated members should appear in IDE for:
 
 - `[LogMethod]` partial methods
+- `[LogMethodMarkup]` partial methods
 - `[LogFormatter]` partial records/properties
 
 If not, verify analyzer wiring in your project file.
