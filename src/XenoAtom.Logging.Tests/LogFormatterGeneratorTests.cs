@@ -44,9 +44,32 @@ public class LogFormatterGeneratorTests
         AssertCompilationSuccess(outputCompilation);
 
         var generated = GetSingleGeneratedSource(driver);
+        Assert.IsTrue(generated.Contains("using System;", StringComparison.Ordinal));
+        Assert.IsTrue(generated.Contains("using XenoAtom.Logging;", StringComparison.Ordinal));
         Assert.IsTrue(generated.Contains("public static DemoFormatter Instance { get; } = new();", StringComparison.Ordinal));
         Assert.IsTrue(generated.Contains("public DemoFormatter() : base(global::XenoAtom.Logging.LogLevelFormat.Tri, \"HH:mm:ss\")", StringComparison.Ordinal));
         Assert.IsTrue(generated.Contains("public override bool TryFormat(", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void GeneratedFormatter_CompilesWithoutConsumerGlobalUsings()
+    {
+        var compilation = CreateCompilation(
+            """
+            namespace XenoAtom.Logging.Demo;
+
+            [global::XenoAtom.Logging.LogFormatter("[{Timestamp:yyyy-MM-dd HH:mm:ss}] [{Level}] [{LoggerName}]{? [{EventId}]?} {Text}{? | {Exception}?}")]
+            public sealed partial record RunedLogFormatter : global::XenoAtom.Logging.LogFormatter;
+            """,
+            includeGlobalUsings: false);
+
+        var driver = RunGenerator(compilation, out var outputCompilation, out var diagnostics);
+        AssertNoErrors(diagnostics, "Generator diagnostics");
+        AssertCompilationSuccess(outputCompilation);
+
+        var generated = GetSingleGeneratedSource(driver);
+        Assert.IsTrue(generated.Contains("using System;", StringComparison.Ordinal));
+        Assert.IsTrue(generated.Contains("using XenoAtom.Logging;", StringComparison.Ordinal));
     }
 
     [TestMethod]
@@ -307,22 +330,29 @@ public class LogFormatterGeneratorTests
         return result;
     }
 
-    private static CSharpCompilation CreateCompilation(string source)
+    private static CSharpCompilation CreateCompilation(string source, bool includeGlobalUsings = true)
     {
         var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview);
         var syntaxTree = CSharpSyntaxTree.ParseText(
             source,
             parseOptions);
-        var globalUsingsTree = CSharpSyntaxTree.ParseText(
-            """
-            global using System;
-            global using XenoAtom.Logging;
-            """,
-            parseOptions);
+        var syntaxTrees = new List<SyntaxTree>();
+        if (includeGlobalUsings)
+        {
+            var globalUsingsTree = CSharpSyntaxTree.ParseText(
+                """
+                global using System;
+                global using XenoAtom.Logging;
+                """,
+                parseOptions);
+            syntaxTrees.Add(globalUsingsTree);
+        }
+
+        syntaxTrees.Add(syntaxTree);
 
         return CSharpCompilation.Create(
             assemblyName: "XenoAtom.Logging.FormatterGeneratorTests.Compilation",
-            syntaxTrees: [globalUsingsTree, syntaxTree],
+            syntaxTrees: syntaxTrees,
             references: GetMetadataReferences(),
             options: new CSharpCompilationOptions(
                 outputKind: OutputKind.DynamicallyLinkedLibrary,
