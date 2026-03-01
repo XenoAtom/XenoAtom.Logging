@@ -29,8 +29,14 @@ public ref struct LogFormatterBuffer
         var buffer = _charBuffer;
         Span<byte> span = buffer;
         int charsWritten;
-        while (!formatter.TryFormat(logMessage, MemoryMarshal.Cast<byte, char>(span), out charsWritten, ref segments))
+        while (true)
         {
+            segments.Reset();
+            if (formatter.TryFormat(logMessage, MemoryMarshal.Cast<byte, char>(span), out charsWritten, ref segments))
+            {
+                break;
+            }
+
             ArrayPool<byte>.Shared.Return(buffer);
             buffer = ArrayPool<byte>.Shared.Rent(span.Length * 2);
             span = buffer;
