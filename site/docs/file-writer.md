@@ -32,6 +32,9 @@ var config = new LogManagerConfig
 LogManager.Initialize(config);
 ```
 
+By default, if `logs/app.log` already contains data when the writer starts, it is archived and a fresh
+`logs/app.log` is created. This avoids appending a new application run to the previous run's active log.
+
 ## Rolling and retention
 
 ```csharp
@@ -40,7 +43,8 @@ var writer = new FileLogWriter(
     {
         FileSizeLimitBytes = 10 * 1024 * 1024, // 10 MB
         RollingInterval = FileRollingInterval.Daily,
-        RetainedFileCountLimit = 14,
+        RetainedFileCountLimit = 14, // defaults to 31; set null to keep indefinitely
+        RollOnStartup = true,
         AutoFlush = false,
         ArchiveTimestampMode = FileArchiveTimestampMode.Utc,
         FlushToDisk = false
@@ -51,8 +55,9 @@ Behavior:
 
 - When the size limit is reached, the current file is archived and a new active file is created.
 - When the rolling interval boundary is crossed (hour/day in UTC), the active file is archived.
-- Archived files are named `app.<timestamp>[.<sequence>].log` using `ArchiveTimestampMode` (`Utc` or `Local`).
-- Retention deletes oldest archives beyond `RetainedFileCountLimit`.
+- When `RollOnStartup` is enabled (default), existing active-file content is archived during writer construction; startup archive names use the existing file creation timestamp.
+- Archived files are named `app.<yyyy-MM-dd-HH_mm_ss_fff>[.<sequence>].log` using `ArchiveTimestampMode` (`Utc` or `Local`).
+- Retention deletes oldest archives beyond `RetainedFileCountLimit`; the default keeps 31 archives. Set `RetainedFileCountLimit = null` to disable cleanup.
 - `FlushToDisk = true` forces durable `FileStream.Flush(true)` for crash-critical workloads.
 
 ## Custom archive file names
@@ -72,7 +77,8 @@ This produces names like `output.2026-02-19-19_16_03.txt`.
 
 Built-in helpers:
 
-- `FileArchiveFileNameFormatters.Compact` (default behavior)
+- `FileArchiveFileNameFormatters.Default` (default behavior, e.g. `output.2026-02-19-19_16_03_123.txt`)
+- `FileArchiveFileNameFormatters.Compact` (legacy compact format, e.g. `output.20260219191603123.txt`)
 - `FileArchiveFileNameFormatters.DateTime`
 - `FileArchiveFileNameFormatters.DateTimeWithMilliseconds`
 

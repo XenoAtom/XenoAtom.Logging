@@ -125,7 +125,7 @@ public class FileLogWriter : LogWriter
 
         if (options.RollOnStartup && _currentFileLength > 0)
         {
-            RollFile(DateTime.UtcNow);
+            RollFile(GetStartupArchiveTimestamp());
         }
     }
 
@@ -430,7 +430,7 @@ public class FileLogWriter : LogWriter
         var context = new FileArchiveFileNameContext(_archiveFileNamePrefix, _archiveFileExtension, archiveTimestamp, sequence);
         var formatter = _archiveFileNameFormatter;
         var archiveFileName = formatter is null
-            ? FileArchiveFileNameFormatters.Compact(context)
+            ? FileArchiveFileNameFormatters.Default(context)
             : formatter(context);
 
         if (string.IsNullOrWhiteSpace(archiveFileName))
@@ -477,6 +477,17 @@ public class FileLogWriter : LogWriter
         {
             File.Delete(files[index]);
         }
+    }
+
+    private DateTime GetStartupArchiveTimestamp()
+    {
+        var timestamp = File.GetCreationTimeUtc(_filePath);
+        if (timestamp <= DateTime.MinValue)
+        {
+            timestamp = DateTime.UtcNow;
+        }
+
+        return timestamp;
     }
 
     private static long GetIntervalKey(DateTime timestamp, FileRollingInterval interval)

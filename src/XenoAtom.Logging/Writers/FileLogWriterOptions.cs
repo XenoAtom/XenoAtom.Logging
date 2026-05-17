@@ -13,6 +13,11 @@ namespace XenoAtom.Logging.Writers;
 public sealed class FileLogWriterOptions
 {
     /// <summary>
+    /// The default number of archived files kept by <see cref="FileLogWriter"/>.
+    /// </summary>
+    public const int DefaultRetainedFileCountLimit = 31;
+
+    /// <summary>
     /// Initializes a new instance of <see cref="FileLogWriterOptions"/>.
     /// </summary>
     /// <param name="filePath">The destination file path.</param>
@@ -107,12 +112,20 @@ public sealed class FileLogWriterOptions
     /// <summary>
     /// Gets or sets the maximum number of archived files to keep.
     /// </summary>
-    public int? RetainedFileCountLimit { get; set; }
+    /// <remarks>
+    /// The default is <see cref="DefaultRetainedFileCountLimit"/>. Set to <see langword="null"/> to keep archives indefinitely.
+    /// Retention is applied after a file is archived.
+    /// </remarks>
+    public int? RetainedFileCountLimit { get; set; } = DefaultRetainedFileCountLimit;
 
     /// <summary>
-    /// Gets or sets whether to roll existing content on startup.
+    /// Gets or sets whether to archive existing active-file content when the writer starts.
     /// </summary>
-    public bool RollOnStartup { get; set; }
+    /// <remarks>
+    /// The default is <see langword="true"/>, so application restarts start with a clean active log file. When startup rolling archives
+    /// an existing file, the archive name uses the existing file creation timestamp.
+    /// </remarks>
+    public bool RollOnStartup { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the file-sharing mode for the underlying stream.
@@ -144,7 +157,7 @@ public sealed class FileLogWriterOptions
     /// </summary>
     /// <remarks>
     /// When <see langword="null"/>, the default archive naming format is used:
-    /// <c>&lt;base&gt;.&lt;yyyyMMddHHmmssfff&gt;[.&lt;sequence&gt;]&lt;extension&gt;</c>.
+    /// <c>&lt;base&gt;.&lt;yyyy-MM-dd-HH_mm_ss_fff&gt;[.&lt;sequence&gt;]&lt;extension&gt;</c>.
     /// </remarks>
     public Func<FileArchiveFileNameContext, string>? ArchiveFileNameFormatter { get; set; }
 

@@ -12,7 +12,16 @@ namespace XenoAtom.Logging.Writers;
 public static class FileArchiveFileNameFormatters
 {
     /// <summary>
-    /// Produces the default compact file name format:
+    /// Produces the default sortable, human-readable file name format:
+    /// <c>&lt;base&gt;.&lt;yyyy-MM-dd-HH_mm_ss_fff&gt;[.&lt;sequence&gt;]&lt;extension&gt;</c>.
+    /// </summary>
+    /// <param name="context">The archive naming context.</param>
+    /// <returns>The archive file name.</returns>
+    public static string Default(FileArchiveFileNameContext context)
+        => Format(context, "yyyy-MM-dd-HH_mm_ss_fff");
+
+    /// <summary>
+    /// Produces the compact file name format:
     /// <c>&lt;base&gt;.&lt;yyyyMMddHHmmssfff&gt;[.&lt;sequence&gt;]&lt;extension&gt;</c>.
     /// </summary>
     /// <param name="context">The archive naming context.</param>

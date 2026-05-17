@@ -51,6 +51,91 @@ public class FileLogWriterTests
     }
 
     [TestMethod]
+    public void FileLogWriter_DefaultsToRollOnStartupWithCreationTimestamp()
+    {
+        var filePath = Path.Combine(_tempDirectory, "app.log");
+        var creationTime = new DateTime(2026, 05, 17, 14, 03, 27, 456, DateTimeKind.Utc);
+        var expectedArchiveFileName = "app.2026-05-17-14_03_27_456.log";
+
+        File.WriteAllText(filePath, "previous run");
+        File.SetCreationTimeUtc(filePath, creationTime);
+
+        var writer = new FileLogWriter(new FileLogWriterOptions(filePath) { AutoFlush = true });
+        LogManager.Initialize(CreateConfig(writer));
+        var logger = LogManager.GetLogger("Tests.File.Roll.Startup");
+        logger.Info("current run");
+        LogManager.Shutdown();
+
+        var archivePath = Path.Combine(_tempDirectory, expectedArchiveFileName);
+        Assert.IsTrue(
+            File.Exists(archivePath),
+            "The previous active log should be archived using its creation timestamp.");
+
+        var activeText = File.ReadAllText(filePath);
+        var archiveText = File.ReadAllText(archivePath);
+        Assert.IsTrue(activeText.Contains("current run", StringComparison.Ordinal));
+        Assert.IsFalse(activeText.Contains("previous run", StringComparison.Ordinal));
+        Assert.AreEqual("previous run", archiveText);
+    }
+
+    [TestMethod]
+    public void FileLogWriter_RollOnStartup_CanBeDisabled()
+    {
+        var filePath = Path.Combine(_tempDirectory, "app.log");
+        File.WriteAllText(filePath, "previous run" + Environment.NewLine);
+
+        var writer = new FileLogWriter(
+            new FileLogWriterOptions(filePath)
+            {
+                AutoFlush = true,
+                RollOnStartup = false
+            });
+
+        LogManager.Initialize(CreateConfig(writer));
+        var logger = LogManager.GetLogger("Tests.File.Roll.Startup.Disabled");
+        logger.Info("current run");
+        LogManager.Shutdown();
+
+        var activeText = File.ReadAllText(filePath);
+        Assert.AreEqual(0, Directory.GetFiles(_tempDirectory, "app.*.log", SearchOption.TopDirectoryOnly).Length);
+        Assert.IsTrue(activeText.Contains("previous run", StringComparison.Ordinal));
+        Assert.IsTrue(activeText.Contains("current run", StringComparison.Ordinal));
+    }
+
+    [TestMethod]
+    public void FileLogWriter_DefaultRetentionCleansUpStartupArchives()
+    {
+        var filePath = Path.Combine(_tempDirectory, "app.log");
+        var firstArchiveTimestamp = new DateTime(2026, 01, 01, 0, 0, 0, DateTimeKind.Utc);
+
+        for (var index = 0; index < FileLogWriterOptions.DefaultRetainedFileCountLimit + 3; index++)
+        {
+            var timestamp = firstArchiveTimestamp.AddMinutes(index);
+            var archivePath = Path.Combine(
+                _tempDirectory,
+                $"app.{timestamp.ToString("yyyy-MM-dd-HH_mm_ss_fff", CultureInfo.InvariantCulture)}.log");
+            File.WriteAllText(archivePath, "archive");
+        }
+
+        var activeCreationTime = firstArchiveTimestamp.AddDays(1);
+        var expectedStartupArchiveName =
+            $"app.{activeCreationTime.ToString("yyyy-MM-dd-HH_mm_ss_fff", CultureInfo.InvariantCulture)}.log";
+        File.WriteAllText(filePath, "previous run");
+        File.SetCreationTimeUtc(filePath, activeCreationTime);
+
+        var writer = new FileLogWriter(new FileLogWriterOptions(filePath));
+        writer.Dispose();
+
+        var archives = Directory.GetFiles(_tempDirectory, "app.*.log", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .ToArray();
+
+        Assert.AreEqual(FileLogWriterOptions.DefaultRetainedFileCountLimit, archives.Length);
+        CollectionAssert.Contains(archives, expectedStartupArchiveName);
+        CollectionAssert.DoesNotContain(archives, "app.2026-01-01-00_00_00_000.log");
+    }
+
+    [TestMethod]
     public void FileLogWriter_StripsMarkupPayloads()
     {
         var filePath = Path.Combine(_tempDirectory, "markup.log");
@@ -251,8 +336,8 @@ public class FileLogWriterTests
     public void FileLogWriter_ArchiveTimestampMode_UsesConfiguredClock()
     {
         var fixedUtcTime = new DateTimeOffset(2026, 02, 08, 11, 22, 33, TimeSpan.Zero);
-        var utcStamp = fixedUtcTime.UtcDateTime.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
-        var localStamp = fixedUtcTime.LocalDateTime.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        var utcStamp = fixedUtcTime.UtcDateTime.ToString("yyyy-MM-dd-HH_mm_ss_fff", CultureInfo.InvariantCulture);
+        var localStamp = fixedUtcTime.LocalDateTime.ToString("yyyy-MM-dd-HH_mm_ss_fff", CultureInfo.InvariantCulture);
 
         var utcDirectory = Path.Combine(_tempDirectory, "utc");
         Directory.CreateDirectory(utcDirectory);
@@ -418,10 +503,21 @@ public class FileLogWriterTests
     }
 
     [TestMethod]
+    public void FileLogWriterOptions_UsesRestartFriendlyDefaults()
+    {
+        var options = new FileLogWriterOptions(Path.Combine(_tempDirectory, "app.log"));
+
+        Assert.IsTrue(options.RollOnStartup);
+        Assert.AreEqual(FileLogWriterOptions.DefaultRetainedFileCountLimit, options.RetainedFileCountLimit);
+        Assert.AreEqual(31, options.RetainedFileCountLimit);
+        Assert.IsNull(options.ArchiveFileNameFormatter);
+    }
+
+    [TestMethod]
     public void FileLogWriter_RollFile_HandlesArchiveNameCollision()
     {
         var fixedUtcTime = new DateTimeOffset(2026, 02, 09, 12, 30, 45, TimeSpan.Zero);
-        var archiveStamp = fixedUtcTime.UtcDateTime.ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture);
+        var archiveStamp = fixedUtcTime.UtcDateTime.ToString("yyyy-MM-dd-HH_mm_ss_fff", CultureInfo.InvariantCulture);
         var filePath = Path.Combine(_tempDirectory, "app.log");
         var collidingArchivePath = Path.Combine(_tempDirectory, $"app.{archiveStamp}.log");
 

@@ -74,6 +74,7 @@ var config = new LogManagerConfig
                 {
                     FileSizeLimitBytes = 10 * 1024 * 1024,
                     RollingInterval = FileRollingInterval.Daily,
+                    RollOnStartup = true,
                     RetainedFileCountLimit = 7
                 })
         }
@@ -87,6 +88,9 @@ logger.Info($"Hello {42}");
 
 LogManager.Shutdown();
 ```
+
+`FileLogWriter` starts each process with a clean active file by default: an existing `app.log` is archived as
+`app.yyyy-MM-dd-HH_mm_ss_fff.log`, and retention keeps the newest 31 archives unless overridden.
 
 Enable async processing:
 
