@@ -5,14 +5,15 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0" />
+    <!-- Pinned on purpose: the source generator must load in the compiler of the oldest supported SDK (.NET 10.0.100 = Roslyn 5.0), a newer reference fails with CS9057. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.8" />
-    <PackageVersion Include="MinVer" Version="7.0.0" />
-    <PackageVersion Include="MSTest" Version="4.2.3" />
-    <PackageVersion Include="Serilog" Version="4.3.1" />
-    <PackageVersion Include="XenoAtom.Terminal.UI" Version="3.5.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="11.0.0" />
+    <PackageVersion Include="MinVer" Version="8.0.0" />
+    <PackageVersion Include="MSTest" Version="4.5.3" />
+    <PackageVersion Include="Serilog" Version="4.4.0" />
+    <PackageVersion Include="XenoAtom.Terminal.UI" Version="3.12.0" />
     <PackageVersion Include="ZeroLog" Version="2.6.1" />
-    <PackageVersion Include="ZLogger" Version="2.5.10" />
+    <PackageVersion Include="ZLogger" Version="2.6.2" />
   </ItemGroup>
 </Project>
